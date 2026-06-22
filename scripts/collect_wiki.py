@@ -22,7 +22,7 @@ BRANDS = {
     "LG":        ("LG_Electronics",       "VD"),
     "Whirlpool": ("Whirlpool_Corporation","DA"),
 }
-DAYS_BACK = 120  # rolling window
+DAYS_BACK = 730  # 최근 2년
 
 def fetch(article, start, end):
     url = ("https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/"
