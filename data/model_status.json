@@ -1,1 +1,6 @@
-{"model":"gemini-2.5-flash","status":"unknown","last_checked":"pending","note":"Run check_model.py once to populate."}
+{
+ "model": "gemini-2.5-flash",
+ "status": "ok",
+ "last_checked": "2026-06-22 08:11 UTC",
+ "note": "Model responds and supports generateContent."
+}
