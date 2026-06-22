@@ -83,7 +83,7 @@ select,input[type=date]{padding:8px 12px;border:1px solid var(--line);border-rad
     <div class="legend" id="legend"></div></div>
   <div style="position:relative;height:250px"><canvas id="trend"></canvas></div>
   <div class="note">번호 말풍선 = 외부 요인 발생 시점(아래 목록과 연결) · 위키피디아 일별 조회수(외부 추정 신호, 경쟁사 실측 트래픽 아님)</div>
-  <div class="evmap" id="evmap"></div>
+  <div class="evmap"><div style="font-size:11px;color:var(--muted);margin-bottom:8px">말풍선 번호 ↔ 요인</div><div id="evmap"></div></div>
 </div>
 
 <div class="cards" id="cards"></div>
@@ -136,9 +136,9 @@ function drawTrend(evSortedAsc){
  evSortedAsc.forEach((e,i)=>{
   let near=labels[0]; for(const dt of labels){ if(dt<=e.date) near=dt; }
   ann['e'+i]={type:'label',xValue:near,yValue:Math.max(...samData,...total),
+   yAdjust:-14,
    content:[String(i+1)],backgroundColor:DIRC[e.impact_direction]||'#999',color:'#fff',
-   font:{size:12,weight:'bold'},padding:{top:3,bottom:3,left:8,right:8},borderRadius:10,yAdjust:-4,
-   callout:{display:true,borderColor:DIRC[e.impact_direction]||'#999',borderWidth:1,margin:4}};
+   font:{size:12,weight:'bold'},padding:{top:3,bottom:3,left:8,right:8},borderRadius:10,   callout:{display:true,borderColor:DIRC[e.impact_direction]||'#999',borderWidth:1,margin:4}};
  });
  document.getElementById('legend').innerHTML=
   `<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#1428A0;display:inline-block"></span>Samsung (기준)</span>`+
@@ -149,7 +149,7 @@ function drawTrend(evSortedAsc){
   data:{labels,datasets:[
    {label:'Samsung',data:samData,borderColor:'#1428A0',backgroundColor:'#1428A014',tension:0.3,pointRadius:0,borderWidth:2.5},
    {label:compLabel(),data:total,borderColor:'#888780',backgroundColor:'#88878014',tension:0.3,pointRadius:0,borderWidth:2}]},
-  options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:18}},
+  options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:34}},
    plugins:{legend:{display:false},annotation:{annotations:ann},
      tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.parsed.y||0).toLocaleString()+'회'}}},
    scales:{x:{ticks:{color:'#888780',font:{size:11},maxTicksLimit:8},grid:{display:false}},
@@ -163,10 +163,10 @@ function render(){const r=rows();
  const evAsc=r.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
  drawTrend(evAsc);
  document.getElementById('evmap').innerHTML = evAsc.length? evAsc.map((e,i)=>`
-   <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:8px">
-     <span style="flex:none;width:20px;height:20px;border-radius:50%;background:${DIRC[e.impact_direction]||'#999'};color:#fff;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;margin-top:1px">${i+1}</span>
-     <div style="flex:1"><div style="font-size:13px;font-weight:500">${e.title} <span style="font-size:11px;color:#999;font-weight:400">· ${e.date||''} · ${DIRLAB[e.impact_direction]||''}</span></div>
-       <div style="font-size:12px;color:var(--muted);margin-top:1px">${e.impact||''}</div></div>
+   <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px">
+     <span style="flex:none;width:18px;height:18px;border-radius:50%;background:${DIRC[e.impact_direction]||'#999'};color:#fff;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center">${i+1}</span>
+     <span style="font-size:12px;color:var(--ink)">${e.title}</span>
+     <span style="font-size:11px;color:#999">· ${e.date||''}</span>
    </div>`).join('') : '<div style="font-size:12px;color:#999">해당 조건의 요인이 없습니다.</div>';
 
  const neg=r.filter(x=>x.impact_direction==='-').length;
@@ -187,7 +187,7 @@ function render(){const r=rows();
 function exportCSV(){const r=rows();
  const h=['date','scope','divisions','kpi','title','impact','description','impact_direction','confidence','source'];
  const csv=[h.join(',')].concat(r.map(x=>h.map(k=>`"${(x[k]||'').toString().replace(/"/g,'""')}"`).join(','))).join('\n');
- const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='scom_external_factors.csv';a.click();}
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv,{type:'text/csv;charset=utf-8'}]));a.download='scom_external_factors.csv';a.click();}
 document.getElementById('csvbtn').onclick=exportCSV;
 region.onchange=()=>{syncCountries();render();};
 [country,dv,kpi,d,sd,ed].forEach(el=>el.onchange=render);render();
