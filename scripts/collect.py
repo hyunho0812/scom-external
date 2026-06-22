@@ -64,7 +64,7 @@ FILTER_SYSTEM = (
  '\"description\":\"2-3 easy sentences a non-expert understands, naming the KPIs in context\",'
  '\"impact_direction\":\"+|-|neutral|unknown\",\"impact_horizon\":\"immediate|weeks|months\",'
  '\"confidence\":\"high|med|low\",\"metric\":\"traffic|revenue|both\"}\n'
- 'If not relevant return {\"relevant\":false}.'
+ 'Write title, impact, and description IN KOREAN (한국어). If not relevant return {\"relevant\":false}.'
 )
 
 def http_json(url, headers=None, data=None, method="GET"):
@@ -180,6 +180,7 @@ def main():
         events.append(ev); seen.add(key); added += 1
         print("  + kept:", ev["title"])
         time.sleep(0.3)
+    # events는 영구 누적 (정리 안 함)
     json.dump(events, open(DATA,"w",encoding="utf-8"), ensure_ascii=False, indent=1)
     print(f"layer1 done. added {added}, total {len(events)}")
 
