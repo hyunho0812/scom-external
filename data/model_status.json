@@ -1,6 +1,6 @@
 {
  "model": "gemini-2.5-flash",
  "status": "ok",
- "last_checked": "2026-06-22 08:11 UTC",
+ "last_checked": "2026-06-22 08:38 UTC",
  "note": "Model responds and supports generateContent."
 }
