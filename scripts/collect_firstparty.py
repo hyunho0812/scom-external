@@ -158,8 +158,8 @@ def main():
                 "category": cat,
                 "title": it["title"][:140],
                 "impact": "1차 출처 업데이트 — samsung.com 노출·유입에 영향 가능 (검수 필요)",
-                "description": (it["summary"][:240] or "First-party update from "+label) +
-                               f"  [source: {label}]",
+                "description": (label+" 공식 업데이트 — 원문: "+(it["summary"][:200] or it["title"])) +
+                               f"  [출처: {label}]",
                 "impact_direction": guess_direction(text),
                 "impact_horizon": "weeks",
                 "confidence": "low",   # keyword-filtered → mark low, review in quarterly check
