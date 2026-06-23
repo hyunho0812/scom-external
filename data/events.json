@@ -2718,5 +2718,25 @@
   "source": "data.worldbank.org",
   "_indicator": "IT.NET.USER.ZS",
   "_quarter": "2026Q2"
+ },
+ {
+  "event_id": "A579e783d",
+  "date": "2026-06-22",
+  "captured_date": "2026-06-23",
+  "scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR",
+  "divisions": "",
+  "kpi": "Traffic",
+  "category": "economy",
+  "title": "STMicroelectronics unveils new compact direct Time-of-Flight 3D LiDAR module bringing high-resolution spatial awareness to compact edge AI s",
+  "impact": "",
+  "description": "STMicroelectronics unveils new compact direct Time-of-Flight 3D LiDAR module bringing high-resolution spatial awareness to compact edge AI systems with industry-leading resolution and performance  [filter: keyword-fallback]",
+  "impact_direction": "unknown",
+  "impact_horizon": "weeks",
+  "confidence": "low",
+  "metric": "traffic",
+  "source": "GlobeNewswire",
+  "raw_title": "STMicroelectronics unveils new compact direct Time-of-Flight 3D LiDAR module bringing high-resolution spatial awareness to compact edge AI systems with industry-leading resolution and performance",
+  "raw_desc": "STMicroelectronics unveils new compact direct Time-of-Flight 3D LiDAR module bringing high-resolution spatial awareness to compact edge AI systems with industry-leading resolution and performance",
+  "raw_url": "https://www.globenewswire.com/news-release/2026/06/22/3315043/0/en/STMicroelectronics-unveils-new-compact-direct-Time-of-Flight-3D-LiDAR-module-bringing-high-resolution-spatial-awareness-to-compact-edge-AI-systems-with-industry-leading-resolution-.html"
  }
 ]
