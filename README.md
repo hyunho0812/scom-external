@@ -16,7 +16,7 @@ data/feed_state.json            ← remembers seen RSS entries (auto-managed)
 scripts/collect.py              ← Layer 1 daily: news API → Claude relevance filter
 scripts/collect_firstparty.py   ← Layer 3 daily: platform RSS/changelogs → FREE keyword filter
 scripts/collect_stats.py        ← Layer 2 monthly: World Bank stats → slow-trend events
-scripts/collect_wiki.py         ← daily: Wikipedia pageviews → competitor trend graph (Samsung/Apple/LG/Whirlpool)
+scripts/collect_wiki.py         ← daily: Wikipedia pageviews → company trend graph (Samsung/Apple/LG/Whirlpool)
 scripts/build.py                ← daily: events.json → index.html (Korean UI: region/country/division/KPI filters)
 feeds.txt                       ← first-party source list (edit to manage feeds)
 QUARTERLY_REVIEW.md             ← human blind-spot checklist (run once a quarter)
@@ -32,7 +32,7 @@ STATES (aging) and sub-threshold changes (a tiny ChatGPT UI tweak). So:
 3. **Layer 2 — stats (monthly):** World Bank indicators; emits an event only when
    a slow trend (aging, GDP/capita, internet penetration) crosses a threshold.
 4. **Quarterly human review:** `QUARTERLY_REVIEW.md` covers what no feed can —
-   brand-new platforms, culture/calendar, quiet competitor moves, slow regulation.
+   brand-new platforms, culture/calendar, quiet company moves, slow regulation.
 
 Even with all four, full coverage is impossible — the aim is to make missing
 something important *unlikely*, not guaranteed-never.
@@ -93,11 +93,11 @@ So the whole pipeline runs at $0. Note: free tiers can change their limits/polic
 over time, and free-tier inputs (here: public news titles/summaries — nothing
 sensitive) may be used by the provider for model improvement.
 
-## Competitor trend graph (Wikipedia pageviews)
+## Company trend graph (Wikipedia pageviews)
 The dashboard shows a trend line: Samsung (always, baseline) + the selected
-division's competitor total. Data is daily Wikipedia pageviews (collect_wiki.py,
+division's company total. Data is daily Wikipedia pageviews (collect_wiki.py,
 free, no key) for Samsung/Apple/LG/Whirlpool — an interest/attention PROXY, not
-real competitor web traffic. Events appear as numbered callout markers mapped to
+real company web traffic. Events appear as numbered callout markers mapped to
 a list under the graph. Division mapping: MX=Apple, VD=LG, DA=Whirlpool.
 
 ## Filter-model status badge (knowing when to swap models)
@@ -112,11 +112,26 @@ Gemini models endpoint for the configured GEMINI_MODEL:
 This is how you catch a model shutdown (like gemini-2.0-flash on 2026-06-01)
 without watching Google's changelog yourself — the badge turns red on its own.
 
+## First-party translation (MyMemory, free)
+First-party feed items (English titles/summaries) are auto-translated to Korean
+via the free MyMemory API (no key, no signup; ~5,000 words/day anonymous). If a
+call fails or the limit is hit, the original English text is used instead. The
+English original is always kept in raw_title / raw_desc / raw_url regardless.
+Machine translation is rougher than the Gemini-written news summaries, but keeps
+the dashboard Korean without extra cost.
+
+## Managing interest keywords (interests.txt)
+Topics you especially want to track live in `interests.txt`, one per line
+('#' = comment). These keywords (default: AI, LLM, GEO, zero-click) are merged
+into the news search queries and the keyword pre-filter, and passed to the Gemini
+filter as priority topics. Edit the file to tune what the collector pays extra
+attention to — same idea as feeds.txt, but for subject keywords.
+
 ## Managing feeds (feeds.txt)
 First-party sources live in `feeds.txt`, one per line as `Label | URL`.
 Edit that file to add/remove sources — the daily job reads it each run.
 Seeded with AI platforms (ChatGPT, Gemini, Claude, Perplexity, Copilot) and
-competitors (Apple, LG, Whirlpool). Some vendors lack a stable official RSS;
+companies (Apple, LG, Whirlpool). Some vendors lack a stable official RSS;
 those lines have a note with a mirror option if one stops working.
 
 ## Tuning

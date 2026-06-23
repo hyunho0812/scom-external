@@ -20,9 +20,9 @@ Perplexity | https://www.perplexity.ai/hub/blog
 #   https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_perplexity_hub.xml
 Copilot (Microsoft) | https://www.microsoft.com/en-us/microsoft-copilot/blog/feed/
 
-# ---------- Competitors ----------
+# ---------- 기업 (Companies) ----------
 Apple newsroom | https://www.apple.com/newsroom/rss-feed.rss
 LG newsroom | https://www.lgnewsroom.com/feed/
 Whirlpool news | https://www.whirlpoolcorp.com/feed/
-# ^ If a competitor feed path changes, find the new one on their press/news page
+# ^ If a company feed path changes, find the new one on their press/news page
 #   (look for an RSS icon or add /feed/ to the news URL) and update here.

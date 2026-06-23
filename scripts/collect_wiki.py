@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Competitor traffic proxy — Wikipedia daily pageviews (FREE, no key).
+Company traffic proxy — Wikipedia daily pageviews (FREE, no key).
 
 Draws the trend graph lines. For each tracked brand we pull daily pageviews of
 its Wikipedia article and store a compact time series in data/wiki_views.json.
 Samsung is always included (baseline); Apple/LG/Whirlpool map to divisions
-MX/VD/DA. These are interest/attention proxies, NOT real competitor traffic.
+MX/VD/DA. These are interest/attention proxies, NOT real company web traffic.
 
 Official Wikimedia REST API — no token, no rate-limit worries at this volume.
 """

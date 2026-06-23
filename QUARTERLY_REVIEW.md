@@ -36,10 +36,10 @@ The checklist targets exactly those gaps.
 - [ ] Cultural shifts in how people shop/research electronics locally.
 - [ ] If found → `category: culture` or `holiday`.
 
-### 4. Quiet competitor moves
+### 4. Quiet company moves
 - [ ] Check Apple / Xiaomi / Google / local rivals' sites & app-store listings
       for changes that didn't make headlines (pricing, regional launches, UI).
-- [ ] If found → `category: competitor`.
+- [ ] If found → `category: company`.
 
 ### 5. Regulation in slow motion
 - [ ] Any privacy / ad / AI rules progressing through legislatures (not yet enforced,

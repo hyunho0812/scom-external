@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the self-contained Korean dashboard (index.html).
 Filters: region(7) → country(12) → division(MX/VD/DA) → KPI → impact → date range.
-Trend graph: Samsung baseline + selected-division competitor total (Wikipedia views),
+Trend graph: Samsung baseline + selected-division company total (Wikipedia views),
 with numbered callout markers for events mapped to a list below.
 Cards: one-line impact summary + plain-language body + affected KPIs."""
 import os, json
@@ -37,6 +37,7 @@ h1{font-size:20px;font-weight:500;color:var(--blue);margin-bottom:4px}
 .mbadge.unknown .dot,.mbadge.error .dot{background:#EF9F27}
 .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
 .ctrl{display:flex;flex-direction:column;gap:5px}.ctrl label{font-size:11px;color:var(--muted)}
+.rowbreak{flex-basis:100%;height:0}
 select,input[type=date]{width:120px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fff;cursor:pointer;height:38px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:18px}
 .phead{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:6px}
@@ -53,12 +54,16 @@ select,input[type=date]{width:120px;padding:8px 12px;border:1px solid var(--line
 .evt .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:5px}
 .evt .ttl{font-size:15px;font-weight:500;display:flex;align-items:center;gap:9px}
 .numbadge{flex:none;width:22px;height:22px;border-radius:50%;color:#fff;font-size:12px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+#trend{cursor:pointer}
+.evt.flash{animation:flash 1.6s ease}
+@keyframes flash{0%{box-shadow:0 0 0 0 rgba(20,40,160,0.0)}20%{box-shadow:0 0 0 3px rgba(20,40,160,0.35)}100%{box-shadow:0 0 0 0 rgba(20,40,160,0.0)}}
 .evt .indent{margin-left:31px}
 .evt .meta{font-size:12px;color:var(--muted)}
 .evt .imp{font-size:13px;font-weight:500;border-radius:8px;padding:8px 10px;margin:6px 0 8px;line-height:1.5}
 .evt .desc{font-size:13px;color:#444;line-height:1.65}
 .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#eef0f5;color:#444;margin-right:5px}
 .kline{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}.klbl{font-size:11px;color:var(--muted)}
+.metaval{font-size:12px;color:var(--ink)}
 .ktag{display:inline-block;font-size:11px;padding:2px 9px;border-radius:10px;margin-right:5px;font-weight:500}
 .empty{padding:30px;text-align:center;color:var(--muted)}
 .foot{font-size:12px;color:#8a6d1a;margin-top:16px;padding:12px;background:#fff8e8;border:1px solid #f0e2b8;border-radius:10px}
@@ -75,18 +80,23 @@ select,input[type=date]{width:120px;padding:8px 12px;border:1px solid var(--line
  <div class="ctrl"><label>KPI</label><select id="kpi">
    <option value="ALL">전체</option><option>Impression</option><option>Click</option><option>Traffic</option><option>Order</option><option>CVR</option><option>Revenue</option><option>AOV</option></select></div>
  <div class="ctrl"><label>영향</label><select id="dir">
-   <option value="ALL">전체</option><option value="-">부정</option><option value="+">긍정</option><option value="neutral">중립</option></select></div>
+   <option value="ALL">전체</option><option value="-">negative</option><option value="+">positive</option><option value="neutral">neutral</option></select></div>
+ <div class="rowbreak"></div>
  <div class="ctrl"><label>시작일</label><input type="date" id="sd"></div>
  <div class="ctrl"><label>종료일</label><input type="date" id="ed"></div>
- <button id="csvbtn" style="margin-left:auto;padding:9px 16px;border:none;border-radius:8px;background:var(--blue);color:#fff;font-size:13px;font-weight:500;cursor:pointer">CSV 내보내기</button>
+ <div class="ctrl"><label>비교 기간</label><select id="cmp">
+   <option value="">없음</option><option value="DoD">DoD (전일)</option><option value="WoW">WoW (전주)</option><option value="MoM">MoM (전월)</option><option value="YoY">YoY (전년)</option></select></div>
+ <button id="csvbtn" style="margin-left:auto;padding:9px 16px;border:none;border-radius:8px;background:var(--blue);color:#fff;font-size:13px;font-weight:500;cursor:pointer;height:38px">CSV 내보내기</button>
 </div>
 
 <div class="panel">
   <div class="phead"><div class="ptitle">위키피디아 조회수 추세 <span id="tsub" style="font-size:11px;color:#999;font-weight:400"></span></div>
     <div class="legend" id="legend"></div></div>
   <div style="position:relative;height:250px"><canvas id="trend"></canvas></div>
-  <div class="note">번호 핀 = 외부 요인 발생 시점 · 아래 요인 카드의 번호와 연결 · 위키피디아 일별 조회수(외부 추정 신호, 경쟁사 실측 트래픽 아님)</div>
+  <div class="note">번호 핀 = 외부 요인 발생 시점 · 아래 요인 카드의 번호와 연결 · 위키피디아 일별 조회수(외부 추정 신호, 기업 실측 트래픽 아님)</div>
 </div>
+
+<div id="verdict" style="display:none;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:14px"></div>
 
 <div class="cards" id="cards"></div>
 <div class="funnel">KPI 퍼널: 노출(Impression) → 클릭(Click) → 트래픽(Traffic) → 주문(Order) · 전환율(CVR) → 매출(Revenue) · 객단가(AOV)</div>
@@ -101,23 +111,71 @@ const WIKI=__WIKI__;
 const REGIONS={"ALL":null,"북미":["US"],"유럽":["GB","DE","FR","ES","PT"],"중남미":["BR","MX_C"],"동남아":["AU"],"서남아":["IN"],"중동":["TR"],"한국":["KR"]};
 const COUNTRIES=[["ALL","전체"],["US","미국"],["GB","영국"],["DE","독일"],["FR","프랑스"],["ES","스페인"],["PT","포르투갈"],["BR","브라질"],["MX_C","멕시코"],["AU","호주"],["IN","인도"],["TR","튀르키예"],["KR","한국"]];
 const DIV2COMP={MX:"Apple",VD:"LG",DA:"Whirlpool"};
-const DIRLAB={"-":"부정","+":"긍정","neutral":"중립","unknown":"미상"};
+const ALL_COUNTRIES=["US","GB","DE","FR","ES","PT","BR","MX_C","AU","IN","TR","KR"];
+const ALL_DIVS=["MX","VD","DA"];
+const C2KO={US:"미국",GB:"영국",DE:"독일",FR:"프랑스",ES:"스페인",PT:"포르투갈",BR:"브라질",MX_C:"멕시코",AU:"호주",IN:"인도",TR:"튀르키예",KR:"한국"};
+// 영향 국가 표기: 12개국 전부면 '전체', 아니면 한글 나열
+function scopeLabelKo(scope){
+ const arr=(scope||'').split(';').filter(x=>x);
+ if(!arr.length) return '—';
+ if(ALL_COUNTRIES.every(c=>arr.includes(c))) return '전체';
+ return arr.map(c=>C2KO[c]||c).join(', ');
+}
+// 영향 사업부 표기: MX/VD/DA 전부면 '전체', 없으면 '—'
+function divLabel(divs){
+ const arr=(divs||'').split(';').filter(x=>x);
+ if(!arr.length) return '전체';
+ if(ALL_DIVS.every(dd=>arr.includes(dd))) return '전체';
+ return arr.join(', ');
+}
+const DIRLAB={"-":"negative","+":"positive","neutral":"neutral","unknown":"unknown"};
 const DIRC={"-":"#E24B4A","+":"#1D9E75","neutral":"#9a9a96","unknown":"#9a9a96"};
 const DIRCLS={"-":"neg","+":"pos","neutral":"","unknown":""};
 const KPIORDER=["Impression","Click","Traffic","Order","CVR","Revenue","AOV"];
 const KPICOL={Impression:"#185FA5",Click:"#185FA5",Traffic:"#185FA5",Order:"#534AB7",CVR:"#534AB7",Revenue:"#534AB7",AOV:"#534AB7"};
 const KPIBG={Impression:"#E6F1FB",Click:"#E6F1FB",Traffic:"#E6F1FB",Order:"#EEEDFE",CVR:"#EEEDFE",Revenue:"#EEEDFE",AOV:"#EEEDFE"};
-const region=document.getElementById('region'),country=document.getElementById('country'),dv=document.getElementById('div'),kpi=document.getElementById('kpi'),d=document.getElementById('dir'),sd=document.getElementById('sd'),ed=document.getElementById('ed');
+const region=document.getElementById('region'),country=document.getElementById('country'),dv=document.getElementById('div'),kpi=document.getElementById('kpi'),d=document.getElementById('dir'),sd=document.getElementById('sd'),ed=document.getElementById('ed'),cmp=document.getElementById('cmp');
+const CMP_DAYS={DoD:1,WoW:7,MoM:30,YoY:365};
+const CONFW={high:3,med:2,low:1};
+let showAll=false;  // 더보기 펼침 상태
+// 비교기간 기준 Samsung 트래픽 증감률 판정 → {pct, dir, baseDate, lastDate}
+function trendVerdict(){
+ const period=cmp.value; if(!period||!CMP_DAYS[period]) return null;
+ const sam=wikiSeries("Samsung"); if(!sam.length) return null;
+ const dates=sam.map(p=>p.date).sort();
+ const samAt=dt=>{const f=sam.find(p=>p.date===dt);return f?f.views:0;};
+ const nearest=(target,arr)=>{let r=arr[0];for(const dt of arr){if(dt<=target)r=dt;}return r;};
+ // 현재 시점 = 종료일(없으면 마지막), 비교 시점 = 시작일(없으면 종료일)에서 비교기간만큼 당김
+ const last = ed.value ? nearest(ed.value,dates) : dates[dates.length-1];
+ const startRef = sd.value || last;
+ const bd=new Date(startRef); bd.setDate(bd.getDate()-CMP_DAYS[period]);
+ const base = nearest(bd.toISOString().slice(0,10), dates);
+ const cur=samAt(last), bv=samAt(base);
+ const pct=bv?((cur-bv)/bv*100):0;
+ return {pct, dir: pct<0?'-':(pct>0?'+':'neutral'), period, baseDate:base, lastDate:last};
+}
 region.innerHTML=Object.keys(REGIONS).map((r,i)=>`<option value="${r}"${i===0?' selected':''}>${r==='ALL'?'전체':r}</option>`).join('');
 function syncCountries(){const reg=REGIONS[region.value];
  const list=reg?COUNTRIES.filter(c=>c[0]==='ALL'||reg.includes(c[0])):COUNTRIES;
  country.innerHTML=list.map((c,i)=>`<option value="${c[0]}"${i===0?' selected':''}>${c[1]}</option>`).join('');}
 syncCountries();
 function activeCountrySet(){if(country.value!=='ALL')return [country.value];const reg=REGIONS[region.value];return reg?reg:null;}
-function rows(){let r=EV.slice();const cs=activeCountrySet();
- if(cs)r=r.filter(e=>(e.scope||'').split(';').some(s=>cs.includes(s)));
- if(dv.value!=='ALL')r=r.filter(e=>(e.divisions||'').split(';').includes(dv.value));
- if(kpi.value!=='ALL')r=r.filter(e=>(e.kpi||'').split(';').includes(kpi.value));
+function rows(){let r=EV.slice();
+ // 국가: 특정값이면 그 값 포함 요인 / '전체'면 12개국 모두에 영향준 요인만(교집합)
+ //       지역 선택 시: 그 지역 국가들 중 하나라도 포함이 아니라, 지역 전체를 커버하는 요인
+ const cs=activeCountrySet();
+ if(cs){ // 특정 국가 또는 특정 지역: 해당 집합을 모두 커버하는 요인
+  r=r.filter(e=>{const sc=(e.scope||'').split(';');return cs.every(c=>sc.includes(c));});
+ } else { // 국가 전체(ALL): 12개국 전부 커버
+  r=r.filter(e=>{const sc=(e.scope||'').split(';');return ALL_COUNTRIES.every(c=>sc.includes(c));});
+ }
+ // 사업부: 특정값이면 포함 / '전체'면 MX·VD·DA 모두 포함(교집합)
+ if(dv.value!=='ALL'){ r=r.filter(e=>(e.divisions||'').split(';').includes(dv.value)); }
+ else { r=r.filter(e=>{const dvs=(e.divisions||'').split(';');return ALL_DIVS.every(x=>dvs.includes(x));}); }
+ // KPI: 특정값이면 포함 / '전체'면 7개 KPI 모두 포함(교집합)
+ if(kpi.value!=='ALL'){ r=r.filter(e=>(e.kpi||'').split(';').includes(kpi.value)); }
+ else { r=r.filter(e=>{const ks=(e.kpi||'').split(';');return KPIORDER.every(x=>ks.includes(x));}); }
+ // 영향: 특정값이면 그 방향만 ('전체'면 제한 없음 — 방향은 교집합 개념이 없으므로)
  if(d.value!=='ALL')r=r.filter(e=>e.impact_direction===d.value);
  if(sd.value)r=r.filter(e=>(e.date||'')>=sd.value);
  if(ed.value)r=r.filter(e=>(e.date||'')<=ed.value);
@@ -126,7 +184,7 @@ function rows(){let r=EV.slice();const cs=activeCountrySet();
 // ---- trend graph ----
 function wikiSeries(brand){return (WIKI.series&&WIKI.series[brand])||[];}
 function compNames(){return dv.value==='ALL'?["Apple","LG","Whirlpool"]:[DIV2COMP[dv.value]];}
-function compLabel(){return dv.value==='ALL'?'경쟁사 합산':compNames()[0];}
+function compLabel(){return dv.value==='ALL'?'기업 합산':compNames()[0];}
 let chart;
 // 핀 모양(원형 본체+꼬리+발광 앵커점+연결선)을 그리는 커스텀 플러그인
 const pinPlugin={
@@ -156,12 +214,28 @@ const pinPlugin={
   });
  }
 };
+// 핀 클릭 시 해당 번호 카드로 스크롤 + 하이라이트
+function scrollToCard(n){
+ let el=document.getElementById('evt-'+n);
+ if(!el && !showAll){ showAll=true; render(); el=document.getElementById('evt-'+n); }
+ if(el){
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  el.classList.add('flash');
+  setTimeout(()=>el.classList.remove('flash'),1600);
+ }
+}
 function drawTrend(evSortedAsc, numByDate){
  const sam=wikiSeries("Samsung");
- // 날짜 범위(시작일/종료일) 필터로 표시 구간 제한
+ // 표시 시작/종료: 시작일·종료일 필터 기준, 비교기간이 있으면 시작일을 그만큼 앞으로 당김
+ let fromDate=sd.value||'', toDate=ed.value||'';
+ const period=cmp.value;
+ if(period && CMP_DAYS[period]){
+  const baseRef=sd.value|| (sam.length?sam[sam.length-1].date:'');
+  if(baseRef){ const bd=new Date(baseRef); bd.setDate(bd.getDate()-CMP_DAYS[period]); fromDate=bd.toISOString().slice(0,10); }
+ }
  let pts=sam.map(p=>p.date);
- if(sd.value)pts=pts.filter(dt=>dt>=sd.value);
- if(ed.value)pts=pts.filter(dt=>dt<=ed.value);
+ if(fromDate)pts=pts.filter(dt=>dt>=fromDate);
+ if(toDate)pts=pts.filter(dt=>dt<=toDate);
  const labels=pts;
  const samData=labels.map(dt=>{const f=sam.find(p=>p.date===dt);return f?f.views:null;});
  const names=compNames();
@@ -186,6 +260,20 @@ function drawTrend(evSortedAsc, numByDate){
    {label:'Samsung',data:samData,borderColor:'#1428A0',backgroundColor:'#1428A014',tension:0.35,pointRadius:0,borderWidth:2.5,spanGaps:true},
    {label:compLabel(),data:total,borderColor:'#888780',backgroundColor:'#88878014',tension:0.35,pointRadius:0,borderWidth:2}]},
   options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:30}},
+   onClick:(evt)=>{
+     const rect=evt.chart.canvas.getBoundingClientRect();
+     const px=evt.x; const py=evt.y;
+     const ps=evt.chart._pins||[];
+     let best=null,bestD=1e9;
+     ps.forEach(p=>{
+      const x=evt.chart.scales.x.getPixelForValue(p.xLabel);
+      const yLine=evt.chart.scales.y.getPixelForValue(p.anchorY);
+      const pinY=yLine-30;
+      const dx=px-x, dy=py-pinY; const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<bestD){bestD=dist;best=p;}
+     });
+     if(best && bestD<24){ scrollToCard(best.n); }
+   },
    plugins:{legend:{display:false},
      tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.parsed.y||0).toLocaleString()+'회'}}},
    scales:{x:{ticks:{color:'#888780',font:{size:11},maxTicksLimit:8},grid:{display:false}},
@@ -197,8 +285,32 @@ function drawTrend(evSortedAsc, numByDate){
 function kpiTags(k){const list=(k||'').split(';').filter(x=>x).sort((a,b)=>KPIORDER.indexOf(a)-KPIORDER.indexOf(b));
  return list.map(x=>`<span class="ktag" style="background:${KPIBG[x]||'#eee'};color:${KPICOL[x]||'#444'}">${x}</span>`).join('');}
 
-function render(){const r=rows();
- // 카드(최신순) 기준 번호 부여 → 핀도 동일 번호 사용
+function render(){
+ let r=rows();  // 기존 모든 필터(지역·국가·사업부·KPI·영향·기간) 적용된 결과
+ // 비교기간 판정: 트렌드 방향 요인을 위로, 나머지도 제외 없이 신뢰도순(neutral 뒤로)
+ const vd=trendVerdict();
+ const vbox=document.getElementById('verdict');
+ const confRank=e=>CONFW[e.confidence]||0;
+ if(vd && vd.dir!=='neutral'){
+  // 정렬: ① 트렌드 방향과 같은 요인 먼저 ② 신뢰도 high순 ③ neutral은 같은 신뢰도 안에서 뒤로 ④ 최신순
+  const dirMatch=e=> e.impact_direction===vd.dir ? 0 : (e.impact_direction==='neutral'?2:1);
+  r.sort((a,b)=>
+    dirMatch(a)-dirMatch(b)
+    || confRank(b)-confRank(a)
+    || ((a.impact_direction==='neutral'?1:0)-(b.impact_direction==='neutral'?1:0))
+    || (b.date||'').localeCompare(a.date||''));
+  const vc=vd.dir==='-'?'#E24B4A':'#1D9E75';
+  const arrow=vd.dir==='-'?'▼':'▲';
+  const pickLabel=vd.dir==='-'?'트래픽 하락 → negative 요인 우선':'트래픽 상승 → positive 요인 우선';
+  vbox.style.display='block'; vbox.style.background=vc+'14'; vbox.style.border='1px solid '+vc+'44';
+  vbox.innerHTML=`<span style="color:${vc};font-weight:600">Samsung ${vd.period} ${arrow} ${vd.pct.toFixed(1)}%</span> · <span style="color:var(--muted)">${pickLabel}, 신뢰도순 정렬 (전체 요인 포함)</span>`;
+ } else if(vd){
+  // 변화 미미: 신뢰도순(neutral 뒤로)
+  r.sort((a,b)=> confRank(b)-confRank(a) || ((a.impact_direction==='neutral'?1:0)-(b.impact_direction==='neutral'?1:0)) || (b.date||'').localeCompare(a.date||''));
+  vbox.style.display='block'; vbox.style.background='var(--bg)'; vbox.style.border='1px solid var(--line)';
+  vbox.innerHTML=`<span style="color:var(--muted)">Samsung ${vd.period} 변화 미미(${vd.pct.toFixed(1)}%) — 신뢰도순 정렬</span>`;
+ } else { vbox.style.display='none'; }
+
  const numByDate={}; r.forEach((e,i)=>{ if(!(e.date in numByDate)) numByDate[e.date]=i+1; });
  const evAsc=r.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
  drawTrend(evAsc, numByDate);
@@ -206,26 +318,35 @@ function render(){const r=rows();
  const neg=r.filter(x=>x.impact_direction==='-').length;
  const scopeLabel=country.value!=='ALL'?(COUNTRIES.find(c=>c[0]===country.value)||['','전체'])[1]:(region.value!=='ALL'?region.value:'전체');
  document.getElementById('cards').innerHTML=
-  `<div class="card"><div class="lbl">표시된 이벤트</div><div class="val">${r.length}</div></div>`+
-  `<div class="card"><div class="lbl">부정 영향</div><div class="val" style="color:var(--neg)">${neg}</div></div>`+
+  `<div class="card"><div class="lbl">전체 이벤트</div><div class="val">${r.length}</div></div>`+
+  `<div class="card"><div class="lbl">negative</div><div class="val" style="color:var(--neg)">${neg}</div></div>`+
   `<div class="card"><div class="lbl">대상</div><div class="val" style="font-size:18px">${scopeLabel}</div></div>`;
- document.getElementById('list').innerHTML = r.length? r.map((e,i)=>{
+ // 상위 10개 + 더보기
+ const LIMIT=10;
+ const shown=showAll?r:r.slice(0,LIMIT);
+ const cardsHtml = r.length? shown.map((e,i)=>{
    const cls=DIRCLS[e.impact_direction]||'';const bc=DIRC[e.impact_direction]||'#9a9a96';
-   const divs=(e.divisions||'').split(';').filter(x=>x);
-   const meta=[...divs,DIRLAB[e.impact_direction]||'',e.confidence||''].filter(x=>x);
+   const meta=[DIRLAB[e.impact_direction]||'',e.confidence||''].filter(x=>x);
    const imp=e.impact?`<div class="imp" style="color:${bc};background:${bc}14">${e.impact}</div>`:'';
    const badge=`<span class="numbadge" style="background:${bc}">${i+1}</span>`;
-   return `<div class="evt ${cls}"><div class="top"><span class="ttl">${badge}${e.title}</span><span class="meta">${e.date||''}</span></div>
+   return `<div class="evt ${cls}" id="evt-${i+1}"><div class="top"><span class="ttl">${badge}${e.title}</span><span class="meta">${e.date||''}</span></div>
      <div class="indent">${meta.map(t=>`<span class="tag">${t}</span>`).join('')}</div>${imp?'<div class="indent">'+imp+'</div>':''}
      <div class="desc indent">${e.description||''}</div>
-     <div class="kline indent"><span class="klbl">영향 KPI:</span>${kpiTags(e.kpi)}</div></div>`;}).join('') : '<div class="empty">해당 조건에 맞는 이벤트가 없습니다.</div>';}
+     <div class="kline indent"><span class="klbl">영향 KPI:</span>${kpiTags(e.kpi)}</div>
+     <div class="kline indent"><span class="klbl">영향 국가:</span><span class="metaval">${scopeLabelKo(e.scope)}</span></div>
+     <div class="kline indent"><span class="klbl">영향 사업부:</span><span class="metaval">${divLabel(e.divisions)}</span></div></div>`;}).join('') : '<div class="empty">해당 조건에 맞는 이벤트가 없습니다.</div>';
+ const moreBtn = (r.length>LIMIT)? `<button id="morebtn" style="display:block;margin:4px auto 0;padding:9px 20px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--blue);font-size:13px;font-weight:500;cursor:pointer">${showAll?'접기':'더보기 ('+(r.length-LIMIT)+'개 더)'}</button>` : '';
+ document.getElementById('list').innerHTML = cardsHtml + moreBtn;
+ const mb=document.getElementById('morebtn');
+ if(mb) mb.onclick=()=>{ showAll=!showAll; render(); };
+}
 function exportCSV(){const r=rows();
- const h=['date','scope','divisions','kpi','title','impact','description','impact_direction','confidence','source'];
+ const h=['date','scope','divisions','kpi','title','impact','description','impact_direction','confidence','source','raw_title','raw_desc','raw_url'];
  const csv=[h.join(',')].concat(r.map(x=>h.map(k=>`"${(x[k]||'').toString().replace(/"/g,'""')}"`).join(','))).join('\n');
  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv,{type:'text/csv;charset=utf-8'}]));a.download='scom_external_factors.csv';a.click();}
 document.getElementById('csvbtn').onclick=exportCSV;
-region.onchange=()=>{syncCountries();render();};
-[country,dv,kpi,d,sd,ed].forEach(el=>el.onchange=render);render();
+region.onchange=()=>{showAll=false;syncCountries();render();};
+[country,dv,kpi,d,sd,ed,cmp].forEach(el=>el.onchange=()=>{showAll=false;render();});render();
 </script></body></html>"""
 
 LABELS={"ok":"정상 ✓","retired":"종료됨 — GEMINI_MODEL 교체 필요","unknown":"키 없음 (키워드 필터만)","error":"점검 실패 — 확인 필요"}

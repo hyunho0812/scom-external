@@ -37,6 +37,26 @@ QUERIES = [
     "oil price economy", "GDPR ecommerce", "foldable phone",
 ]
 
+# --- 관심 키워드 (interests.txt에서 로드) ---
+def load_interests():
+    path = os.path.join(HERE, "..", "interests.txt")
+    out = []
+    try:
+        for line in open(path, encoding="utf-8"):
+            line = line.strip()
+            if line and not line.startswith("#"):
+                out.append(line)
+    except Exception:
+        pass
+    return out
+
+INTERESTS = load_interests()
+# 관심 키워드를 검색어와 키워드 사전에 병합(중복 제거)
+for _kw in INTERESTS:
+    q = _kw + " Samsung"
+    if q not in QUERIES:
+        QUERIES.append(q)
+
 # --- keyword pre-filter (free) ---
 KW_KEEP = [
     "samsung","galaxy","smartphone","electronics","iphone","apple","foldable",
@@ -44,6 +64,10 @@ KW_KEEP = [
     "oil","inflation","economy","tariff","holiday","sale","ecommerce","retail",
     "search","ranking","platform","tiktok","social","aging","consumer","tv","appliance",
 ]
+# 관심 키워드도 keep 목록에 추가(소문자)
+for _kw in INTERESTS:
+    if _kw.lower() not in KW_KEEP:
+        KW_KEEP.append(_kw.lower())
 KW_DROP = ["football","cricket","soccer","obituary","horoscope","celebrity gossip"]
 
 FILTER_SYSTEM = (
@@ -52,7 +76,7 @@ FILTER_SYSTEM = (
  "directly or indirectly. Be selective; ignore generic PR, sports, gossip, stock noise, "
  "and unrelated same-name entities. Respond with ONLY a JSON object, no markdown:\n"
  '{\"relevant\":true|false,\"category\":\"culture|marketing|platform|holiday|economy|'
- 'social_issue|geopolitics|AI|competitor|regulation\",'
+ 'social_issue|geopolitics|AI|company|regulation\",'
  '\"scope\":[country codes from US,GB,DE,FR,ES,PT,BR,MX_C,AU,IN,TR,KR that this affects; '
  'use the full list if it is worldwide],'
  '\"divisions\":[any of MX,VD,DA that this relates to — MX=Apple-relevant, VD=LG-relevant, '
@@ -109,7 +133,9 @@ def gemini_filter(article):
         return None
     url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
            f"{GEMINI_MODEL}:generateContent?key={GEMINI_KEY}")
-    prompt = (FILTER_SYSTEM + "\n\nITEM:\nTITLE: " + article["title"] +
+    interest_note = ("\n\nPRIORITY TOPICS (treat as especially relevant if related): "
+                     + ", ".join(INTERESTS)) if INTERESTS else ""
+    prompt = (FILTER_SYSTEM + interest_note + "\n\nITEM:\nTITLE: " + article["title"] +
               "\nSUMMARY: " + article["desc"] + "\nSOURCE: " + article["source"])
     body = json.dumps({
         "contents":[{"parts":[{"text":prompt}]}],
@@ -152,6 +178,10 @@ def to_event(article, verdict, via):
         "confidence":(verdict.get("confidence","low") if verdict else "low"),
         "metric":verdict.get("metric","traffic") if verdict else "traffic",
         "source":article["source"] or article["url"],
+        # 영문 원본 누적 보관 (대시보드 비표시, 필요시 사용)
+        "raw_title":article.get("title",""),
+        "raw_desc":article.get("desc",""),
+        "raw_url":article.get("url",""),
     }
 
 def main():
