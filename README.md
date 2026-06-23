@@ -1,150 +1,59 @@
-# samsung.com External Factors — free auto-updating web dashboard
+# Quarterly blind-spot review — samsung.com external tracker
 
-This deploys a public dashboard URL that refreshes itself **every day with no
-action from you**. Hosting and automation are free via GitHub Pages + Actions.
+Automation (news + stats + first-party feeds) catches most things, but some
+factors slip through every automated net. This list is the human layer: ~30
+minutes once a quarter to check what the machines structurally can't.
 
-A live URL can only be created under your own GitHub account — these steps
-produce it in about 15 minutes. After that you never touch it.
+Mark each done, add anything found straight into `data/events.json` (same
+fields as other events). Date each review.
 
----
-
-## What's in this folder
-```
-index.html                      ← the dashboard (Korean UI, trend graph), auto-generated
-data/events.json                ← the event log (seeded with 10 events)
-data/feed_state.json            ← remembers seen RSS entries (auto-managed)
-scripts/collect.py              ← Layer 1 daily: news API → Claude relevance filter
-scripts/collect_firstparty.py   ← Layer 3 daily: platform RSS/changelogs → FREE keyword filter
-scripts/collect_stats.py        ← Layer 2 monthly: World Bank stats → slow-trend events
-scripts/collect_wiki.py         ← daily: Wikipedia pageviews → company trend graph (Samsung/Apple/LG/Whirlpool)
-scripts/build.py                ← daily: events.json → index.html (Korean UI: region/country/division/KPI filters)
-feeds.txt                       ← first-party source list (edit to manage feeds)
-QUARTERLY_REVIEW.md             ← human blind-spot checklist (run once a quarter)
-.github/workflows/daily-update.yml ← the free daily cron that runs everything
-```
-
-## Three collection layers + a human layer
-No single source sees everything. News covers sudden EVENTS but misses slow
-STATES (aging) and sub-threshold changes (a tiny ChatGPT UI tweak). So:
-1. **Layer 1 — news (daily):** broad pull, Claude filters for relevance.
-2. **Layer 3 — first-party feeds (daily):** official platform blogs/release notes,
-   so small changes are caught straight from the source, no press needed.
-3. **Layer 2 — stats (monthly):** World Bank indicators; emits an event only when
-   a slow trend (aging, GDP/capita, internet penetration) crosses a threshold.
-4. **Quarterly human review:** `QUARTERLY_REVIEW.md` covers what no feed can —
-   brand-new platforms, culture/calendar, quiet company moves, slow regulation.
-
-Even with all four, full coverage is impossible — the aim is to make missing
-something important *unlikely*, not guaranteed-never.
-
-## How the daily loop works
-Every morning GitHub Actions runs on its own:
-1. `collect.py` pulls recent articles from a news API (broad — includes noise).
-2. Each article goes to Claude, which decides "relevant to samsung.com?" and,
-   if yes, tags it (category, scope, direction…). Only relevant items are kept.
-3. `build.py` regenerates `index.html`.
-4. The page is published to GitHub Pages. Your URL now shows today's view.
-
-The LLM filter is what makes "automatic" usable — the news API alone returns
-lots of irrelevant items; Claude drops them before they reach your dashboard.
-It is not perfect — skim the list weekly and delete any stragglers from
-`data/events.json`.
+## Why this exists
+- News API misses slow STATES (aging, middle-class growth) and sub-threshold events.
+- Stats API only covers indicators you wired up — not culture, sentiment, or novelty.
+- First-party feeds only cover sources you listed — new platforms aren't on the list yet.
+The checklist targets exactly those gaps.
 
 ---
 
-## One-time setup
+## Review date: __________   Reviewer: __________
 
-### 1. Create the repo
-- Sign in at github.com ▸ New repository ▸ name it e.g. `samsung-external` ▸
-  Public ▸ Create.
-- Upload this whole folder's contents (drag the files into the repo's
-  "Add file ▸ Upload files", keeping the `scripts/`, `data/`, `.github/` paths).
+### 1. New platforms / channels (the "we didn't know it existed" gap)
+- [ ] Any new social or content platform gaining traction in our 12 markets?
+      (TikTok-style entrants, regional apps, new AI search tools)
+- [ ] Any platform we depend on that launched a feature changing discovery/checkout?
+- [ ] If found → add as `category: platform` or `marketing`, set scope.
 
-### 2. Add your API keys as secrets (both free)
-- Repo ▸ Settings ▸ Secrets and variables ▸ Actions ▸ New repository secret.
-- `GEMINI_API_KEY` — get it free at aistudio.google.com/apikey (sign in with a
-  Google account, "Create API key"; no credit card). This powers the Layer 1
-  LLM filter. Free tier ≈ 1,500 requests/day on Flash — plenty here.
-- `NEWS_API_KEY` — free at newsapi.org (or adapt collect.py to another source).
-- Secrets are encrypted and never appear in the page or logs.
-- (Optional) the workflow sets GEMINI_MODEL to gemini-2.5-flash. If Google
-  retires that name, change it in the workflow to the current free Flash model
-  (e.g. a newer gemini-*-flash / flash-lite).
+### 2. Slow demographic / structural trends (the "too gradual" gap)
+- [ ] Skim World Bank / national-statistics dashboards for each key market:
+      aging, urbanization, smartphone penetration, middle-class size.
+- [ ] Anything the monthly stats job didn't flag because it stayed under threshold
+      but feels directionally important over 3-5 years?
+- [ ] If found → `category: social_issue` or `economy`, horizon `months`.
 
-### 3. Turn on Pages
-- Repo ▸ Settings ▸ Pages ▸ Source = "GitHub Actions". Save.
+### 3. Culture / calendar (the "not newsworthy but matters" gap)
+- [ ] Upcoming holidays, festivals, shopping events per market in the next quarter
+      (regional ones the news won't headline).
+- [ ] Cultural shifts in how people shop/research electronics locally.
+- [ ] If found → `category: culture` or `holiday`.
 
-### 4. Run it once
-- Repo ▸ Actions ▸ "daily-update" ▸ Run workflow. After it finishes,
-  Settings ▸ Pages shows your live URL: `https://<you>.github.io/samsung-external/`.
-- That's your team link. The cron (`0 21 * * *` = ~06:00 KST) refreshes it daily.
+### 4. Quiet company moves
+- [ ] Check Apple / Xiaomi / Google / local rivals' sites & app-store listings
+      for changes that didn't make headlines (pricing, regional launches, UI).
+- [ ] If found → `category: company`.
+
+### 5. Regulation in slow motion
+- [ ] Any privacy / ad / AI rules progressing through legislatures (not yet enforced,
+      so not yet "news") that will hit our markets? (EU AI Act phases, etc.)
+- [ ] If found → `category: regulation`, horizon `months`.
+
+### 6. Automation health check
+- [ ] Skim the last quarter of auto-collected events: any obvious false positives
+      to delete? Any category conspicuously empty (a sign the source list has a hole)?
+- [ ] Adjust QUERIES (collect.py), INDICATORS (collect_stats.py), or FEEDS
+      (collect_firstparty.py) to close any gap you noticed.
 
 ---
 
-## Costs — everything is free
-- GitHub Pages + Actions: free for public repos.
-- Layer 1 news: news API free tier + **Gemini free tier** for the LLM filter.
-  Hybrid order (keyword pre-filter → Gemini) keeps Gemini calls low so you stay
-  inside the free daily quota. If the quota is hit (HTTP 429) or no Gemini key
-  is set, it automatically falls back to the keyword decision — never stalls.
-- Layer 3 first-party feeds: FREE keyword filter, no API calls.
-- Layer 2 stats (World Bank): FREE, no key.
-So the whole pipeline runs at $0. Note: free tiers can change their limits/policy
-over time, and free-tier inputs (here: public news titles/summaries — nothing
-sensitive) may be used by the provider for model improvement.
-
-## Company trend graph (Wikipedia pageviews)
-The dashboard shows a trend line: Samsung (always, baseline) + the selected
-division's company total. Data is daily Wikipedia pageviews (collect_wiki.py,
-free, no key) for Samsung/Apple/LG/Whirlpool — an interest/attention PROXY, not
-real company web traffic. Events appear as numbered callout markers mapped to
-a list under the graph. Division mapping: MX=Apple, VD=LG, DA=Whirlpool.
-
-## Filter-model status badge (knowing when to swap models)
-The dashboard shows a badge with the LLM model the filter uses, whether it's
-alive, and when it was last checked. Each daily run, `check_model.py` pings the
-Gemini models endpoint for the configured GEMINI_MODEL:
-- **green "active ✓"** — model responds, nothing to do.
-- **red "RETIRED — update GEMINI_MODEL"** — model returned 404/not-found (Google
-  retired it). Swap GEMINI_MODEL in the workflow for a current free Flash model;
-  collection keeps running on keyword fallback until you do.
-- **amber "no key" / "check failed"** — no Gemini key set, or a transient error.
-This is how you catch a model shutdown (like gemini-2.0-flash on 2026-06-01)
-without watching Google's changelog yourself — the badge turns red on its own.
-
-## First-party translation (MyMemory, free)
-First-party feed items (English titles/summaries) are auto-translated to Korean
-via the free MyMemory API (no key, no signup; ~5,000 words/day anonymous). If a
-call fails or the limit is hit, the original English text is used instead. The
-English original is always kept in raw_title / raw_desc / raw_url regardless.
-Machine translation is rougher than the Gemini-written news summaries, but keeps
-the dashboard Korean without extra cost.
-
-## Managing interest keywords (interests.txt)
-Topics you especially want to track live in `interests.txt`, one per line
-('#' = comment). These keywords (default: AI, LLM, GEO, zero-click) are merged
-into the news search queries and the keyword pre-filter, and passed to the Gemini
-filter as priority topics. Edit the file to tune what the collector pays extra
-attention to — same idea as feeds.txt, but for subject keywords.
-
-## Managing feeds (feeds.txt)
-First-party sources live in `feeds.txt`, one per line as `Label | URL`.
-Edit that file to add/remove sources — the daily job reads it each run.
-Seeded with AI platforms (ChatGPT, Gemini, Claude, Perplexity, Copilot) and
-companies (Apple, LG, Whirlpool). Some vendors lack a stable official RSS;
-those lines have a note with a mirror option if one stops working.
-
-## Tuning
-- Add/remove countries: edit COUNTRIES in collect.py and REGIONS/COUNTRIES in build.py.
-- Broaden/narrow collection: edit QUERIES in collect.py.
-- Change refresh time: edit the cron in daily-update.yml (UTC).
-- Make repo private: works, but Pages may need a paid plan for private repos —
-  keep it public, or host the built index.html elsewhere.
-
-## Honesty notes for the team
-- "Relevant" is decided by an LLM, so an occasional miss/false-positive happens.
-- impact_direction is an estimate. There are no attribution percentages in this
-  dashboard by design — it shows what happened and a directional read, not a
-  causal split.
-- This tracks EXTERNAL events only. Joining to internal samsung.com traffic/
-  revenue is a separate, later step done in your own secure environment.
+Honest note: even with all three automated layers plus this review, full coverage
+is impossible — the goal is to make a *miss on something important* unlikely, not
+to guarantee zero misses.
