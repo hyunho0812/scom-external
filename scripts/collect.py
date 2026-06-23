@@ -172,7 +172,7 @@ def to_event(article, verdict, via):
         "title":(verdict.get("title") if verdict else article["title"])[:140],
         "impact":(verdict.get("impact","") if verdict else ""),
         "description":(verdict.get("description","") if verdict else
-                       article["desc"][:200]) + f"  [filter: {via}]",
+                       article["desc"][:200]),
         "impact_direction":verdict.get("impact_direction","unknown") if verdict else "unknown",
         "impact_horizon":verdict.get("impact_horizon","weeks") if verdict else "weeks",
         "confidence":(verdict.get("confidence","low") if verdict else "low"),

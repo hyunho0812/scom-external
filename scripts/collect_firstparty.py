@@ -191,9 +191,8 @@ def main():
                 "kpi": guess_kpi(text),
                 "category": cat,
                 "title": f"[{label}] " + title_ko,
-                "impact": "1차 출처 업데이트 — samsung.com 노출·유입에 영향 가능",
-                "description": (label + " 공식 업데이트 — " + summary_ko) +
-                               f"  [출처: {label}]",
+                "impact": "samsung.com 노출·유입에 영향 가능",
+                "description": summary_ko,
                 "impact_direction": guess_direction(text),
                 "impact_horizon": "weeks",
                 "confidence": "low",   # keyword-filtered → mark low, review in quarterly check
