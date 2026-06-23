@@ -26,10 +26,13 @@ WB_ISO = {"US":"USA","GB":"GBR","DE":"DEU","FR":"FRA","ES":"ESP","PT":"PRT",
           "BR":"BRA","MX_C":"MEX","AU":"AUS","IN":"IND","TR":"TUR","KR":"KOR"}
 
 INDICATORS = {
-    "SP.POP.65UP.TO.ZS": ("aging",   "social_issue", "Population 65+ share",       0.4),
-    "NY.GDP.PCAP.KD.ZG": ("economy", "economy",      "GDP per-capita growth",      1.5),
-    "IT.NET.USER.ZS":    ("digital", "marketing",    "Internet user penetration",  1.5),
+    "SP.POP.65UP.TO.ZS": ("aging",   "social_issue", "65세 이상 인구 비중",   0.4),
+    "NY.GDP.PCAP.KD.ZG": ("economy", "economy",      "1인당 GDP 성장률",      1.5),
+    "IT.NET.USER.ZS":    ("digital", "marketing",    "인터넷 보급률",         1.5),
 }
+# 국가 코드 → 한글명 (title 표기용)
+KO_NAME = {"US":"미국","GB":"영국","DE":"독일","FR":"프랑스","ES":"스페인","PT":"포르투갈",
+           "BR":"브라질","MX_C":"멕시코","AU":"호주","IN":"인도","TR":"튀르키예","KR":"한국"}
 
 def wb(iso, code):
     url = f"https://api.worldbank.org/v2/country/{iso}/indicator/{code}?format=json&per_page=8&mrv=6"
@@ -69,7 +72,7 @@ def main():
             if abs(change) < thr:
                 continue  # too small to matter — skip
             direction = "+" if change > 0 else "-"
-            # aging up & internet up are structurally relevant; sign is informational
+            mname = KO_NAME.get(market, market)
             events.append({
                 "event_id": f"WB-{market}-{slug}-{q}",
                 "date": today.strftime("%Y-%m-%d"),
@@ -77,12 +80,12 @@ def main():
                 "scope": market,
                 "divisions": "",
                 "kpi": "CVR;Order;AOV;Revenue",
-                "impact": f"{label} 추세 변화 → 해당 시장 구매력·전환·매출에 점진적 영향",
+                "impact": f"{mname} {label} 추세 변화 → 해당 시장 구매력·전환·매출에 점진적 영향",
                 "category": cat,
-                "title": f"{label} shift in {market}: {ov:.1f}→{nv:.1f} ({oy}-{ny})",
-                "description": (f"Slow-trend signal from World Bank: {label.lower()} moved "
-                               f"{change:+.1f} pts over {oy}-{ny}. Gradual structural change "
-                               f"that news rarely flags but can shift samsung.com demand mix."),
+                "title": f"{mname} {label} 변화: {ov:.1f}→{nv:.1f} ({oy}~{ny})",
+                "description": (f"World Bank 통계 기반 장기 추세 신호: {mname}의 {label}이(가) "
+                               f"{oy}~{ny}년 동안 {change:+.1f}p 변동했습니다. 뉴스에 잘 드러나지 않는 "
+                               f"점진적 구조 변화로, samsung.com 수요 구성에 영향을 줄 수 있습니다."),
                 "impact_direction": "neutral",
                 "impact_horizon": "months",
                 "confidence": "med",

@@ -35,9 +35,9 @@ h1{font-size:20px;font-weight:500;color:var(--blue);margin-bottom:4px}
 .mbadge.retired{background:#fdecea;border-color:#f5c2bd;color:#a3271f}.mbadge.retired .dot{background:#E24B4A}
 .mbadge.unknown,.mbadge.error{background:#fef7e0;border-color:#f0e2b8;color:#8a6d1a}
 .mbadge.unknown .dot,.mbadge.error .dot{background:#EF9F27}
-.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
 .ctrl{display:flex;flex-direction:column;gap:5px}.ctrl label{font-size:11px;color:var(--muted)}
-select,input[type=date]{padding:8px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fff;cursor:pointer}
+select,input[type=date]{width:120px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fff;cursor:pointer;height:38px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:18px}
 .phead{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:6px}
 .ptitle{font-size:13px;font-weight:500}
@@ -51,7 +51,10 @@ select,input[type=date]{padding:8px 12px;border:1px solid var(--line);border-rad
 .evt{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--neu);border-radius:10px;padding:14px 16px;margin-bottom:12px}
 .evt.pos{border-left-color:var(--pos)}.evt.neg{border-left-color:var(--neg)}
 .evt .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:5px}
-.evt .ttl{font-size:15px;font-weight:500}.evt .meta{font-size:12px;color:var(--muted)}
+.evt .ttl{font-size:15px;font-weight:500;display:flex;align-items:center;gap:9px}
+.numbadge{flex:none;width:22px;height:22px;border-radius:50%;color:#fff;font-size:12px;font-weight:bold;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.evt .indent{margin-left:31px}
+.evt .meta{font-size:12px;color:var(--muted)}
 .evt .imp{font-size:13px;font-weight:500;border-radius:8px;padding:8px 10px;margin:6px 0 8px;line-height:1.5}
 .evt .desc{font-size:13px;color:#444;line-height:1.65}
 .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#eef0f5;color:#444;margin-right:5px}
@@ -82,8 +85,7 @@ select,input[type=date]{padding:8px 12px;border:1px solid var(--line);border-rad
   <div class="phead"><div class="ptitle">위키피디아 조회수 추세 <span id="tsub" style="font-size:11px;color:#999;font-weight:400"></span></div>
     <div class="legend" id="legend"></div></div>
   <div style="position:relative;height:250px"><canvas id="trend"></canvas></div>
-  <div class="note">번호 말풍선 = 외부 요인 발생 시점(아래 목록과 연결) · 위키피디아 일별 조회수(외부 추정 신호, 경쟁사 실측 트래픽 아님)</div>
-  <div class="evmap"><div style="font-size:11px;color:var(--muted);margin-bottom:8px">말풍선 번호 ↔ 요인</div><div id="evmap"></div></div>
+  <div class="note">번호 핀 = 외부 요인 발생 시점 · 아래 요인 카드의 번호와 연결 · 위키피디아 일별 조회수(외부 추정 신호, 경쟁사 실측 트래픽 아님)</div>
 </div>
 
 <div class="cards" id="cards"></div>
@@ -126,19 +128,53 @@ function wikiSeries(brand){return (WIKI.series&&WIKI.series[brand])||[];}
 function compNames(){return dv.value==='ALL'?["Apple","LG","Whirlpool"]:[DIV2COMP[dv.value]];}
 function compLabel(){return dv.value==='ALL'?'경쟁사 합산':compNames()[0];}
 let chart;
-function drawTrend(evSortedAsc){
+// 핀 모양(원형 본체+꼬리+발광 앵커점+연결선)을 그리는 커스텀 플러그인
+const pinPlugin={
+ id:'pins',
+ afterDatasetsDraw(c){
+  const ctx=c.ctx; const pins=c._pins||[];
+  pins.forEach(p=>{
+   const x=c.scales.x.getPixelForValue(p.xLabel);
+   const yLine=c.scales.y.getPixelForValue(p.anchorY);
+   const r=12, pinY=yLine-30;
+   ctx.save();
+   ctx.strokeStyle=p.color; ctx.lineWidth=1.5; ctx.globalAlpha=0.5;
+   ctx.beginPath(); ctx.moveTo(x,yLine-3); ctx.lineTo(x,pinY+r); ctx.stroke();
+   ctx.globalAlpha=1;
+   ctx.beginPath(); ctx.arc(x,yLine,5,0,7); ctx.fillStyle=p.color; ctx.globalAlpha=0.25; ctx.fill();
+   ctx.globalAlpha=1; ctx.beginPath(); ctx.arc(x,yLine,3,0,7); ctx.fillStyle=p.color; ctx.fill();
+   ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+   ctx.shadowColor='rgba(0,0,0,0.18)'; ctx.shadowBlur=6; ctx.shadowOffsetY=2;
+   ctx.beginPath(); ctx.moveTo(x-5,pinY+r-2); ctx.lineTo(x+5,pinY+r-2); ctx.lineTo(x,pinY+r+6); ctx.closePath();
+   ctx.fillStyle=p.color; ctx.fill();
+   ctx.beginPath(); ctx.arc(x,pinY,r,0,7); ctx.fillStyle=p.color; ctx.fill();
+   ctx.shadowColor='transparent';
+   ctx.lineWidth=2; ctx.strokeStyle='#fff'; ctx.stroke();
+   ctx.fillStyle='#fff'; ctx.font='bold 12px -apple-system,Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+   ctx.fillText(String(p.n),x,pinY);
+   ctx.restore();
+  });
+ }
+};
+function drawTrend(evSortedAsc, numByDate){
  const sam=wikiSeries("Samsung");
- const labels=sam.map(p=>p.date);
- const samData=sam.map(p=>p.views);
+ // 날짜 범위(시작일/종료일) 필터로 표시 구간 제한
+ let pts=sam.map(p=>p.date);
+ if(sd.value)pts=pts.filter(dt=>dt>=sd.value);
+ if(ed.value)pts=pts.filter(dt=>dt<=ed.value);
+ const labels=pts;
+ const samData=labels.map(dt=>{const f=sam.find(p=>p.date===dt);return f?f.views:null;});
  const names=compNames();
- const total=labels.map((dt,i)=>names.reduce((s,n)=>{const ser=wikiSeries(n);const f=ser.find(p=>p.date===dt);return s+(f?f.views:0);},0));
- const ann={};
- evSortedAsc.forEach((e,i)=>{
-  let near=labels[0]; for(const dt of labels){ if(dt<=e.date) near=dt; }
-  ann['e'+i]={type:'label',xValue:near,yValue:Math.max(...samData,...total),
-   yAdjust:-14,
-   content:[String(i+1)],backgroundColor:DIRC[e.impact_direction]||'#999',color:'#fff',
-   font:{size:12,weight:'bold'},padding:{top:3,bottom:3,left:8,right:8},borderRadius:10,   callout:{display:true,borderColor:DIRC[e.impact_direction]||'#999',borderWidth:1,margin:4}};
+ const total=labels.map(dt=>names.reduce((s,n)=>{const ser=wikiSeries(n);const f=ser.find(p=>p.date===dt);return s+(f?f.views:0);},0));
+ // y축 최댓값을 데이터 최고점보다 25% 높게 잡아 핀 공간 확보
+ const dataMax=Math.max(1,...samData.filter(v=>v!=null),...total);
+ const yMax=Math.ceil(dataMax*1.25/1000)*1000;
+ const pins=[];
+ evSortedAsc.forEach((e)=>{
+  if(labels.length && (e.date<labels[0] || e.date>labels[labels.length-1])) return; // 범위 밖 요인은 생략
+  let nearIdx=0; for(let k=0;k<labels.length;k++){ if(labels[k]<=e.date) nearIdx=k; }
+  const sv=samData[nearIdx], tv=total[nearIdx];
+  pins.push({n:(numByDate&&numByDate[e.date])||'',xLabel:labels[nearIdx],anchorY:Math.max(sv==null?0:sv, tv),color:DIRC[e.impact_direction]||'#999'});
  });
  document.getElementById('legend').innerHTML=
   `<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#1428A0;display:inline-block"></span>Samsung (기준)</span>`+
@@ -147,27 +183,25 @@ function drawTrend(evSortedAsc){
  if(chart)chart.destroy();
  chart=new Chart(document.getElementById('trend'),{type:'line',
   data:{labels,datasets:[
-   {label:'Samsung',data:samData,borderColor:'#1428A0',backgroundColor:'#1428A014',tension:0.3,pointRadius:0,borderWidth:2.5},
-   {label:compLabel(),data:total,borderColor:'#888780',backgroundColor:'#88878014',tension:0.3,pointRadius:0,borderWidth:2}]},
-  options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:34}},
-   plugins:{legend:{display:false},annotation:{annotations:ann},
+   {label:'Samsung',data:samData,borderColor:'#1428A0',backgroundColor:'#1428A014',tension:0.35,pointRadius:0,borderWidth:2.5,spanGaps:true},
+   {label:compLabel(),data:total,borderColor:'#888780',backgroundColor:'#88878014',tension:0.35,pointRadius:0,borderWidth:2}]},
+  options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:30}},
+   plugins:{legend:{display:false},
      tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.parsed.y||0).toLocaleString()+'회'}}},
    scales:{x:{ticks:{color:'#888780',font:{size:11},maxTicksLimit:8},grid:{display:false}},
-     y:{ticks:{color:'#888780',font:{size:11},callback:v=>(v/1000)+'k'},grid:{color:'rgba(136,135,128,0.12)'}}}}});
+     y:{suggestedMax:yMax,ticks:{color:'#888780',font:{size:11},callback:v=>(v/1000)+'k'},grid:{color:'rgba(136,135,128,0.10)'}}}},
+  plugins:[pinPlugin]});
+ chart._pins=pins; chart.update();
 }
 
 function kpiTags(k){const list=(k||'').split(';').filter(x=>x).sort((a,b)=>KPIORDER.indexOf(a)-KPIORDER.indexOf(b));
  return list.map(x=>`<span class="ktag" style="background:${KPIBG[x]||'#eee'};color:${KPICOL[x]||'#444'}">${x}</span>`).join('');}
 
 function render(){const r=rows();
+ // 카드(최신순) 기준 번호 부여 → 핀도 동일 번호 사용
+ const numByDate={}; r.forEach((e,i)=>{ if(!(e.date in numByDate)) numByDate[e.date]=i+1; });
  const evAsc=r.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
- drawTrend(evAsc);
- document.getElementById('evmap').innerHTML = evAsc.length? evAsc.map((e,i)=>`
-   <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px">
-     <span style="flex:none;width:18px;height:18px;border-radius:50%;background:${DIRC[e.impact_direction]||'#999'};color:#fff;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center">${i+1}</span>
-     <span style="font-size:12px;color:var(--ink)">${e.title}</span>
-     <span style="font-size:11px;color:#999">· ${e.date||''}</span>
-   </div>`).join('') : '<div style="font-size:12px;color:#999">해당 조건의 요인이 없습니다.</div>';
+ drawTrend(evAsc, numByDate);
 
  const neg=r.filter(x=>x.impact_direction==='-').length;
  const scopeLabel=country.value!=='ALL'?(COUNTRIES.find(c=>c[0]===country.value)||['','전체'])[1]:(region.value!=='ALL'?region.value:'전체');
@@ -175,15 +209,16 @@ function render(){const r=rows();
   `<div class="card"><div class="lbl">표시된 이벤트</div><div class="val">${r.length}</div></div>`+
   `<div class="card"><div class="lbl">부정 영향</div><div class="val" style="color:var(--neg)">${neg}</div></div>`+
   `<div class="card"><div class="lbl">대상</div><div class="val" style="font-size:18px">${scopeLabel}</div></div>`;
- document.getElementById('list').innerHTML = r.length? r.map(e=>{
+ document.getElementById('list').innerHTML = r.length? r.map((e,i)=>{
    const cls=DIRCLS[e.impact_direction]||'';const bc=DIRC[e.impact_direction]||'#9a9a96';
    const divs=(e.divisions||'').split(';').filter(x=>x);
    const meta=[...divs,DIRLAB[e.impact_direction]||'',e.confidence||''].filter(x=>x);
    const imp=e.impact?`<div class="imp" style="color:${bc};background:${bc}14">${e.impact}</div>`:'';
-   return `<div class="evt ${cls}"><div class="top"><span class="ttl">${e.title}</span><span class="meta">${e.date||''}</span></div>
-     <div>${meta.map(t=>`<span class="tag">${t}</span>`).join('')}</div>${imp}
-     <div class="desc">${e.description||''}</div>
-     <div class="kline"><span class="klbl">영향 KPI:</span>${kpiTags(e.kpi)}</div></div>`;}).join('') : '<div class="empty">해당 조건에 맞는 이벤트가 없습니다.</div>';}
+   const badge=`<span class="numbadge" style="background:${bc}">${i+1}</span>`;
+   return `<div class="evt ${cls}"><div class="top"><span class="ttl">${badge}${e.title}</span><span class="meta">${e.date||''}</span></div>
+     <div class="indent">${meta.map(t=>`<span class="tag">${t}</span>`).join('')}</div>${imp?'<div class="indent">'+imp+'</div>':''}
+     <div class="desc indent">${e.description||''}</div>
+     <div class="kline indent"><span class="klbl">영향 KPI:</span>${kpiTags(e.kpi)}</div></div>`;}).join('') : '<div class="empty">해당 조건에 맞는 이벤트가 없습니다.</div>';}
 function exportCSV(){const r=rows();
  const h=['date','scope','divisions','kpi','title','impact','description','impact_direction','confidence','source'];
  const csv=[h.join(',')].concat(r.map(x=>h.map(k=>`"${(x[k]||'').toString().replace(/"/g,'""')}"`).join(','))).join('\n');

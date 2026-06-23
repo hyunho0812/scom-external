@@ -156,8 +156,8 @@ def main():
                 "divisions": guess_divisions(label, text),
                 "kpi": guess_kpi(text),
                 "category": cat,
-                "title": it["title"][:140],
-                "impact": "1차 출처 업데이트 — samsung.com 노출·유입에 영향 가능 (검수 필요)",
+                "title": f"[{label}] " + it["title"][:128],
+                "impact": "1차 출처 업데이트 — samsung.com 노출·유입에 영향 가능",
                 "description": (label+" 공식 업데이트 — 원문: "+(it["summary"][:200] or it["title"])) +
                                f"  [출처: {label}]",
                 "impact_direction": guess_direction(text),

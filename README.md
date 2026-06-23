@@ -10,7 +10,7 @@ produce it in about 15 minutes. After that you never touch it.
 
 ## What's in this folder
 ```
-index.html                      ← the dashboard (no attribution %), auto-generated
+index.html                      ← the dashboard (Korean UI, trend graph), auto-generated
 data/events.json                ← the event log (seeded with 10 events)
 data/feed_state.json            ← remembers seen RSS entries (auto-managed)
 scripts/collect.py              ← Layer 1 daily: news API → Claude relevance filter
@@ -120,7 +120,7 @@ competitors (Apple, LG, Whirlpool). Some vendors lack a stable official RSS;
 those lines have a note with a mirror option if one stops working.
 
 ## Tuning
-- Add/remove markets: edit MARKETS in collect.py (GLOBAL stays).
+- Add/remove countries: edit COUNTRIES in collect.py and REGIONS/COUNTRIES in build.py.
 - Broaden/narrow collection: edit QUERIES in collect.py.
 - Change refresh time: edit the cron in daily-update.yml (UTC).
 - Make repo private: works, but Pages may need a paid plan for private repos —
