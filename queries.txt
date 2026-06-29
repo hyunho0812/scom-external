@@ -2,12 +2,12 @@
 # One per line. '#' comments and blank lines ignored. Max 10.
 
 android smartphone market
-foldable phone market
-video commerce trends
 smartphone market
-consumer electronics retail
 ecommerce market share
 social commerce
-ai shopping adoption
+consumer electronics retail
 retail channel report
 brand website shopper behavior
+galaxy competitor news
+live shopping platforms
+AI search marketing

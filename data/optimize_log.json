@@ -26,5 +26,33 @@
    "brand website shopper behavior"
   ],
   "rationale": "원래 쿼리들이 0개의 결과를 보여 심각한 비효율을 나타냈기에, 삼성 관련 쿼리 2개와 니치 쿼리 1개를 외부 요인에 초점을 맞춘 3가지 새로운 쿼리(android smartphone market, foldable phone market, video commerce trends)로 교체하여 최근 관련 기사 및 광범위한 시장 트렌드에 더 잘 부합하도록 했습니다. 나머지 7개 쿼리는 규칙에 따라 유지했으며, 개선된 KW_KEEP 목록을 통해 효율성이 높아지기를 기대합니다. KW_KEEP 목록은 최근 유지된 기사에서 식별된 특정 주체 및 핵심 개념을 포함하도록 확장하여 관련성 높은 외부 시장 신호를 더 잘 포착하고 기사 통과율을 높이는 것을 목표로 하며, KW_DROP은 변경하지 않았습니다."
+ },
+ {
+  "date": "2026-06-29",
+  "old_queries": [
+   "android smartphone market",
+   "foldable phone market",
+   "video commerce trends",
+   "smartphone market",
+   "consumer electronics retail",
+   "ecommerce market share",
+   "social commerce",
+   "ai shopping adoption",
+   "retail channel report",
+   "brand website shopper behavior"
+  ],
+  "new_queries": [
+   "android smartphone market",
+   "smartphone market",
+   "ecommerce market share",
+   "social commerce",
+   "consumer electronics retail",
+   "retail channel report",
+   "brand website shopper behavior",
+   "galaxy competitor news",
+   "live shopping platforms",
+   "AI search marketing"
+  ],
+  "rationale": "낮은 성과 및 중복 쿼리 3개 교체; 삼성 경쟁, 라이브 쇼핑, AI 검색 마케팅 관련 신규 쿼리 추가; 관련 기사에서 얻은 키워드로 KW_KEEP 확장"
  }
 ]

@@ -36,5 +36,48 @@
     "kept": 0
    }
   }
+ },
+ {
+  "date": "2026-06-29",
+  "total_raw": 63,
+  "total_dup": 14,
+  "total_kept": 30,
+  "per_query": {
+   "android smartphone market": {
+    "raw": 19,
+    "dup": 3,
+    "kept": 12
+   },
+   "smartphone market": {
+    "raw": 10,
+    "dup": 7,
+    "kept": 2
+   },
+   "ecommerce market share": {
+    "raw": 11,
+    "dup": 2,
+    "kept": 2
+   },
+   "social commerce": {
+    "raw": 10,
+    "dup": 1,
+    "kept": 7
+   },
+   "consumer electronics retail": {
+    "raw": 1,
+    "dup": 0,
+    "kept": 1
+   },
+   "retail channel report": {
+    "raw": 2,
+    "dup": 0,
+    "kept": 1
+   },
+   "AI search marketing": {
+    "raw": 10,
+    "dup": 1,
+    "kept": 5
+   }
+  }
  }
 ]
