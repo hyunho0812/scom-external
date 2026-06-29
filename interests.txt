@@ -1,0 +1,8 @@
+# Interest keywords - topics to prioritize during collection.
+# One per line like feeds.txt. Lines starting with '#' are comments.
+# When these appear in a title/summary, collection priority rises and the
+# Gemini filter is told to treat these topics as especially important.
+
+zero click
+GDPR
+iphone

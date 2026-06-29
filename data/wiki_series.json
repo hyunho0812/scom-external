@@ -1,0 +1,13 @@
+{
+ "series": {
+  "Samsung": [],
+  "Apple": [],
+  "LG": [],
+  "Whirlpool": []
+ },
+ "divisions": {
+  "MX": "Apple",
+  "VD": "LG",
+  "DA": "Whirlpool"
+ }
+}
