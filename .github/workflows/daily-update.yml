@@ -1,0 +1,99 @@
+name: daily-update
+
+on:
+  schedule:
+    - cron: '0 21 * * *'        # 21:00 UTC daily ≈ 06:00 KST — news/blogs/wiki
+    - cron: '0 21 28 * *'       # 28th of month — IMF monthly stats (previous month)
+  workflow_dispatch: {}          # manual run from the Actions tab
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check filter model health (records status + retirement)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: gemini-2.5-flash
+        run: python scripts/check_model.py
+
+      # ---- Layer 0: daily query & keyword-filter optimizer (Gemini) ----
+      - name: Layer 0 — optimize search queries & keyword filters
+        continue-on-error: true   # 최적화 실패해도 수집은 계속 진행
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: gemini-2.5-flash
+        run: python scripts/optimize.py
+
+      # ---- Layer 1: news (GDELT pool + NewsAPI), hybrid keyword→Gemini filter ----
+      - name: Layer 1a — GDELT free news pool (no key, unlimited)
+        run: python scripts/collect_gdelt.py
+
+      - name: Layer 1 — news + free hybrid filter (keyword → Gemini → fallback)
+        env:
+          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: gemini-2.5-flash
+        run: python scripts/collect_news.py
+
+      # ---- Layer 2: first-party feeds (AI platforms / Companies / Blogs) ----
+      - name: Layer 2 — first-party feeds (daily, free keyword filter)
+        run: python scripts/collect_feeds.py
+
+      - name: Company trend — Wikipedia pageviews (free, no key)
+        run: python scripts/collect_wiki.py
+
+      - name: Samsung search interest — Google Trends (free, no key)
+        continue-on-error: true   # Trends 차단돼도 나머지는 계속
+        run: python scripts/collect_trends.py
+
+      # ---- Layer 3: IMF monthly macro stats (국가별 통계 탭, separate dashboard) ----
+      # Runs only on the 28th (collects the PREVIOUS month's data), or manual dispatch.
+      - name: Detect collection day (28th)
+        id: statday
+        run: |
+          if [ "$(date -u +%d)" = "28" ]; then
+            echo "run_stats=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_stats=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Layer 3 — IMF monthly indicators (28th → previous month)
+        if: ${{ steps.statday.outputs.run_stats == 'true' || github.event_name == 'workflow_dispatch' }}
+        run: python scripts/collect_imf.py
+
+      - name: Rebuild dashboard
+        run: python scripts/build.py
+
+      - name: Commit updated data + page
+        run: |
+          git config user.name  "github-actions"
+          git config user.email "actions@github.com"
+          git add data/events.json data/feed_state.json data/model_status.json data/wiki_series.json data/gdelt_pool.json data/imf_series.json data/query_performance.json data/kw_filters.json data/optimize_log.json data/trends.json queries.txt index.html
+          git commit -m "daily update $(date -u +%F)" || echo "no changes"
+          git push
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
