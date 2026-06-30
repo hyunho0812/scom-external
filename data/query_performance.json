@@ -79,5 +79,58 @@
     "kept": 5
    }
   }
+ },
+ {
+  "date": "2026-06-30",
+  "total_raw": 91,
+  "total_dup": 10,
+  "total_kept": 60,
+  "per_query": {
+   "android smartphone market": {
+    "raw": 10,
+    "dup": 0,
+    "kept": 9
+   },
+   "smartphone market": {
+    "raw": 10,
+    "dup": 3,
+    "kept": 5
+   },
+   "ecommerce market share": {
+    "raw": 10,
+    "dup": 0,
+    "kept": 9
+   },
+   "social commerce": {
+    "raw": 20,
+    "dup": 1,
+    "kept": 6
+   },
+   "consumer electronics retail": {
+    "raw": 10,
+    "dup": 0,
+    "kept": 9
+   },
+   "retail channel report": {
+    "raw": 10,
+    "dup": 2,
+    "kept": 5
+   },
+   "AI search marketing": {
+    "raw": 10,
+    "dup": 1,
+    "kept": 9
+   },
+   "foldable phone market share": {
+    "raw": 1,
+    "dup": 0,
+    "kept": 1
+   },
+   "AI search innovation": {
+    "raw": 10,
+    "dup": 3,
+    "kept": 7
+   }
+  }
  }
 ]

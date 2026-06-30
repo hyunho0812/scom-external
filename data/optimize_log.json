@@ -54,5 +54,33 @@
    "AI search marketing"
   ],
   "rationale": "낮은 성과 및 중복 쿼리 3개 교체; 삼성 경쟁, 라이브 쇼핑, AI 검색 마케팅 관련 신규 쿼리 추가; 관련 기사에서 얻은 키워드로 KW_KEEP 확장"
+ },
+ {
+  "date": "2026-06-30",
+  "old_queries": [
+   "android smartphone market",
+   "smartphone market",
+   "ecommerce market share",
+   "social commerce",
+   "consumer electronics retail",
+   "retail channel report",
+   "brand website shopper behavior",
+   "galaxy competitor news",
+   "live shopping platforms",
+   "AI search marketing"
+  ],
+  "new_queries": [
+   "android smartphone market",
+   "smartphone market",
+   "ecommerce market share",
+   "social commerce",
+   "consumer electronics retail",
+   "retail channel report",
+   "AI search marketing",
+   "Apple antitrust regulation",
+   "foldable phone market share",
+   "AI search innovation"
+  ],
+  "rationale": "낮은 성능의 3개 쿼리를 교체하고, 경쟁사 규제, 신기술 시장, AI 검색 혁신 등 외부 요소를 강화하여 뉴스 관련성을 높이고 키워드를 최신화했습니다."
  }
 ]
