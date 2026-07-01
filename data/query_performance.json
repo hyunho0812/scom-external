@@ -132,5 +132,63 @@
     "kept": 7
    }
   }
+ },
+ {
+  "date": "2026-07-01",
+  "total_raw": 81,
+  "total_dup": 15,
+  "total_kept": 54,
+  "per_query": {
+   "android smartphone market": {
+    "raw": 10,
+    "dup": 0,
+    "kept": 8
+   },
+   "premium smartphone market": {
+    "raw": 10,
+    "dup": 5,
+    "kept": 5
+   },
+   "ecommerce market share": {
+    "raw": 2,
+    "dup": 0,
+    "kept": 2
+   },
+   "social commerce": {
+    "raw": 9,
+    "dup": 1,
+    "kept": 7
+   },
+   "consumer electronics retail": {
+    "raw": 10,
+    "dup": 2,
+    "kept": 5
+   },
+   "retail channel report": {
+    "raw": 10,
+    "dup": 0,
+    "kept": 9
+   },
+   "AI search marketing": {
+    "raw": 10,
+    "dup": 3,
+    "kept": 6
+   },
+   "Apple revenue performance": {
+    "raw": 9,
+    "dup": 2,
+    "kept": 5
+   },
+   "foldable phone market share": {
+    "raw": 1,
+    "dup": 0,
+    "kept": 1
+   },
+   "generative AI content strategy": {
+    "raw": 10,
+    "dup": 2,
+    "kept": 6
+   }
+  }
  }
 ]
