@@ -110,5 +110,33 @@
    "generative AI content strategy"
   ],
   "rationale": "저조한 쿼리 3개 교체, 시장 세분화 및 경쟁사 추적 강화, AI 콘텐츠 및 마케팅 트렌드 반영, 키워드 필터 보강."
+ },
+ {
+  "date": "2026-07-02",
+  "old_queries": [
+   "android smartphone market",
+   "premium smartphone market",
+   "ecommerce market share",
+   "social commerce",
+   "consumer electronics retail",
+   "retail channel report",
+   "AI search marketing",
+   "Apple revenue performance",
+   "foldable phone market share",
+   "generative AI content strategy"
+  ],
+  "new_queries": [
+   "android smartphone market",
+   "ecommerce market share",
+   "consumer electronics retail",
+   "retail channel report",
+   "AI search marketing",
+   "foldable phone market share",
+   "generative AI content strategy",
+   "smartphone innovation trend",
+   "digital retail innovation",
+   "apple iphone strategy"
+  ],
+  "rationale": "3가지 저성과 쿼리를 스마트폰 혁신 트렌드, 디지털 리테일 혁신, 애플 아이폰 전략 쿼리로 교체하고, KW_KEEP을 확장하여 AI 관련 키워드와 신규 쿼리 적합도를 높였습니다."
  }
 ]

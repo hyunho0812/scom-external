@@ -2,12 +2,12 @@
 # One per line. '#' comments and blank lines ignored. Max 10.
 
 android smartphone market
-premium smartphone market
 ecommerce market share
-social commerce
 consumer electronics retail
 retail channel report
 AI search marketing
-Apple revenue performance
 foldable phone market share
 generative AI content strategy
+smartphone innovation trend
+digital retail innovation
+apple iphone strategy
