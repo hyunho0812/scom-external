@@ -37,7 +37,7 @@ def load_queries():
 QUERIES = load_queries()
 MAX_PER_QUERY = 10   # 10 articles per query, same as NewsAPI
 
-def fetch_one(q):
+def fetch_one(q, retries=2):
     params = {
         "query": q + " sourcelang:english",
         "mode": "ArtList",
@@ -48,45 +48,57 @@ def fetch_one(q):
     }
     url = "https://api.gdeltproject.org/api/v2/doc/doc?" + urllib.parse.urlencode(params)
     req = urllib.request.Request(url, headers={"User-Agent": "scom-tracker/1.0"})
-    try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            raw = r.read().decode("utf-8", "replace")
-        # GDELT sometimes returns empty/HTML responses; parse defensively
-        if not raw.strip().startswith("{"):
-            print("  GDELT non-JSON response for:", q)
+    for attempt in range(retries + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                raw = r.read().decode("utf-8", "replace")
+            # GDELT sometimes returns empty/HTML responses; parse defensively
+            if not raw.strip().startswith("{"):
+                print("  GDELT non-JSON response for:", q)
+                return []
+            data = json.loads(raw)
+            arts = data.get("articles", []) or []
+            out = []
+            for a in arts:
+                out.append({
+                    "title": a.get("title", "") or "",
+                    "url": a.get("url", "") or "",
+                    "domain": a.get("domain", "") or "",
+                    "date": (a.get("seendate", "") or "")[:8],  # YYYYMMDD
+                    "source": a.get("domain", "") or "gdelt",
+                    "query": q,
+                })
+            return out
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and attempt < retries:
+                wait = 15 * (attempt + 1)  # 15s, then 30s
+                print(f"  GDELT 429 for '{q}' — backing off {wait}s "
+                      f"(retry {attempt+1}/{retries})")
+                time.sleep(wait)
+                continue
+            print("  GDELT HTTP error", e.code, "for", q,
+                  "(gave up)" if e.code == 429 else "")
             return []
-        data = json.loads(raw)
-        arts = data.get("articles", []) or []
-        out = []
-        for a in arts:
-            out.append({
-                "title": a.get("title", "") or "",
-                "url": a.get("url", "") or "",
-                "domain": a.get("domain", "") or "",
-                "date": (a.get("seendate", "") or "")[:8],  # YYYYMMDD
-                "source": a.get("domain", "") or "gdelt",
-                "query": q,
-            })
-        return out
-    except urllib.error.HTTPError as e:
-        print("  GDELT HTTP error", e.code, "for", q)
-        return []
-    except Exception as e:
-        print("  GDELT error for", q, ":", e)
-        return []
+        except Exception as e:
+            print("  GDELT error for", q, ":", e)
+            return []
+    return []
 
 def main():
     print("GDELT collect start")
     all_items = []
     seen = set()
+    failed_queries = []
     for q in QUERIES:
         items = fetch_one(q)
+        if not items:
+            failed_queries.append(q)
         for it in items:
             key = it["url"]
             if key and key not in seen:
                 seen.add(key)
                 all_items.append(it)
-        time.sleep(1)  # courtesy gap
+        time.sleep(5)  # courtesy gap — GDELT rate-limits (429) if hit faster than this
     # Normalize dates to YYYY-MM-DD
     for it in all_items:
         d = it.get("date", "")
@@ -97,6 +109,9 @@ def main():
     json.dump(all_items, open(RAW, "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)
     print(f"GDELT done. {len(all_items)} unique articles -> data/gdelt_pool.json")
+    if failed_queries:
+        print(f"[diag] {len(failed_queries)}/{len(QUERIES)} queries returned nothing "
+              f"(rate-limited or errored): {failed_queries}")
 
 if __name__ == "__main__":
     main()

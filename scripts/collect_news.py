@@ -209,16 +209,24 @@ def gemini_filter(article):
               "\nSUMMARY: " + article["desc"] + "\nSOURCE: " + article["source"])
     body = json.dumps({
         "contents":[{"parts":[{"text":prompt}]}],
-        "generationConfig":{"temperature":0,"maxOutputTokens":300,
-                            "responseMimeType":"application/json"},
+        "generationConfig":{"temperature":0,"maxOutputTokens":600,
+                            "responseMimeType":"application/json",
+                            "thinkingConfig":{"thinkingBudget":0}},
     }).encode()
     try:
         data,_ = http_json(url, headers={"Content-Type":"application/json"},
                            data=body, method="POST")
-        parts = (data.get("candidates",[{}])[0].get("content",{}) or {}).get("parts",[{}])
+        cand = (data.get("candidates") or [{}])[0]
+        parts = (cand.get("content",{}) or {}).get("parts",[{}])
         text = "".join(p.get("text","") for p in parts).strip()
         text = text.replace("```json","").replace("```","").strip()
         time.sleep(6.0)  # avoid per-minute limit (~10/min), generous for up to 200 items
+        if not text:
+            # Empty output — usually means the token budget ran out before any
+            # answer text was produced. finishReason tells us which.
+            print(f"  Gemini returned empty text (finishReason={cand.get('finishReason')}) "
+                  f"— treating as unavailable for this item.")
+            return None
         return json.loads(text)
     except urllib.error.HTTPError as e:
         if e.code == 429:

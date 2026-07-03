@@ -19,10 +19,83 @@ from xml.etree import ElementTree as ET
 
 HERE = os.path.dirname(__file__)
 
-# --- MyMemory free translation (no key; anonymous ~5,000 words/day) ---
+# --- Gemini free-tier one-line Korean summary (preferred) ---
+GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+_gemini_off = {"flag": False}   # set once quota is hit, to stop hammering
+_sum_cache = {}
+_sum_stats = {"ok": 0, "off": 0}  # diagnostics
+
+SUMMARY_SYSTEM = (
+ "You write a single-sentence Korean summary of a news item for a samsung.com "
+ "traffic-monitoring dashboard. Summarize the MAIN point in ONE natural Korean "
+ "sentence (<=60 Korean characters), focused on what could affect samsung.com "
+ "web traffic or online sales. No quotes, no markdown, no preamble — output only "
+ "the Korean sentence. If the item is not in English, still summarize in Korean."
+)
+
+def gemini_summary(title, summary):
+    """Return a one-line Korean summary, or None if Gemini is unavailable."""
+    if not GEMINI_KEY or _gemini_off["flag"]:
+        _sum_stats["off"] += 1
+        return None
+    key = (title or "") + "||" + (summary or "")
+    if key in _sum_cache:
+        return _sum_cache[key]
+    url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
+           f"{GEMINI_MODEL}:generateContent?key={GEMINI_KEY}")
+    prompt = SUMMARY_SYSTEM + "\n\nTITLE: " + (title or "") + "\nBODY: " + (summary or "")
+    body = json.dumps({
+        "contents":[{"parts":[{"text":prompt}]}],
+        "generationConfig":{"temperature":0.2,"maxOutputTokens":200,
+                            "thinkingConfig":{"thinkingBudget":0}},
+    }).encode()
+    try:
+        req = urllib.request.Request(url, data=body,
+              headers={"Content-Type":"application/json"}, method="POST")
+        with urllib.request.urlopen(req, timeout=60) as r:
+            data = json.loads(r.read().decode())
+        cand = (data.get("candidates") or [{}])[0]
+        parts = (cand.get("content",{}) or {}).get("parts",[{}])
+        out = "".join(p.get("text","") for p in parts).strip()
+        out = out.replace("```","").strip()
+        time.sleep(6.0)  # stay under ~10 req/min free limit
+        if not out:
+            print(f"  Gemini summary empty (finishReason={cand.get('finishReason')})")
+        if out:
+            _sum_cache[key] = out
+            _sum_stats["ok"] += 1
+            return out
+        return None
+    except urllib.error.HTTPError as e:
+        if e.code == 429:
+            print("  Gemini quota hit (429) — feeds fall back to translation.")
+            _gemini_off["flag"] = True
+        else:
+            print("  Gemini summary error", e.code)
+        return None
+    except Exception as e:
+        print("  Gemini summary failed:", e); return None
+
+# --- MyMemory free translation (no key; anonymous ~5,000 words/day) — fallback only ---
+def clip_sentence(text, limit=400):
+    """Trim to <= limit chars without cutting mid-word.
+    Prefer ending at the last sentence boundary; otherwise the last space."""
+    text = (text or "").strip()
+    if len(text) <= limit:
+        return text
+    head = text[:limit]
+    cut = max(head.rfind(". "), head.rfind("! "), head.rfind("? "))
+    if cut >= limit * 0.5:
+        return head[:cut + 1].strip()
+    sp = head.rfind(" ")
+    return (head[:sp].strip() if sp > 0 else head.strip()) + "…"
+
 # Translate first-party title/summary to Korean. On failure, return the original
 # (English originals are always preserved separately in raw_* fields).
 _tr_cache = {}
+_tr_stats = {"ok": 0, "warning": 0, "exception": 0, "empty": 0}  # diagnostics
+
 def translate_ko(text):
     text = (text or "").strip()
     if not text:
@@ -33,26 +106,41 @@ def translate_ko(text):
     if any('\uac00' <= c <= '\ud7a3' for c in text):
         _tr_cache[text] = text
         return text
-    snippet = text[:480]  # respect MyMemory per-request length limit
+    snippet = clip_sentence(text, 480)  # respect MyMemory per-request length limit, no mid-word cut
     try:
         url = "https://api.mymemory.translated.net/get?" + urllib.parse.urlencode(
             {"q": snippet, "langpair": "en|ko"})
         req = urllib.request.Request(url, headers={"User-Agent": "scom-tracker/1.0"})
         with urllib.request.urlopen(req, timeout=20) as r:
             data = json.loads(r.read().decode())
-        out = (data.get("responseData", {}) or {}).get("translatedText", "") or text
-        # Guard against the API returning an error string as the translation
-        if "MYMEMORY WARNING" in out or "INVALID" in out.upper():
+        raw_out = (data.get("responseData", {}) or {}).get("translatedText", "")
+        # MyMemory returns an error string (not a translation) when the daily quota
+        # is exhausted or the request is invalid. Detect and log it explicitly.
+        if not raw_out:
+            _tr_stats["empty"] += 1
+            print("  [translate] empty response from MyMemory")
             out = text
+        elif "MYMEMORY WARNING" in raw_out or "INVALID" in raw_out.upper() \
+                or data.get("quotaFinished"):
+            _tr_stats["warning"] += 1
+            print("  [translate] MyMemory quota/limit:", raw_out[:80])
+            out = text
+        else:
+            _tr_stats["ok"] += 1
+            out = raw_out
         _tr_cache[text] = out
         time.sleep(0.4)  # ease rate limit
         return out
-    except Exception:
+    except Exception as e:
+        _tr_stats["exception"] += 1
+        print("  [translate] MyMemory request failed:", type(e).__name__, str(e)[:80])
         _tr_cache[text] = text
         return text
 
 DATA  = os.path.join(HERE, "..", "data", "events.json")
 STATE = os.path.join(HERE, "..", "data", "feed_state.json")
+
+
 FEEDS_FILE = os.path.join(HERE, "..", "feeds.txt")
 
 # Keep an entry if its text contains any of these (relevance gate).
@@ -111,7 +199,13 @@ def guess_direction(text):
     return "neutral"
 
 def http(url):
-    req = urllib.request.Request(url, headers={"User-Agent":"Mozilla/5.0 tracker"})
+    req = urllib.request.Request(url, headers={
+        "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/124.0.0.0 Safari/537.36"),
+        "Accept": "application/rss+xml, application/xml, text/xml, */*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+    })
     with urllib.request.urlopen(req, timeout=40) as r:
         return r.read()
 
@@ -181,8 +275,22 @@ def main():
             if eid in existing_ids:
                 continue
             cat = guess_category(label, text)
-            title_ko = translate_ko(it["title"][:128])
-            summary_ko = translate_ko((it["summary"][:200] or it["title"]))
+            # Prefer a one-line Korean summary of the FULL original via Gemini.
+            # Fall back to MyMemory translation of the (clipped) text if Gemini is unavailable.
+            summary_ko = gemini_summary(it["title"], it["summary"])
+            if summary_ko:
+                title_ko = translate_ko(it["title"][:128])  # short title still translated
+            else:
+                title_ko = translate_ko(it["title"][:128])
+                summary_ko = translate_ko(clip_sentence(it["summary"], 400) or it["title"])
+            # Skip the item entirely if we could not get Korean text (both summary
+            # and translation failed → would otherwise store raw English). Better to
+            # drop it than pollute the feed with untranslated English.
+            def _has_ko(s):
+                return any('\uac00' <= c <= '\ud7a3' for c in (s or ""))
+            if not _has_ko(summary_ko) and not _has_ko(title_ko):
+                print("  - skip (no Korean):", it["title"][:50])
+                continue
             events.append({
                 "event_id": eid,
                 "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
@@ -209,6 +317,15 @@ def main():
     json.dump(events, open(DATA,"w",encoding="utf-8"), ensure_ascii=False, indent=1)
     json.dump(state,  open(STATE,"w",encoding="utf-8"), ensure_ascii=False, indent=1)
     print(f"first-party (free) done. added {added}, total {len(events)}")
+    # --- translation/summary diagnostics (visible in GitHub Actions logs) ---
+    print(f"[diag] Gemini summaries ok: {_sum_stats['ok']}, "
+          f"unavailable: {_sum_stats['off']}")
+    print(f"[diag] MyMemory translate — ok: {_tr_stats['ok']}, "
+          f"quota_warning: {_tr_stats['warning']}, "
+          f"exception: {_tr_stats['exception']}, empty: {_tr_stats['empty']}")
+    if _tr_stats['warning'] or _tr_stats['exception'] or _tr_stats['empty']:
+        print("[diag] ⚠ MyMemory had failures above — feeds may contain untranslated "
+              "English unless Gemini summaries covered them.")
 
 if __name__ == "__main__":
     main()
