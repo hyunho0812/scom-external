@@ -2,12 +2,12 @@
 # One per line. '#' comments and blank lines ignored. Max 10.
 
 consumer electronics retail
-ecommerce market share
 social commerce
-product discovery survey
-retail channel report
 ai shopping adoption
 brand website shopper behavior
 samsung ecommerce strategy
 galaxy smartphone market share
 apple iphone sales forecast
+samsung ai strategy
+galaxy device market share
+apple intelligence update
