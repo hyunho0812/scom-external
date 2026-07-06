@@ -138,5 +138,33 @@
    "apple iphone strategy"
   ],
   "rationale": "3가지 저성과 쿼리를 스마트폰 혁신 트렌드, 디지털 리테일 혁신, 애플 아이폰 전략 쿼리로 교체하고, KW_KEEP을 확장하여 AI 관련 키워드와 신규 쿼리 적합도를 높였습니다."
+ },
+ {
+  "date": "2026-07-06",
+  "old_queries": [
+   "samsung",
+   "samsung galaxy",
+   "smartphone market",
+   "consumer electronics retail",
+   "ecommerce market share",
+   "social commerce",
+   "product discovery survey",
+   "retail channel report",
+   "ai shopping adoption",
+   "brand website shopper behavior"
+  ],
+  "new_queries": [
+   "smartphone market",
+   "consumer electronics retail",
+   "ecommerce market share",
+   "social commerce",
+   "product discovery survey",
+   "retail channel report",
+   "brand website shopper behavior",
+   "foldable phone market",
+   "android smartphone pricing",
+   "AI shopping integration"
+  ],
+  "rationale": "성능 저조 쿼리 3개(samsung, samsung galaxy, ai shopping adoption)를 AI 쇼핑, 폴더블폰, 안드로이드 스마트폰 가격 등 외부 요인에 초점을 맞춘 쿼리로 대체하고, 관련 키워드를 KW_KEEP에 추가하여 관련성을 높였습니다."
  }
 ]

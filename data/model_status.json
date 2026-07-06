@@ -1,4 +1,6 @@
 {
- "status": "unknown",
- "checked": ""
+ "model": "gemini-2.5-flash",
+ "status": "ok",
+ "last_checked": "2026-07-06 04:42 UTC",
+ "note": "Model responds and supports generateContent."
 }
