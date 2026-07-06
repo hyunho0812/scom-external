@@ -1,59 +1,126 @@
 #!/usr/bin/env python3
 """
-Model health check — records which LLM the filter uses and whether it's alive.
+Model health check — checks all THREE free LLMs used in the fallback chain
+(Gemini -> Groq -> Mistral) and records whether each is alive.
 
-Writes data/model_status.json, which the dashboard reads to show a badge:
-  - model name in use
-  - status: "ok" (responds), "retired" (404 / not found), "unknown" (no key),
-            "error" (other failure)
-  - last_checked timestamp
-  - note for humans
+Each is checked cheaply (a GET on a model-info/list endpoint, not an actual
+generation call) so this script itself barely touches anyone's daily quota.
 
-Run daily (the workflow calls it before collection). If status is "retired",
-the dashboard shows a red warning so you know to swap GEMINI_MODEL for a current
-free Flash model. Collection still runs meanwhile via keyword fallback.
+Writes data/model_status.json:
+  {
+    "gemini":  {"model": ..., "status": ..., "note": ...},
+    "groq":    {"model": ..., "status": ..., "note": ...},
+    "mistral": {"model": ..., "status": ..., "note": ...},
+    "last_checked": "..."
+  }
+status is one of:
+  "ok"      — key present, model responds
+  "retired" — key present, but the model name 404s (likely deprecated/renamed)
+  "unknown" — no key set for that provider
+  "error"   — key present but the check failed some other way (network, 5xx, etc.)
+
+Run daily (the workflow calls it before collection). The dashboard shows a
+badge per LLM; if any shows "retired", swap that provider's *_MODEL env var
+for a current model. Collection still runs meanwhile via the next LLM in the
+chain, or the keyword-only fallback if all three are down.
 """
 import os, json, urllib.request, urllib.error
 from datetime import datetime, timezone
 
 HERE = os.path.dirname(__file__)
 OUT  = os.path.join(HERE, "..", "data", "model_status.json")
+
 GEMINI_KEY   = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+GROQ_KEY     = os.environ.get("GROQ_API_KEY", "")
+GROQ_MODEL   = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
+MISTRAL_KEY   = os.environ.get("MISTRAL_API_KEY", "")
+MISTRAL_MODEL = os.environ.get("MISTRAL_MODEL", "mistral-small-latest")
 
-def check():
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+
+def check_gemini():
     if not GEMINI_KEY:
-        return {"model": GEMINI_MODEL, "status": "unknown", "last_checked": now,
-                "note": "No GEMINI_API_KEY set — Layer 1 runs on keyword filter only."}
-    # Ask the models endpoint about this specific model — cheap, no generation.
+        return {"model": GEMINI_MODEL, "status": "unknown",
+                "note": "No GEMINI_API_KEY set — Layer 1 falls further down the chain."}
     url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
            f"{GEMINI_MODEL}?key={GEMINI_KEY}")
     try:
-        req = urllib.request.Request(url)
-        with urllib.request.urlopen(req, timeout=30) as r:
+        with urllib.request.urlopen(urllib.request.Request(url), timeout=30) as r:
             info = json.loads(r.read().decode())
         methods = info.get("supportedGenerationMethods", [])
         if "generateContent" in methods or not methods:
-            return {"model": GEMINI_MODEL, "status": "ok", "last_checked": now,
+            return {"model": GEMINI_MODEL, "status": "ok",
                     "note": "Model responds and supports generateContent."}
-        return {"model": GEMINI_MODEL, "status": "error", "last_checked": now,
+        return {"model": GEMINI_MODEL, "status": "error",
                 "note": "Model exists but may not support generateContent — verify."}
     except urllib.error.HTTPError as e:
         if e.code in (404, 400):
-            return {"model": GEMINI_MODEL, "status": "retired", "last_checked": now,
-                    "note": f"Model not found (HTTP {e.code}). It was likely retired — "
-                            f"update GEMINI_MODEL to a current free Flash model."}
-        return {"model": GEMINI_MODEL, "status": "error", "last_checked": now,
-                "note": f"Check failed (HTTP {e.code})."}
+            return {"model": GEMINI_MODEL, "status": "retired",
+                    "note": f"Model not found (HTTP {e.code}) — update GEMINI_MODEL."}
+        return {"model": GEMINI_MODEL, "status": "error", "note": f"HTTP {e.code}."}
     except Exception as e:
-        return {"model": GEMINI_MODEL, "status": "error", "last_checked": now,
-                "note": f"Check failed: {e}"}
+        return {"model": GEMINI_MODEL, "status": "error", "note": f"Check failed: {e}"}
+
+
+def check_groq():
+    if not GROQ_KEY:
+        return {"model": GROQ_MODEL, "status": "unknown",
+                "note": "No GROQ_API_KEY set — 2nd fallback unavailable."}
+    url = f"https://api.groq.com/openai/v1/models/{GROQ_MODEL}"
+    try:
+        req = urllib.request.Request(url, headers={"Authorization": f"Bearer {GROQ_KEY}"})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            info = json.loads(r.read().decode())
+        if info.get("active", True):
+            return {"model": GROQ_MODEL, "status": "ok", "note": "Model responds and is active."}
+        return {"model": GROQ_MODEL, "status": "retired",
+                "note": "Model exists but is marked inactive — update GROQ_MODEL."}
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            return {"model": GROQ_MODEL, "status": "retired",
+                    "note": f"Model not found (HTTP 404) — likely deprecated. "
+                            f"Check console.groq.com/docs/deprecations and update GROQ_MODEL."}
+        return {"model": GROQ_MODEL, "status": "error", "note": f"HTTP {e.code}."}
+    except Exception as e:
+        return {"model": GROQ_MODEL, "status": "error", "note": f"Check failed: {e}"}
+
+
+def check_mistral():
+    if not MISTRAL_KEY:
+        return {"model": MISTRAL_MODEL, "status": "unknown",
+                "note": "No MISTRAL_API_KEY set — 3rd fallback unavailable."}
+    # Mistral's free Experiment tier is 2 req/min; a model-list GET is a single
+    # cheap call and won't meaningfully eat into that budget.
+    url = "https://api.mistral.ai/v1/models"
+    try:
+        req = urllib.request.Request(url, headers={"Authorization": f"Bearer {MISTRAL_KEY}"})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            info = json.loads(r.read().decode())
+        ids = [m.get("id") for m in info.get("data", [])]
+        if MISTRAL_MODEL in ids:
+            return {"model": MISTRAL_MODEL, "status": "ok",
+                    "note": "Model found in the account's available model list."}
+        return {"model": MISTRAL_MODEL, "status": "retired",
+                "note": "Model not in the account's model list — update MISTRAL_MODEL."}
+    except urllib.error.HTTPError as e:
+        return {"model": MISTRAL_MODEL, "status": "error", "note": f"HTTP {e.code}."}
+    except Exception as e:
+        return {"model": MISTRAL_MODEL, "status": "error", "note": f"Check failed: {e}"}
+
 
 def main():
-    status = check()
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    status = {
+        "gemini": check_gemini(),
+        "groq": check_groq(),
+        "mistral": check_mistral(),
+        "last_checked": now,
+    }
     json.dump(status, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    print("model status:", status["status"], "-", status["model"])
+    for name in ("gemini", "groq", "mistral"):
+        s = status[name]
+        print(f"{name} model status: {s['status']} - {s['model']}")
+
 
 if __name__ == "__main__":
     main()

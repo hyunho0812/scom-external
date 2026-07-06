@@ -51,14 +51,12 @@ INDICATORS = {
         "label": "가구·가전 물가지수", "unit": "지수",
         "candidates": [
             ("IMF.STA","CPI","{iso}.CPI.CP05.IX.M"),   # COICOP 05: furnishings & household appliances
-            ("IMF.STA","CPI","{iso}.PCPIHAHO_IX.M"),
         ],
     },
     "cpi_housing": {
         "label": "주거·에너지 물가지수", "unit": "지수",
         "candidates": [
             ("IMF.STA","CPI","{iso}.CPI.CP04.IX.M"),   # COICOP 04: housing, water, electricity, gas
-            ("IMF.STA","CPI","{iso}.PCPIHAH_IX.M"),
         ],
     },
     "cpi_comm": {
@@ -75,6 +73,11 @@ INDICATORS = {
     },
     "retail": {
         "label": "소매판매지수", "unit": "지수",
+        # UNVERIFIED: could not confirm IMF publishes a monthly per-country retail
+        # sales index under api.imf.org/external/sdmx/3.0. IMF's strength is CPI/
+        # GDP/trade/monetary stats; retail sales is more often an OECD/national-
+        # statistics-office series. If this stays empty after a real run, it may
+        # need to be dropped or sourced elsewhere (e.g. OECD MEI, also free).
         "candidates": [
             ("IMF.STA","IFS","{iso}.RETAIL_IX.M"),
             ("IMF.STA","IFS","M.{iso}.AIPMA_RT_IX"),
@@ -82,6 +85,8 @@ INDICATORS = {
     },
     "lfpr": {
         "label": "경제활동참가율", "unit": "%",
+        # UNVERIFIED: same caveat as retail — could not confirm this exact key
+        # against IMF's SDMX 3.0 codelists. Keep an eye on whether this fills in.
         "candidates": [
             ("IMF.STA","LFS","{iso}.LFPR._T._T.M"),
             ("IMF.STA","LFS","{iso}.LFPR.M"),
@@ -89,7 +94,7 @@ INDICATORS = {
     },
 }
 
-def fetch_csv(agency, flow, key, start):
+def fetch_csv(agency, flow, key, start, verbose=False):
     url = f"{BASE}{agency}/{flow}/~/{key}?c[TIME_PERIOD]=ge:{start}"
     req = urllib.request.Request(url, headers={"Accept":"text/csv",
                                                "User-Agent":"scom-tracker/1.0"})
@@ -97,8 +102,17 @@ def fetch_csv(agency, flow, key, start):
         with urllib.request.urlopen(req, timeout=40) as r:
             return r.read().decode("utf-8","replace")
     except urllib.error.HTTPError as e:
+        if verbose:
+            body = ""
+            try:
+                body = e.read().decode("utf-8","replace")[:200]
+            except Exception:
+                pass
+            print(f"    [diag] {key}: HTTP {e.code} — {body}")
         return ""   # wrong code usually 404/400 -> try next candidate
-    except Exception:
+    except Exception as e:
+        if verbose:
+            print(f"    [diag] {key}: {type(e).__name__}: {str(e)[:150]}")
         return ""
 
 def parse_rows(csv_text):
@@ -120,11 +134,11 @@ def parse_rows(csv_text):
     out.sort()
     return out
 
-def collect_indicator(iso, spec, start):
+def collect_indicator(iso, spec, start, verbose=False):
     """Try candidate keys in order; return the first non-empty series."""
     for agency, flow, keytmpl in spec["candidates"]:
         key = keytmpl.format(iso=iso)
-        pts = parse_rows(fetch_csv(agency, flow, key, start))
+        pts = parse_rows(fetch_csv(agency, flow, key, start, verbose=verbose))
         if pts:
             return pts
         time.sleep(0.5)
@@ -139,13 +153,16 @@ def main():
               "indicators": {c:{"label":v["label"],"unit":v["unit"]}
                              for c,v in INDICATORS.items()},
               "data": {}}
+    first_country = next(iter(ISO3))
     for our, iso in ISO3.items():
         series["data"].setdefault(our, {})
         for code, spec in INDICATORS.items():
-            pts = collect_indicator(iso, spec, start)
+            pts = collect_indicator(iso, spec, start, verbose=(our == first_country))
             if pts:
                 series["data"][our][code] = pts
                 print(f"  + {our} {code}: {len(pts)} pts")
+            elif our == first_country:
+                print(f"  - {our} {code}: no data (see [diag] lines above)")
         time.sleep(1)
     json.dump(series, open(OUT,"w",encoding="utf-8"), ensure_ascii=False, indent=1)
     filled = sum(1 for c in series["data"].values() for _ in c)

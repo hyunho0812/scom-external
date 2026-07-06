@@ -94,23 +94,39 @@ def recent_kept_titles(n=25):
     titles = [e.get("raw_title") or e.get("title","") for e in ev[-n:]]
     return [t for t in titles if t][:n]
 
-def gemini(prompt):
+def gemini(prompt, retries=2):
     if not GEMINI_KEY:
         return None
     url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
            f"{GEMINI_MODEL}:generateContent?key={GEMINI_KEY}")
-    body = json.dumps({"contents":[{"parts":[{"text":prompt}]}]}).encode()
-    try:
-        req = urllib.request.Request(url, data=body,
-                                     headers={"Content-Type":"application/json"}, method="POST")
-        with urllib.request.urlopen(req, timeout=60) as r:
-            data = json.loads(r.read().decode())
-        parts = (data.get("candidates",[{}])[0].get("content",{}) or {}).get("parts",[{}])
-        text = "".join(p.get("text","") for p in parts).strip()
-        return text.replace("```json","").replace("```","").strip()
-    except Exception as e:
-        print("  optimize gemini error:", e)
-        return None
+    body = json.dumps({
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {"thinkingConfig": {"thinkingBudget": 0}},
+    }).encode()
+    for attempt in range(retries + 1):
+        try:
+            req = urllib.request.Request(url, data=body,
+                                         headers={"Content-Type":"application/json"}, method="POST")
+            with urllib.request.urlopen(req, timeout=60) as r:
+                data = json.loads(r.read().decode())
+            parts = (data.get("candidates",[{}])[0].get("content",{}) or {}).get("parts",[{}])
+            text = "".join(p.get("text","") for p in parts).strip()
+            return text.replace("```json","").replace("```","").strip()
+        except urllib.error.HTTPError as e:
+            # 503/500/502/504 = Gemini transiently overloaded; 429 = rate limit.
+            # Both are usually resolved by a short wait, so retry before giving up.
+            if e.code in (429, 500, 502, 503, 504) and attempt < retries:
+                wait = 10 * (attempt + 1)
+                print(f"  optimize gemini HTTP {e.code} — retrying in {wait}s "
+                      f"({attempt+1}/{retries})")
+                time.sleep(wait)
+                continue
+            print("  optimize gemini error: HTTP", e.code, "(gave up)")
+            return None
+        except Exception as e:
+            print("  optimize gemini error:", e)
+            return None
+    return None
 
 def main():
     cur_q = load_queries()

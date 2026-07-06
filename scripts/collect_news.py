@@ -6,31 +6,47 @@ Layer 1 — news collection with a FREE hybrid filter.
 Pipeline:
   1. Pull recent articles from a news API (broad — includes noise).
   2. KEYWORD pre-filter: cheaply drop obvious noise, keep plausible candidates.
-  3. GEMINI free-tier filter: the survivors get a precise relevance judgement
-     from Gemini (Google AI Studio free tier — no cost, no credit card).
-  4. If Gemini has no key or the daily free quota is exhausted (HTTP 429),
-     FALL BACK to the keyword decision so the pipeline never stalls.
+  3. LLM judgement chain — the survivors get a precise relevance/category/date/
+     impact judgement from Gemini first, then Groq if Gemini's daily quota is
+     exhausted, then Mistral if Groq also fails (all free, no card). All three
+     use the exact same judgement prompt/schema, so a Gemini outage no longer
+     degrades classification to hardcoded defaults — Groq or Mistral judge it
+     for real.
+  4. Only if ALL THREE LLMs are unavailable/fail is the item skipped rather
+     than stored with English text or guessed classification.
   5. Append passing events to data/events.json (deduped by title+date).
 
-Everything here is free: news API free tier + Gemini free tier. The hybrid
-order (keyword first) keeps Gemini calls low so you stay inside the free quota.
+Everything here is free: news API free tier + Gemini + Groq + Mistral free
+tiers. The hybrid order (keyword first) keeps LLM calls low so you stay
+inside the free quota.
 
 Env (set as GitHub Secrets):
   NEWS_API_KEY     — newsapi.org free tier (or adapt to another source)
   GEMINI_API_KEY   — from aistudio.google.com/apikey (free, no card)
   GEMINI_MODEL     — optional; defaults to gemini-2.5-flash
+  GROQ_API_KEY     — from console.groq.com/keys (free, no card); 2nd choice,
+                     used only when Gemini's daily quota is exhausted
+  GROQ_MODEL       — optional; defaults to openai/gpt-oss-120b
+  MISTRAL_API_KEY  — from console.mistral.ai (free "Experiment" tier, no card);
+                     3rd choice (last resort), used only when both Gemini and
+                     Groq are unavailable. Note: Experiment-tier requests may
+                     be used by Mistral to train their models — fine here
+                     since this only handles public news/RSS text.
+  MISTRAL_MODEL    — optional; defaults to mistral-small-latest
 """
-import os, json, time, hashlib, urllib.request, urllib.parse, urllib.error
+import os, sys, json, time, hashlib, urllib.request, urllib.parse, urllib.error
 from datetime import datetime, timedelta, timezone
 
 HERE = os.path.dirname(__file__)
+sys.path.insert(0, HERE)
+from llm_common import llm_filter, diag_summary
+
 DATA = os.path.join(HERE, "..", "data", "events.json")
-NEWS_KEY   = os.environ.get("NEWS_API_KEY", "")
-GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+NEWS_KEY = os.environ.get("NEWS_API_KEY", "")
 
 MARKETS = ["US","GB","DE","FR","ES","PT","BR","MX_C","AU","IN","TR","KR"]  # no GLOBAL; MX_C=Mexico (division MX is Apple)
 DIVISIONS = {"MX":"Apple","VD":"LG","DA":"Whirlpool"}
+
 
 def load_queries():
     """Load shared search queries from queries.txt (used by both news + GDELT)."""
@@ -48,24 +64,11 @@ def load_queries():
 
 QUERIES = load_queries()
 
-# --- Interest keywords (loaded from interests.txt) ---
-def load_interests():
-    path = os.path.join(HERE, "..", "interests.txt")
-    out = []
-    try:
-        for line in open(path, encoding="utf-8"):
-            line = line.strip()
-            if line and not line.startswith("#"):
-                out.append(line)
-    except Exception:
-        pass
-    return out
+# Interest keywords (interests.txt) are loaded once in llm_common.py (shared
+# with collect_feeds.py and folded into the judgement prompt there); reuse
+# the same list here to also seed the keyword pre-filter's KW_KEEP below.
+from llm_common import INTERESTS
 
-INTERESTS = load_interests()
-# Interest keywords are NOT added as separate search queries (to save NewsAPI
-# requests); they only feed the keyword dictionary (KW_KEEP) and the Gemini prompt.
-
-# --- keyword pre-filter (free) ---
 # --- keyword pre-filter (free) ---
 # Prefer data/kw_filters.json (refreshed daily by optimize.py); else use defaults below.
 _DEFAULT_KEEP = [
@@ -91,51 +94,6 @@ KW_KEEP, KW_DROP = _load_kw_filters()
 for _kw in INTERESTS:
     if _kw.lower() not in KW_KEEP:
         KW_KEEP.append(_kw.lower())
-
-FILTER_SYSTEM = (
- "You filter news for relevance to samsung.com (Samsung's e-commerce/brand site). "
- "Decide if an item could plausibly affect samsung.com web traffic or online revenue, "
- "directly or indirectly. Be selective; ignore generic PR, sports, gossip, stock noise, "
- "and unrelated same-name entities.\n"
- "TWO EXTRA RULES (reject if either fails):\n"
- "1) SPECIFIC EVENT ONLY: keep only a specific, dated event or development (e.g. a product "
- "launch, a regulation, a named report/announcement, a concrete supply-chain or market shift). "
- "REJECT recurring/seasonal generalities that happen every year (e.g. 'Christmas shopping "
- "season', 'summer appliance demand', 'back-to-school', 'year-end slowdown') — these are not "
- "datable news events and must return relevant:false.\n"
- "2) PHENOMENON-START DATE: set 'date' to when the event/phenomenon ACTUALLY began or took "
- "effect per the article, NOT the article's publication date. For an ongoing phenomenon, use "
- "the date its real impact started (e.g. a rule's effective date, a launch date, when a "
- "disruption began). If the article only gives a publish date and no event date, use the "
- "event date implied by the content.\n"
- "ENCOURAGED — DATED STATISTICS/RESEARCH: actively KEEP statistics, surveys, and market-research "
- "findings about how people discover, research, and buy electronics — these are valuable. "
- "Examples: retail-channel share (Amazon/Walmart/Best Buy/Coupang/Naver), brand-site vs "
- "marketplace purchase behavior, research-vs-buy intent on brand sites, social-platform usage for "
- "product discovery (YouTube/Instagram/TikTok), social-commerce or live-commerce milestones, "
- "AI-shopping adoption. BUT keep such an item ONLY IF it has a datable anchor: a report's "
- "publication date, or a specific period record (e.g. 'BFCM 4-day sales', 'Q3 share', 'September "
- "ranking'). Use that anchor as 'date'. If a statistic is a vague always-true state with no "
- "report date or period (e.g. 'most people shop on mobile'), return relevant:false.\n"
- "Respond with ONLY a JSON object, no markdown:\n"
- '{\"relevant\":true|false,\"date\":\"YYYY-MM-DD (phenomenon-start date, see rule 2)\",'
- '\"category\":\"culture|marketing|platform|holiday|economy|'
- 'social_issue|geopolitics|AI|company|regulation\",'
- '\"scope\":[country codes from US,GB,DE,FR,ES,PT,BR,MX_C,AU,IN,TR,KR that this affects; '
- 'use the full list if it is worldwide],'
- '\"divisions\":[any of MX,VD,DA that this relates to — MX=Apple-relevant, VD=LG-relevant, '
- 'DA=Whirlpool/home-appliance-relevant; empty if none],'
- '\"kpi\":[which samsung.com KPIs it likely affects, from '
- 'Impression,Click,Traffic,Order,CVR,Revenue,AOV],'
- '\"title\":\"<=12 words\",'
- '\"impact\":\"one-line plain-language summary: what shifts -> which samsung.com KPIs move how\",'
- '\"description\":\"2-3 easy sentences a non-expert understands, naming the KPIs in context\",'
- '\"impact_direction\":\"+|-|neutral|unknown\",\"impact_horizon\":\"immediate|weeks|months\",'
- '\"impact_strength\":1-5 (1=negligible, 5=very large; size of the effect on '
- 'samsung.com traffic/revenue),'
- '\"confidence\":\"high|med|low\",\"metric\":\"traffic|revenue|both\"}\n'
- 'Write title, impact, and description IN KOREAN (한국어). If not relevant return {\"relevant\":false}.'
-)
 
 def http_json(url, headers=None, data=None, method="GET"):
     req = urllib.request.Request(url, headers=headers or {}, data=data, method=method)
@@ -193,57 +151,14 @@ def keyword_verdict(text):
     if any(k in t for k in KW_DROP): return False
     return any(k in t for k in KW_KEEP)
 
-# Gemini quota state for this run: once we see 429, stop calling and fall back.
-_gemini_exhausted = {"flag": False}
-
-def gemini_filter(article):
-    """Precise relevance via Gemini free tier. Returns dict, or None if Gemini
-    is unavailable (caller then uses the keyword decision)."""
-    if not GEMINI_KEY or _gemini_exhausted["flag"]:
-        return None
-    url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
-           f"{GEMINI_MODEL}:generateContent?key={GEMINI_KEY}")
-    interest_note = ("\n\nPRIORITY TOPICS (treat as especially relevant if related): "
-                     + ", ".join(INTERESTS)) if INTERESTS else ""
-    prompt = (FILTER_SYSTEM + interest_note + "\n\nITEM:\nTITLE: " + article["title"] +
-              "\nSUMMARY: " + article["desc"] + "\nSOURCE: " + article["source"])
-    body = json.dumps({
-        "contents":[{"parts":[{"text":prompt}]}],
-        "generationConfig":{"temperature":0,"maxOutputTokens":600,
-                            "responseMimeType":"application/json",
-                            "thinkingConfig":{"thinkingBudget":0}},
-    }).encode()
-    try:
-        data,_ = http_json(url, headers={"Content-Type":"application/json"},
-                           data=body, method="POST")
-        cand = (data.get("candidates") or [{}])[0]
-        parts = (cand.get("content",{}) or {}).get("parts",[{}])
-        text = "".join(p.get("text","") for p in parts).strip()
-        text = text.replace("```json","").replace("```","").strip()
-        time.sleep(6.0)  # avoid per-minute limit (~10/min), generous for up to 200 items
-        if not text:
-            # Empty output — usually means the token budget ran out before any
-            # answer text was produced. finishReason tells us which.
-            print(f"  Gemini returned empty text (finishReason={cand.get('finishReason')}) "
-                  f"— treating as unavailable for this item.")
-            return None
-        return json.loads(text)
-    except urllib.error.HTTPError as e:
-        if e.code == 429:
-            print("  Gemini free quota hit (429) — falling back to keyword filter for the rest.")
-            _gemini_exhausted["flag"] = True
-        else:
-            print("  Gemini error", e.code)
-        return None
-    except Exception as e:
-        print("  Gemini parse error:", e); return None
-
-def to_event(article, verdict, via):
+def to_event(article, verdict, llm_used):
     DEF_SCOPE = ";".join(MARKETS)
-    # Prefer the phenomenon-start date Gemini extracted; fall back to publish date, then today.
+    # Prefer the phenomenon-start date the LLM extracted; fall back to publish date, then today.
     _today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     _vdate = (verdict.get("date","") if verdict else "") or ""
     event_date = _vdate if re.match(r"^\d{4}-\d{2}-\d{2}$", _vdate) else (article["date"] or _today)
+    title_ko = verdict.get("title") if verdict else ""
+    desc_ko = verdict.get("description", "") if verdict else ""
     return {
         "event_id":"A"+hashlib.md5((article["title"]+event_date).encode()).hexdigest()[:8],
         "date":event_date,
@@ -252,15 +167,15 @@ def to_event(article, verdict, via):
         "divisions":";".join(verdict.get("divisions",[])) if verdict else "",
         "kpi":";".join(verdict.get("kpi",[])) if verdict else "Traffic",
         "category":verdict.get("category","economy") if verdict else "economy",
-        "title":(verdict.get("title") if verdict else article["title"])[:140],
-        "impact":(verdict.get("impact","") if verdict else ""),
-        "description":(verdict.get("description","") if verdict else
-                       article["desc"][:200]),
+        "title":(title_ko or article["title"])[:140],
+        "impact":(verdict.get("impact","") if verdict else "samsung.com 노출·유입에 영향 가능"),
+        "description":(desc_ko or ""),
         "impact_direction":verdict.get("impact_direction","unknown") if verdict else "unknown",
         "impact_horizon":verdict.get("impact_horizon","weeks") if verdict else "weeks",
         "impact_strength":(verdict.get("impact_strength",2) if verdict else 1),
         "confidence":(verdict.get("confidence","low") if verdict else "low"),
         "metric":verdict.get("metric","traffic") if verdict else "traffic",
+        "llm":llm_used,  # which model produced this judgement, for the dashboard badge
         "source":article["source"] or article["url"],
         # Keep English originals (not shown on dashboard; available if needed)
         "raw_title":article.get("title",""),
@@ -309,16 +224,19 @@ def main():
         # Step 2: keyword pre-filter
         kw = keyword_verdict(text)
         if not kw:
-            continue  # obvious noise, never reaches Gemini
-        # Step 3: Gemini precise judgement (free)
-        verdict = gemini_filter(art)
+            continue  # obvious noise, never reaches any LLM
+        # Step 3: precise judgement via Gemini -> Groq -> Mistral (in that order).
+        verdict, llm_used = llm_filter(art)
         if verdict is not None:
             if not verdict.get("relevant"):
-                continue  # Gemini says no
-            ev = to_event(art, verdict, via="gemini")
+                continue  # the judging LLM says this isn't relevant
         else:
-            # Step 4: fallback — keyword said keep, Gemini unavailable
-            ev = to_event(art, None, via="keyword-fallback")
+            # Step 4: all three LLMs unavailable/failed. Keyword said keep, but
+            # with no LLM left we can't get real classification or Korean text —
+            # skip rather than store an English, hardcoded-low-confidence stub.
+            print("  - skip (no LLM available for judgement):", art["title"][:50])
+            continue
+        ev = to_event(art, verdict, llm_used)
         events.append(ev); seen.add(key); added += 1; bump(q, "kept")
         print("  + kept:", ev["title"])
     # Events accumulate permanently (no pruning)
@@ -338,6 +256,7 @@ def main():
     json.dump(hist, open(os.path.join(HERE,"..","data","query_performance.json"),"w",encoding="utf-8"),
               ensure_ascii=False, indent=1)
     print(f"layer1 done. added {added}, total {len(events)} | raw {total_raw}, dup {total_dup}")
+    diag_summary("collect_news")
 
 if __name__ == "__main__":
     main()

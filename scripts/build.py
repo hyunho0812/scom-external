@@ -5,7 +5,7 @@ Trend graph: Samsung baseline + selected-division company total (Wikipedia views
 with numbered callout markers for events mapped to a list below.
 Cards: one-line impact summary + plain-language body + affected KPIs."""
 import os, json
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 
 HERE=os.path.dirname(__file__)
 DATA=os.path.join(HERE,"..","data","events.json")
@@ -28,10 +28,11 @@ DEF_CMP_FROM = _ly_to.replace(month=1, day=1).isoformat()
 DEF_CMP_TO   = _ly_to.isoformat()
 try: wiki=json.load(open(WIKI,encoding="utf-8"))
 except Exception: wiki={"series":{},"divisions":{}}
-try: trends=json.load(open(os.path.join(HERE,"..","data","trends.json"),encoding="utf-8"))
-except Exception: trends={"series":{}}
 try: mstat=json.load(open(MSTAT,encoding="utf-8"))
-except Exception: mstat={"model":"unknown","status":"unknown","last_checked":"n/a","note":""}
+except Exception: mstat={}
+_MSTAT_DEFAULT={"model":"unknown","status":"unknown","note":""}
+def _mstat_of(name):
+    return mstat.get(name, _MSTAT_DEFAULT) or _MSTAT_DEFAULT
 try: imf_series=json.load(open(os.path.join(HERE,"..","data","imf_series.json"),encoding="utf-8"))
 except Exception: imf_series={"countries":{},"indicators":{},"data":{}}
 # The country-statistics tab uses IMF monthly data only (World Bank removed)
@@ -57,7 +58,8 @@ body{font-family:'Samsung Sharp Sans','SamsungOne',-apple-system,BlinkMacSystemF
 .cp-tag{font-size:11px;background:#f7f8fb;padding:3px 9px;border-radius:8px;margin-right:5px;color:#5f6368}
 h1{font-size:20px;font-weight:600;color:var(--blue)}
 .sub{font-size:13px;color:var(--muted)}
-.mbadge{display:inline-flex;align-items:center;gap:7px;font-size:12px;padding:5px 11px;border-radius:20px;margin-bottom:18px;border:1px solid var(--line);background:#fff}
+.mbadges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.mbadge{display:inline-flex;align-items:center;gap:7px;font-size:12px;padding:5px 11px;border-radius:20px;margin-bottom:0;border:1px solid var(--line);background:#fff}
 .mbadge .dot{width:8px;height:8px;border-radius:50%}
 .mbadge.ok{background:#eaf6f0;border-color:#c2e6d4;color:#137a52}.mbadge.ok .dot{background:#137a52}
 .mbadge.retired{background:#fbeae8;border-color:#f3c4bd;color:#a3271f}.mbadge.retired .dot{background:#D0392B}
@@ -99,9 +101,11 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem;box-shadow:0 1px 2px rgba(20,40,160,0.04)}
 .card .lbl{font-size:12px;color:var(--muted);margin-bottom:6px}.card .val{font-size:24px;font-weight:600}
-.srcline{position:absolute;right:16px;bottom:12px;font-size:11px;color:#9aa0a6;max-width:45%;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.srcline{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:#9aa0a6}
+.srcline>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.llmtag{color:#b0b0aa;font-style:italic}
 .funnel{font-size:11px;color:var(--muted);margin-bottom:16px}
-.evt{position:relative;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--neu);border-radius:12px;padding:15px 17px 30px;margin-bottom:12px;box-shadow:0 1px 2px rgba(20,40,160,0.04)}
+.evt{position:relative;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--neu);border-radius:12px;padding:15px 17px;margin-bottom:12px;box-shadow:0 1px 2px rgba(20,40,160,0.04)}
 .evt.pos{border-left-color:var(--pos)}.evt.neg{border-left-color:var(--neg)}
 .evt .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:5px}
 .evt .ttl{font-size:15px;font-weight:500;display:flex;align-items:center;gap:9px}
@@ -116,7 +120,6 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
 .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#eef0f5;color:#444;margin-right:5px}
 .kline{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}.klbl{font-size:11px;color:var(--muted)}
 .metaval{font-size:12px;color:var(--ink)}
-.ktag{display:inline-block;font-size:11px;padding:2px 9px;border-radius:10px;margin-right:5px;font-weight:500}
 .empty{padding:30px;text-align:center;color:var(--muted)}
 .foot{font-size:12px;color:#8a6d1a;margin-top:16px;padding:12px;background:#fff8e8;border:1px solid #f0e2b8;border-radius:10px}
 </style></head><body>
@@ -128,16 +131,13 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
 </div>
 <div class="wrap">
 <div id="tab-factors" class="tabpane active">
-<div class="mbadge __MSTATUS__" title="__MNOTE__"><span class="dot"></span>
-  <span>필터 모델: <strong>__MMODEL__</strong> — __MLABEL__ · 점검 __MCHECKED__</span></div>
+<div class="mbadges">__MBADGES__</div>
 <div class="controls">
  <div class="filterrow">
   <div class="ctrl"><label>지역</label><select id="region"></select></div>
   <div class="ctrl"><label>국가</label><select id="country"></select></div>
   <div class="ctrl"><label>사업부</label><select id="div">
     <option value="ALL">전체</option><option value="MX">MX</option><option value="VD">VD</option><option value="DA">DA</option></select></div>
-  <div class="ctrl"><label>KPI</label><select id="kpi">
-    <option value="ALL">전체</option><option>Impression</option><option>Click</option><option selected>Traffic</option><option>Order</option><option>CVR</option><option>Revenue</option><option>AOV</option></select></div>
   <div class="ctrl"><label>기간</label>
    <select id="ptype">
     <option value="day">Day</option>
@@ -185,7 +185,7 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
   <div class="phead"><div class="ptitle">위키피디아 조회수 추세 <span id="tsub" style="font-size:11px;color:#999;font-weight:400"></span></div>
     <div class="legend" id="legend"></div></div>
   <div style="position:relative;height:250px"><canvas id="trend"></canvas></div>
-  <div class="note">번호 핀 = 외부 요인 발생 시점 · 아래 요인 카드의 번호와 연결 · 위키피디아 일별 조회수(외부 추정 신호, 기업 실측 트래픽 아님)</div>
+  <div class="note">번호 핀 = 외부 요인 발생 시점 · 아래 요인 카드의 번호와 연결 · 위키피디아 일별 조회수(외부 추정 신호, 기업 실측 트래픽 아님) · 영향강도=samsung.com 트래픽에 주는 영향 크기(1~5), 신뢰도=그 판단에 대한 확신(high/med/low)</div>
 </div>
 
 <div id="verdict" style="display:none;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:14px"></div>
@@ -222,7 +222,6 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
 <script>
 const EV=__DATA__;
 const WIKI=__WIKI__;
-const TRENDS=__TRENDS__;
 const STATS=__STATS__;
 const REGIONS={"ALL":null,"북미":["US"],"유럽":["GB","DE","FR","ES","PT"],"중남미":["BR","MX_C"],"동남아":["AU"],"서남아":["IN"],"중동":["TR"],"한국":["KR"]};
 const COUNTRIES=[["ALL","전체"],["US","미국"],["GB","영국"],["DE","독일"],["FR","프랑스"],["ES","스페인"],["PT","포르투갈"],["BR","브라질"],["MX_C","멕시코"],["AU","호주"],["IN","인도"],["TR","튀르키예"],["KR","한국"]];
@@ -244,13 +243,9 @@ function divLabel(divs){
  if(ALL_DIVS.every(dd=>arr.includes(dd))) return '전체';
  return arr.join(', ');
 }
-const DIRLAB={"-":"negative","+":"positive","neutral":"neutral","unknown":"unknown"};
 const DIRC={"-":"#E24B4A","+":"#1D9E75","neutral":"#9a9a96","unknown":"#9a9a96"};
 const DIRCLS={"-":"neg","+":"pos","neutral":"","unknown":""};
-const KPIORDER=["Impression","Click","Traffic","Order","CVR","Revenue","AOV"];
-const KPICOL={Impression:"#185FA5",Click:"#185FA5",Traffic:"#185FA5",Order:"#534AB7",CVR:"#534AB7",Revenue:"#534AB7",AOV:"#534AB7"};
-const KPIBG={Impression:"#E6F1FB",Click:"#E6F1FB",Traffic:"#E6F1FB",Order:"#EEEDFE",CVR:"#EEEDFE",Revenue:"#EEEDFE",AOV:"#EEEDFE"};
-const region=document.getElementById('region'),country=document.getElementById('country'),dv=document.getElementById('div'),kpi=document.getElementById('kpi'),sd=document.getElementById('sd'),ed=document.getElementById('ed'),csd=document.getElementById('csd'),ced=document.getElementById('ced');
+const region=document.getElementById('region'),country=document.getElementById('country'),dv=document.getElementById('div'),sd=document.getElementById('sd'),ed=document.getElementById('ed'),csd=document.getElementById('csd'),ced=document.getElementById('ced');
 const ptype=document.getElementById('ptype'),cmpBasis=document.getElementById('cmpBasis'),pickerWrap=document.getElementById('pickerWrap');
 
 // ===== Flexible period selector =====
@@ -402,8 +397,6 @@ function rows(){let r=EV.slice();
  if(cs){ r=r.filter(e=>{const sc=(e.scope||'').split(';');return cs.some(c=>sc.includes(c));}); }
  // Division: specific value = contains it; 'all' = no filter
  if(dv.value!=='ALL'){ r=r.filter(e=>(e.divisions||'').split(';').includes(dv.value)); }
- // KPI: specific value = contains it; 'all' = no filter
- if(kpi.value!=='ALL'){ r=r.filter(e=>(e.kpi||'').split(';').includes(kpi.value)); }
  if(sd.value)r=r.filter(e=>(e.date||'')>=sd.value);
  if(ed.value)r=r.filter(e=>(e.date||'')<=ed.value);
  return r.sort((a,b)=>(b.date||'').localeCompare(a.date||''));}
@@ -545,13 +538,6 @@ function drawTrend(evSortedAsc, numByDate){
  const upMap={}; if(upSeries) upSeries.forEach(p=>upMap[p.date]=p.views);
  const upData=labels.map(dt=>upMap[dt]!=null?upMap[dt]:null);
  const hasUpload=upSeries&&upData.some(v=>v!=null);
- // Google Trends (search interest 0-100) on a secondary axis; nearest-earlier value if dates differ
- const trSeries=(TRENDS.series&&TRENDS.series["Samsung"])||[];
- const trData=labels.map(dt=>{
-   let v=null; for(const p of trSeries){ if(p[0]<=dt) v=p[1]; else break; }
-   return v;
- });
- const hasTrends=trData.some(v=>v!=null);
  const names=compNames();
  const total=labels.map(dt=>names.reduce((s,n)=>{const ser=wikiSeries(n);const f=ser.find(p=>p.date===dt);return s+(f?f.views:0);},0));
  // Set y-max 25% above the data peak to leave room for pins
@@ -567,9 +553,8 @@ function drawTrend(evSortedAsc, numByDate){
  document.getElementById('legend').innerHTML=
   `<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#1428A0;display:inline-block"></span>Samsung 위키 (기준)</span>`+
   `<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#888;display:inline-block"></span>${compLabel()}</span>`+
-  (hasUpload?`<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#D0392B;display:inline-block"></span>실제 트래픽(업로드)</span>`:'')+
-  (hasTrends?`<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#EF9F27;display:inline-block;border-top:2px dashed #EF9F27"></span>Samsung 검색관심도</span>`:'');
- document.getElementById('tsub').textContent=hasUpload?'(위키 조회수 + 업로드 실제 트래픽 + 검색 관심도)':'(위키 일별 조회수 + 구글 검색 관심도)';
+  (hasUpload?`<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#D0392B;display:inline-block"></span>실제 트래픽(업로드)</span>`:'');
+ document.getElementById('tsub').textContent=hasUpload?'(위키 조회수 + 업로드 실제 트래픽)':'(위키 일별 조회수)';
  if(chart)chart.destroy();
  const dsets=[
    {label:'Samsung 위키',data:samData,borderColor:'#1428A0',backgroundColor:'#1428A014',tension:0.35,pointRadius:0,borderWidth:2.5,spanGaps:true,yAxisID:'y'},
@@ -577,10 +562,6 @@ function drawTrend(evSortedAsc, numByDate){
  if(hasUpload){
    dsets.push({label:'실제 트래픽(업로드)',data:upData,borderColor:'#D0392B',backgroundColor:'#D0392B12',
      tension:0.35,pointRadius:0,borderWidth:2.5,spanGaps:true,yAxisID:'yUpload'});
- }
- if(hasTrends){
-   dsets.push({label:'Samsung 검색관심도',data:trData,borderColor:'#EF9F27',backgroundColor:'transparent',
-     tension:0.35,pointRadius:0,borderWidth:2,borderDash:[5,4],spanGaps:true,yAxisID:'yTrend'});
  }
  chart=new Chart(document.getElementById('trend'),{type:'line',
   data:{labels,datasets:dsets},
@@ -603,14 +584,12 @@ function drawTrend(evSortedAsc, numByDate){
      tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.parsed.y||0).toLocaleString()+'회'}}},
    scales:{x:{ticks:{color:'#888780',font:{size:11},maxTicksLimit:8},grid:{display:false}},
      y:{suggestedMax:yMax,ticks:{color:'#888780',font:{size:11},callback:v=>(v/1000)+'k'},grid:{color:'rgba(136,135,128,0.10)'}},
-     yTrend:{display:hasTrends,position:'right',min:0,max:100,ticks:{color:'#EF9F27',font:{size:10},callback:v=>v},grid:{display:false},title:{display:true,text:'검색관심도',color:'#EF9F27',font:{size:10}}},
      yUpload:{display:hasUpload,position:'right',ticks:{color:'#D0392B',font:{size:10},callback:v=>(v/1000)+'k'},grid:{display:false},title:{display:true,text:'실제 트래픽',color:'#D0392B',font:{size:10}}}}},
   plugins:[pinPlugin,cpPlugin]});
  chart._pins=pins; chart._changePoints=changePoints; chart.update();
 }
 
-function kpiTags(k){const list=(k||'').split(';').filter(x=>x).sort((a,b)=>KPIORDER.indexOf(a)-KPIORDER.indexOf(b));
- return list.map(x=>`<span class="ktag" style="background:${KPIBG[x]||'#eee'};color:${KPICOL[x]||'#444'}">${x}</span>`).join('');}
+
 
 function render(){
  let r=rows();  // result after all active filters (region/country/division/KPI/period)
@@ -731,7 +710,7 @@ function render(){
             <span style="font-size:11px;color:var(--muted)">활성 요인 ${g.items.length}건</span></div>
           <div class="grp-body" style="display:none;padding:0 14px 10px">${sub}</div>
         </div>`;}).join('')}
-     <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.6">기여도는 해당 기간 활성 요인의 영향강도·신뢰도로 비례 배분한 추정입니다. "급변과 연결"은 그 요인 발생 직후 7일 내 트래픽 급변점이 있었음을 뜻합니다. 인과 입증이 아니며, 위키 대리지표(또는 업로드 트래픽) 기준입니다.</div>
+     <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.6">기여도는 해당 기간 활성 요인의 영향강도·신뢰도로 비례 배분한 추정입니다. "급변과 연결"은 그 요인 발생 직후 7일 내 트래픽 급변점이 있었음을 뜻합니다. 인과 입증이 아니며, 위키 대리지표(또는 업로드 트래픽) 기준입니다.<br>영향강도: 이 요인이 samsung.com 트래픽에 주는 영향의 크기(1~5) · 신뢰도: 그 영향 판단이 맞다고 보는 확신 정도(high/med/low)</div>
    </div>`;
   } else {
    perHtml=`<div class="cp-card"><div style="font-size:13px;color:var(--muted)">비교 기간 대비 ${dirWord}했으나, 현재 기간 내 방향이 일치하는 외부 요인이 수집되지 않았습니다.</div></div>`;
@@ -758,7 +737,7 @@ function render(){
  const shown=showAll?r:r.slice(0,LIMIT);
  const cardsHtml = r.length? shown.map((e,i)=>{
    const cls=DIRCLS[e.impact_direction]||'';const bc=DIRC[e.impact_direction]||'#9a9a96';
-   const meta=[DIRLAB[e.impact_direction]||'',e.confidence||''].filter(x=>x);
+   const meta=[e.confidence?`신뢰도: ${e.confidence}`:''].filter(x=>x);
    const imp=e.impact?`<div class="imp" style="color:${bc};background:${bc}14">${e.impact}</div>`:'';
    const badge=`<span class="numbadge" style="background:${bc}">${i+1}</span>`;
    // Strip source/filter tags and legacy markers from the body text
@@ -770,26 +749,28 @@ function render(){
      .replace(/원문:\s*/g,'')
      .trim();
    const src=e.source||'';
+   const llm=e.llm||'';
+   const bottomLine=(src||llm)?
+     `<div class="srcline"><span>${src?'source: '+src:''}</span><span class="llmtag">${llm?'요약: '+llm:''}</span></div>`:'';
    return `<div class="evt ${cls}" id="evt-${i+1}"><div class="top"><span class="ttl">${badge}${e.title}</span><span class="meta">${e.date||''}</span></div>
      <div class="indent">${meta.map(t=>`<span class="tag">${t}</span>`).join('')}</div>${imp?'<div class="indent">'+imp+'</div>':''}
      <div class="desc indent">${desc}</div>
-     <div class="kline indent"><span class="klbl">영향 KPI:</span>${kpiTags(e.kpi)}</div>
      <div class="kline indent"><span class="klbl">영향 국가:</span><span class="metaval">${scopeLabelKo(e.scope)}</span></div>
      <div class="kline indent"><span class="klbl">영향 사업부:</span><span class="metaval">${divLabel(e.divisions)}</span></div>
-     ${src?`<div class="srcline">source: ${src}</div>`:''}</div>`;}).join('') : '<div class="empty">해당 조건에 맞는 이벤트가 없습니다.</div>';
+     ${bottomLine}</div>`;}).join('') : '<div class="empty">해당 조건에 맞는 이벤트가 없습니다.</div>';
  const moreBtn = (r.length>LIMIT)? `<button id="morebtn" style="display:block;margin:4px auto 0;padding:9px 20px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--blue);font-size:13px;font-weight:500;cursor:pointer">${showAll?'접기':'더보기 ('+(r.length-LIMIT)+'개 더)'}</button>` : '';
  document.getElementById('list').innerHTML = cardsHtml + moreBtn;
  const mb=document.getElementById('morebtn');
  if(mb) mb.onclick=()=>{ showAll=!showAll; render(); };
 }
 function exportCSV(){const r=rows();
- const h=['date','scope','divisions','kpi','title','impact','description','impact_direction','confidence','source','raw_title','raw_desc','raw_url'];
+ const h=['date','scope','divisions','kpi','title','impact','description','impact_direction','confidence','llm','source','raw_title','raw_desc','raw_url'];
  const csv=[h.join(',')].concat(r.map(x=>h.map(k=>`"${(x[k]||'').toString().replace(/"/g,'""')}"`).join(','))).join('\n');
  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv,{type:'text/csv;charset=utf-8'}]));a.download='scom_external_factors.csv';a.click();}
 document.getElementById('csvbtn').onclick=exportCSV;
 region.onchange=()=>{showAll=false;syncCountries();render();};
 country.onchange=onCountryChange;
-[dv,kpi,sd,ed,csd,ced].forEach(el=>el.onchange=()=>{showAll=false;render();});
+[dv,sd,ed,csd,ced].forEach(el=>el.onchange=()=>{showAll=false;render();});
 ptype.onchange=refreshPeriod; cmpBasis.onchange=()=>{applyPeriod();showAll=false;render();};
 // Traffic CSV upload (in-memory only, never persisted)
 const trafficFile=document.getElementById('trafficFile');
@@ -887,16 +868,25 @@ function drawStats(){
 
 </script></body></html>"""
 
-LABELS={"ok":"정상 ✓","retired":"종료됨 — GEMINI_MODEL 교체 필요","unknown":"키 없음 (키워드 필터만)","error":"점검 실패 — 확인 필요"}
+LLM_LABELS={"ok":"정상 ✓","retired":"종료됨 — 모델 교체 필요","unknown":"키 없음",
+            "error":"점검 실패 — 확인 필요"}
+_LLM_DISPLAY=[("gemini","Gemini (1순위)"),("groq","Groq (2순위)"),("mistral","Mistral (3순위)")]
+_checked=str(mstat.get("last_checked","n/a"))
+def _badge(name, label):
+    s=_mstat_of(name)
+    status=s.get("status","unknown")
+    note=str(s.get("note","")).replace('"',"'")
+    model=str(s.get("model","unknown"))
+    lbl=LLM_LABELS.get(status,"상태 미상")
+    return (f'<div class="mbadge {status}" title="{note}"><span class="dot"></span>'
+            f'<span>{label}: <strong>{model}</strong> — {lbl}</span></div>')
+mbadges_html = "".join(_badge(n,l) for n,l in _LLM_DISPLAY) + \
+    f'<div class="mbadge" style="opacity:.6">점검 {_checked}</div>'
+
 HTML=(HTML.replace("__DATA__",json.dumps(events,ensure_ascii=False))
           .replace("__WIKI__",json.dumps(wiki,ensure_ascii=False))
-          .replace("__TRENDS__",json.dumps(trends,ensure_ascii=False))
           .replace("__STATS__",json.dumps(stats_series,ensure_ascii=False))
-          .replace("__MSTATUS__",mstat.get("status","unknown"))
-          .replace("__MMODEL__",str(mstat.get("model","unknown")))
-          .replace("__MLABEL__",LABELS.get(mstat.get("status","unknown"),"상태 미상"))
-          .replace("__MCHECKED__",str(mstat.get("last_checked","n/a")))
-          .replace("__MNOTE__",str(mstat.get("note","")).replace('"',"'"))
+          .replace("__MBADGES__",mbadges_html)
           .replace("__DEF_CMP_FROM__",DEF_CMP_FROM)
           .replace("__DEF_CMP_TO__",DEF_CMP_TO)
           .replace("__DEF_CUR_FROM__",DEF_CUR_FROM)

@@ -71,7 +71,7 @@ def fetch_one(q, retries=2):
             return out
         except urllib.error.HTTPError as e:
             if e.code == 429 and attempt < retries:
-                wait = 15 * (attempt + 1)  # 15s, then 30s
+                wait = 20 * (attempt + 1)  # 20s, then 40s
                 print(f"  GDELT 429 for '{q}' — backing off {wait}s "
                       f"(retry {attempt+1}/{retries})")
                 time.sleep(wait)
@@ -80,7 +80,16 @@ def fetch_one(q, retries=2):
                   "(gave up)" if e.code == 429 else "")
             return []
         except Exception as e:
-            print("  GDELT error for", q, ":", e)
+            # Generic network faults (SSL handshake timeout, connection reset, DNS
+            # blip) are usually transient too — retry them the same as 429 instead
+            # of giving up on the first hit, which was silently dropping queries.
+            if attempt < retries:
+                wait = 20 * (attempt + 1)
+                print(f"  GDELT network error for '{q}': {e} — retrying in {wait}s "
+                      f"({attempt+1}/{retries})")
+                time.sleep(wait)
+                continue
+            print("  GDELT error for", q, ":", e, "(gave up)")
             return []
     return []
 
@@ -98,7 +107,8 @@ def main():
             if key and key not in seen:
                 seen.add(key)
                 all_items.append(it)
-        time.sleep(5)  # courtesy gap — GDELT rate-limits (429) if hit faster than this
+        time.sleep(8)  # courtesy gap — widened after repeated 429s persisted at 5s,
+                       # likely due to GitHub Actions' shared runner IP pool
     # Normalize dates to YYYY-MM-DD
     for it in all_items:
         d = it.get("date", "")
