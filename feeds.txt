@@ -28,7 +28,6 @@ Apple newsroom | https://www.apple.com/newsroom/rss-feed.rss
 Semrush | https://www.semrush.com/blog/feed/
 Ahrefs | https://ahrefs.com/blog/feed/
 Moz | https://moz.com/feeds/blog.rss
-Search Engine Land | https://searchengineland.com/feed
 Search Engine Journal | https://www.searchenginejournal.com/feed/
 # -- E-commerce --
 Practical Ecommerce | https://www.practicalecommerce.com/feed

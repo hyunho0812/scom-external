@@ -13,10 +13,16 @@ produce it in about 15 minutes. After that you never touch it.
 index.html                      <- the dashboard (Korean UI, trend graph), auto-generated
 data/events.json                <- the event log (seeded with 10 events)
 data/feed_state.json            <- remembers seen RSS entries (auto-managed)
-scripts/collect_news.py         <- Layer 1 daily: NewsAPI+GDELT -> Gemini relevance filter
-scripts/collect_feeds.py        <- Layer 2 daily: first-party RSS -> FREE keyword filter
+scripts/collect_news.py         <- Layer 1 daily: NewsAPI+GDELT -> keyword pre-filter -> LLM judgement
+scripts/collect_feeds.py        <- Layer 2 daily: first-party RSS -> keyword pre-filter -> LLM judgement
+scripts/collect_gdelt.py        <- Layer 1a daily: free GDELT news pool (no key)
 scripts/collect_imf.py          <- Layer 3 monthly (28th): IMF stats -> country-stats tab
 scripts/collect_wiki.py         <- daily: Wikipedia pageviews -> company trend graph
+scripts/llm_common.py           <- shared Gemini/Groq/Mistral fallback-chain helpers
+scripts/check_model.py          <- daily: health-checks all 3 LLMs -> dashboard badges
+scripts/optimize.py             <- daily: Gemini tunes queries.txt/keyword filters
+scripts/merge_past_events.py    <- manual tool: merge AI/uploaded event batches
+scripts/check_feed_translation.py <- manual diagnostic: audit feed translation quality
 scripts/build.py                <- daily: rebuilds index.html from all data files
 feeds.txt                       ← first-party source list (edit to manage feeds)
 QUARTERLY_REVIEW.md             ← human blind-spot checklist (run once a quarter)
@@ -60,16 +66,48 @@ It is not perfect — skim the list weekly and delete any stragglers from
 - Upload this whole folder's contents (drag the files into the repo's
   "Add file ▸ Upload files", keeping the `scripts/`, `data/`, `.github/` paths).
 
-### 2. Add your API keys as secrets (both free)
+### 2. Add your API keys as secrets (all free)
 - Repo ▸ Settings ▸ Secrets and variables ▸ Actions ▸ New repository secret.
 - `GEMINI_API_KEY` — get it free at aistudio.google.com/apikey (sign in with a
   Google account, "Create API key"; no credit card). This powers the Layer 0/1
-  LLM filter. Free tier ≈ 1,500 requests/day on Flash — plenty here.
+  LLM filter (1st choice).
 - `NEWS_API_KEY` — free at newsapi.org (or adapt collect_news.py to another source).
+- `GROQ_API_KEY` — get it free at console.groq.com/keys (sign in with email or
+  Google; no credit card). 2nd-choice LLM, used only when Gemini's daily quota
+  runs out.
+- `MISTRAL_API_KEY` — get it free at console.mistral.ai (no credit card). This is
+  the 3rd-choice LLM, used only when BOTH Gemini and Groq are unavailable in the
+  same run. Note: Mistral's free "Experiment" tier may use your requests to train
+  their models (per Mistral's own help docs) — acceptable here since this only
+  ever processes public news/RSS text, never samsung.com's real traffic data.
+- So the whole pipeline is 100% LLM-based across three independent free tiers,
+  with no non-LLM translation API anywhere.
 - Secrets are encrypted and never appear in the page or logs.
-- (Optional) the workflow sets GEMINI_MODEL to gemini-2.5-flash. If Google
-  retires that name, change it in the workflow to the current free Flash model
-  (e.g. a newer gemini-*-flash / flash-lite).
+- (Optional) the workflow sets GEMINI_MODEL to gemini-2.5-flash, GROQ_MODEL to
+  openai/gpt-oss-120b, and MISTRAL_MODEL to mistral-small-latest. If any
+  provider retires that model name, change it in the workflow to a current
+  free equivalent — `scripts/check_model.py` checks all three daily and the
+  dashboard badge turns red ("retired") if one needs swapping.
+
+### Free-tier comparison (as of 2026-07)
+All figures are published limits and change without notice — the dashboard's
+model-status badges are the source of truth for whether each is actually
+working right now.
+
+| | Gemini (1st) | Groq (2nd) | Mistral (3rd) |
+|---|---|---|---|
+| Model used here | gemini-2.5-flash | openai/gpt-oss-120b | mistral-small-latest |
+| Requests/min | ~10–15 | 30 | **2** (tight — only hit as last resort) |
+| Requests/day | ~1,500 (varies) | 1,000 | not published (token-capped instead) |
+| Token budget | large context (~1M) | 8K/min, 200K/day | **~1B/month** (most generous by far) |
+| No credit card | ✓ | ✓ | ✓ |
+| Data-training opt-out | only outside EU/UK/EEA | usually no training | **requests may train Mistral's models** |
+| Durability note | Google cut free limits once already (late 2025) | occasionally deprecates/renames models (check console.groq.com/docs/deprecations) | tier has had no recorded pricing changes |
+
+Practical read: Gemini and Groq handle almost all daily volume between them.
+Mistral's 2 RPM makes it unsuitable as anything but a rarely-hit last resort,
+but its huge monthly token budget means it won't run dry even if it ends up
+carrying a full day's leftover translations once in a while.
 
 ### 3. Turn on Pages
 - Repo ▸ Settings ▸ Pages ▸ Source = "GitHub Actions". Save.
@@ -83,11 +121,13 @@ It is not perfect — skim the list weekly and delete any stragglers from
 
 ## Costs — everything is free
 - GitHub Pages + Actions: free for public repos.
-- Layer 1 news: news API free tier + **Gemini free tier** for the LLM filter.
-  Hybrid order (keyword pre-filter → Gemini) keeps Gemini calls low so you stay
-  inside the free daily quota. If the quota is hit (HTTP 429) or no Gemini key
-  is set, it automatically falls back to the keyword decision — never stalls.
-- Layer 2 first-party feeds: FREE keyword filter, no API calls.
+- Layer 1 news + Layer 2 first-party feeds: both use the SAME free LLM
+  judgement chain (keyword pre-filter → Gemini → Groq → Mistral, all free
+  tiers, no card). Hybrid order (keyword first) keeps LLM calls low so you
+  stay inside each provider's free daily quota. If Gemini's quota is hit
+  (HTTP 429), Groq judges instead; if Groq also fails, Mistral does — only if
+  ALL THREE are unavailable is an item skipped, rather than stored with
+  English text or guessed classification.
 - Layer 3 stats (IMF SDMX): FREE, no key. Monthly. World Bank (annual) was removed.
 So the whole pipeline runs at $0. Note: free tiers can change their limits/policy
 over time, and free-tier inputs (here: public news titles/summaries — nothing
@@ -100,20 +140,22 @@ free, no key) for Samsung/Apple/LG/Whirlpool — an interest/attention PROXY, no
 real company web traffic. Events appear as numbered callout markers mapped to
 a list under the graph. Division mapping: MX=Apple, VD=LG, DA=Whirlpool.
 
-## Filter-model status badge (knowing when to swap models)
-The dashboard shows a badge with the LLM model the filter uses, whether it's
-alive, and when it was last checked. Each daily run, `check_model.py` pings the
-Gemini models endpoint for the configured GEMINI_MODEL:
-- **green "active ✓"** — model responds, nothing to do.
-- **red "RETIRED — update GEMINI_MODEL"** — model returned 404/not-found (Google
-  retired it). Swap GEMINI_MODEL in the workflow for a current free Flash model;
-  collection keeps running on keyword fallback until you do.
-- **amber "no key" / "check failed"** — no Gemini key set, or a transient error.
-This is how you catch a model shutdown (like gemini-2.0-flash on 2026-06-01)
-without watching Google's changelog yourself — the badge turns red on its own.
+## Model-status badges (knowing when to swap models)
+The dashboard shows three badges — one per LLM in the judgement chain
+(Gemini, Groq, Mistral) — each showing the model name, whether it's alive,
+and when it was last checked. Each daily run, `check_model.py` pings all
+three providers' model-info endpoints (a cheap GET, no generation):
+- **green "정상 ✓"** — model responds, nothing to do.
+- **red "종료됨 — 모델 교체 필요"** — the model 404s (the provider retired it).
+  Swap that provider's *_MODEL env var in the workflow for a current model;
+  collection keeps running on the next LLM in the chain until you do.
+- **amber "키 없음"** — no API key set for that provider, or a transient error.
+This is how you catch a model retirement (like Groq deprecating
+llama-3.3-70b-versatile in June 2026) without watching each provider's
+changelog yourself — the relevant badge turns red on its own.
 
 ## News sources (NewsAPI + GDELT)
-Two news sources feed the same keyword→Gemini pipeline:
+Two news sources feed the same keyword-prefilter → LLM-judgement pipeline:
 - NewsAPI (key required, 100 req/day free) — collect_news.py, 10 queries × 10 articles.
 - GDELT (no key, effectively unlimited) — collect_gdelt.py writes data/raw_gdelt.json,
   which collect_news.py also reads. GDELT monitors worldwide news, updates every 15 min,
