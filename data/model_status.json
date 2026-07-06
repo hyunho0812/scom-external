@@ -1,1 +1,18 @@
-{}
+{
+ "gemini": {
+  "model": "gemini-2.5-flash",
+  "status": "ok",
+  "note": "Model responds and supports generateContent."
+ },
+ "groq": {
+  "model": "openai/gpt-oss-120b",
+  "status": "unknown",
+  "note": "No GROQ_API_KEY set — 2nd fallback unavailable."
+ },
+ "mistral": {
+  "model": "mistral-small-latest",
+  "status": "unknown",
+  "note": "No MISTRAL_API_KEY set — 3rd fallback unavailable."
+ },
+ "last_checked": "2026-07-06 07:52 UTC"
+}

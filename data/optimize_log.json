@@ -1,0 +1,30 @@
+[
+ {
+  "date": "2026-07-06",
+  "old_queries": [
+   "samsung",
+   "samsung galaxy",
+   "smartphone market",
+   "consumer electronics retail",
+   "ecommerce market share",
+   "social commerce",
+   "product discovery survey",
+   "retail channel report",
+   "ai shopping adoption",
+   "brand website shopper behavior"
+  ],
+  "new_queries": [
+   "consumer electronics retail",
+   "ecommerce market share",
+   "social commerce",
+   "product discovery survey",
+   "retail channel report",
+   "ai shopping adoption",
+   "brand website shopper behavior",
+   "samsung ecommerce strategy",
+   "galaxy smartphone market share",
+   "apple iphone sales forecast"
+  ],
+  "rationale": "기존 쿼리가 모두 낮은 성능을 보여 전면 개편했습니다. 관련 기사 제목을 분석하여 삼성 직접 관련 키워드와 외부 시장 요인 (경쟁사, 시장 동향, AI 쇼핑, 경제, 물류)을 구체화한 쿼리를 구성했습니다. KW_KEEP에 'memory', 'semiconductor', 'logistics', 'supply chain', 'used', 'refurbished' 등을 추가하여 관련성 높은 기사를 놓치지 않도록 했고, KW_DROP에 'sports', 'politics', 'entertainment' 등을 추가하여 노이즈를 줄였습니다."
+ }
+]
