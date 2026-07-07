@@ -1,1 +1,30 @@
-[]
+[
+ {
+  "date": "2026-07-07",
+  "old_queries": [
+   "samsung",
+   "samsung galaxy",
+   "smartphone market",
+   "consumer electronics retail",
+   "ecommerce market share",
+   "social commerce",
+   "product discovery survey",
+   "retail channel report",
+   "ai shopping adoption",
+   "brand website shopper behavior"
+  ],
+  "new_queries": [
+   "consumer electronics retail",
+   "ecommerce market share",
+   "social commerce",
+   "product discovery survey",
+   "retail channel report",
+   "ai shopping adoption",
+   "brand website shopper behavior",
+   "samsung ecommerce strategy",
+   "galaxy device innovation",
+   "smartphone market share trend"
+  ],
+  "rationale": "관련성 높은 기사 제목에서 핵심 키워드를 추출하여 기존 쿼리를 구체화하고, 외부 환경 변화 추적을 위해 경쟁사 및 거시 경제, AI 쇼핑 트렌드 쿼리를 추가했으며, KW_KEEP을 확장했습니다."
+ }
+]
