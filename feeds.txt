@@ -3,37 +3,70 @@
 # Lines starting with # are comments. Blank lines ignored.
 # After editing, the daily job picks up changes automatically on its next run.
 #
-# Some vendors don't publish a stable official RSS. Where the official feed is
-# missing/unstable, a note marks it - swap in your preferred mirror if one breaks.
-# Test a feed quickly: paste the URL into any RSS reader; if it loads, it works.
+# Policy (set 2026-07): OFFICIAL feeds only - no 3rd-party scraper/mirror
+# feeds, even ones that technically work. A mirror depends on a volunteer
+# keeping their scraper alive; if they stop, the feed goes silently stale.
+# Run scripts/check_feeds.py any time to verify every feed below still parses
+# and returns items (it also runs automatically every day, alongside
+# check_model.py and optimize.py).
 
-# ---------- AI platforms ----------
+# ---------- AI platforms (4, fixed - clear targeting, no periodic review needed) ----------
 OpenAI news | https://openai.com/news/rss.xml
 Gemini (Google) | https://blog.google/products/gemini/rss/
 Google AI blog | https://blog.google/technology/ai/rss/
-Claude (Anthropic) | https://www.anthropic.com/news
-# ^ Anthropic has no official RSS pointer; if your reader can't parse the page,
-#   replace with a mirror, e.g. an Olshansk/rss-feeds raw XML for Claude Blog.
-Perplexity | https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_perplexity_hub.xml
-# ^ perplexity.ai/hub/blog has no official RSS; using the community mirror above.
 Copilot (Microsoft) | https://www.microsoft.com/en-us/microsoft-copilot/blog/feed/
 
-# ---------- Companies ----------
+# ---------- Companies (1, fixed) ----------
 Apple newsroom | https://www.apple.com/newsroom/rss-feed.rss
+# The following competitors are tracked via Wikipedia pageviews (collect_wiki.py)
+# and news/RSS keyword matching, but do NOT have a verified official RSS feed
+# as of 2026-07 (checked directly, not guessed) - their newsrooms are modern
+# JS-rendered pages with no RSS auto-discovery. Re-check periodically; add
+# here only if a genuine official feed appears (not a 3rd-party scraper):
+#   LG (lg.com/global/newsroom), Whirlpool (whirlpool.mediaroom.com),
+#   Xiaomi (mi.com/global/discover/newsroom), OPPO (oppo.com/en/newsroom),
+#   vivo, TCL, Hisense (hisense-usa.com/newsroom), Bosch/BSH Hausgeräte.
 
-# ---------- Blogs (SEO / E-commerce / Digital Marketing) ----------
-# Blogs covering SEO / AI-search / commerce / marketing trends relevant to samsung.com.
-# Topics like zero-click, AI search visibility, GDPR, and conversion show up often.
-# -- SEO --
-Semrush | https://www.semrush.com/blog/feed/
-Ahrefs | https://ahrefs.com/blog/feed/
-Moz | https://moz.com/feeds/blog.rss
+# ---------- Broader trend sources (10) - this IS the category to periodically
+# review/rotate. Purpose: complement NewsAPI (which already covers acute daily
+# events) with sources on GRADUAL, structural shifts affecting samsung.com -
+# not limited to ecommerce/marketing/search; anything plausibly relevant.
+# Prioritized by type:
+#   (a) Periodic data/trend-research publishers (quarterly/annual reports on
+#       structural shifts, e.g. "AI's growing share of search traffic in 2026")
+#   (b) Editorially-independent trade journalism (daily, but not vendor blogs)
+# Review cadence: no fixed schedule needed - scripts/check_feeds.py (daily)
+# catches breakage; revisit the SOURCE LIST itself occasionally (e.g. every
+# few months) using data/query_performance.json as a guide to what's actually
+# producing useful events.
+
+# -- (a) Periodic trend/market research (5) --
+IDC Press Releases | https://www.idc.com/rss/idcpressreleases.xml
+# ^ Quarterly smartphone/PC/memory market share & shipment data - directly
+#   relevant to Samsung's core device businesses (MX/VD/DA).
+Gartner Newsroom | https://www.gartner.com/en/newsroom/rss
+# ^ IT/tech market analyst research (broader enterprise tech, not just consumer).
+TrendForce Consumer Electronics | https://www.trendforce.com/feed/Consumer_electronics.html
+# ^ TV/smartphone/notebook/tablet shipment & pricing trends - Samsung's actual
+#   product categories.
+TrendForce Semiconductors | https://www.trendforce.com/feed/Semiconductors.html
+# ^ DRAM/NAND memory price trends - directly ties to past events like memory
+#   shortages driving device price hikes.
+Pew Research Internet & Tech | https://pewresearch.org/internet/feed
+# ^ Survey-based research on internet/technology adoption and behavior shifts
+#   (e.g. how people discover/research products, generational usage patterns).
+
+# -- (b) Independent trade journalism (5) --
+Search Engine Land | https://searchengineland.com/feed
 Search Engine Journal | https://www.searchenginejournal.com/feed/
-# -- E-commerce --
+Retail Dive | https://www.retaildive.com/feeds/news/
 Practical Ecommerce | https://www.practicalecommerce.com/feed
-Shopify Blog | https://www.shopify.com/blog.atom
-# -- Digital Marketing --
-HubSpot Marketing | https://blog.hubspot.com/marketing/rss.xml
-Neil Patel | https://neilpatel.com/blog/feed/
-# ^ If a blog RSS breaks, try appending /feed/ or /rss to the URL, or
-#   look up the feed URL in an RSS reader and swap it in.
+Digiday | https://digiday.com/feed
+# ^ Digiday's URL is confirmed consistently across multiple independent
+#   listings (all pointing at digiday.com's own domain), but wasn't directly
+#   fetch-tested like the others above - if check_feeds.py flags it, that's why.
+
+# Removed 2026-07 (vendor/personal blogs, replaced by the research/journalism
+# outlets above for better neutrality and periodic-trend focus): Semrush,
+# Ahrefs, Moz, Shopify Blog, HubSpot Marketing, Neil Patel, Claude(Anthropic)
+# mirror, Perplexity mirror.

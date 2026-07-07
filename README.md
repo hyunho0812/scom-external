@@ -25,7 +25,6 @@ scripts/merge_past_events.py    <- manual tool: merge AI/uploaded event batches
 scripts/check_feed_translation.py <- manual diagnostic: audit feed translation quality
 scripts/build.py                <- daily: rebuilds index.html from all data files
 feeds.txt                       ← first-party source list (edit to manage feeds)
-QUARTERLY_REVIEW.md             ← human blind-spot checklist (run once a quarter)
 .github/workflows/daily-update.yml ← the free daily cron that runs everything
 ```
 
@@ -37,10 +36,8 @@ STATES (aging) and sub-threshold changes (a tiny ChatGPT UI tweak). So:
    so small changes are caught straight from the source, no press needed.
 3. **Layer 3 - IMF stats (monthly):** IMF SDMX monthly indicators (overall/furnishings/housing/communications/recreation CPI, retail sales, labor-force participation) for the country-stats tab. Runs on the 28th for the previous month. (Previously
    a slow trend (aging, GDP/capita, internet penetration) crosses a threshold.
-4. **Quarterly human review:** `QUARTERLY_REVIEW.md` covers what no feed can —
-   brand-new platforms, culture/calendar, quiet company moves, slow regulation.
 
-Even with all four, full coverage is impossible — the aim is to make missing
+Even with these layers, full coverage is impossible — the aim is to make missing
 something important *unlikely*, not guaranteed-never.
 
 ## How the daily loop works
