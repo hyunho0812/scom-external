@@ -2,12 +2,12 @@
 # One per line. '#' comments and blank lines ignored. Max 10.
 
 consumer electronics retail
-ecommerce market share
 social commerce
 product discovery survey
 retail channel report
-ai shopping adoption
 brand website shopper behavior
-samsung ecommerce strategy
 galaxy device innovation
 smartphone market share trend
+apple intelligence strategy
+semiconductor memory market trend
+online retail ai adoption

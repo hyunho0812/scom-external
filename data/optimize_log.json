@@ -26,5 +26,33 @@
    "smartphone market share trend"
   ],
   "rationale": "관련성 높은 기사 제목에서 핵심 키워드를 추출하여 기존 쿼리를 구체화하고, 외부 환경 변화 추적을 위해 경쟁사 및 거시 경제, AI 쇼핑 트렌드 쿼리를 추가했으며, KW_KEEP을 확장했습니다."
+ },
+ {
+  "date": "2026-07-07",
+  "old_queries": [
+   "consumer electronics retail",
+   "ecommerce market share",
+   "social commerce",
+   "product discovery survey",
+   "retail channel report",
+   "ai shopping adoption",
+   "brand website shopper behavior",
+   "samsung ecommerce strategy",
+   "galaxy device innovation",
+   "smartphone market share trend"
+  ],
+  "new_queries": [
+   "consumer electronics retail",
+   "social commerce",
+   "product discovery survey",
+   "retail channel report",
+   "brand website shopper behavior",
+   "galaxy device innovation",
+   "smartphone market share trend",
+   "apple intelligence strategy",
+   "semiconductor memory market trend",
+   "online retail ai adoption"
+  ],
+  "rationale": "기존 성능이 저조한 쿼리들을 제거하고, 최근 관련 기사에서 나타난 AI, 반도체 시장, 경쟁사(Apple) 전략, 지속 가능성 트렌드 및 유망 키워드를 반영하여 쿼리와 KW_KEEP을 업데이트했습니다."
  }
 ]

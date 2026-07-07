@@ -41,5 +41,58 @@
     "kept": 6
    }
   }
+ },
+ {
+  "date": "2026-07-07",
+  "total_raw": 91,
+  "total_dup": 7,
+  "total_kept": 11,
+  "per_query": {
+   "consumer electronics retail": {
+    "raw": 10,
+    "dup": 0,
+    "kept": 2
+   },
+   "social commerce": {
+    "raw": 20,
+    "dup": 0,
+    "kept": 0
+   },
+   "product discovery survey": {
+    "raw": 3,
+    "dup": 1,
+    "kept": 0
+   },
+   "retail channel report": {
+    "raw": 20,
+    "dup": 3,
+    "kept": 1
+   },
+   "galaxy device innovation": {
+    "raw": 6,
+    "dup": 0,
+    "kept": 5
+   },
+   "smartphone market share trend": {
+    "raw": 4,
+    "dup": 0,
+    "kept": 0
+   },
+   "apple intelligence strategy": {
+    "raw": 20,
+    "dup": 3,
+    "kept": 3
+   },
+   "semiconductor memory market trend": {
+    "raw": 7,
+    "dup": 0,
+    "kept": 0
+   },
+   "online retail ai adoption": {
+    "raw": 1,
+    "dup": 0,
+    "kept": 0
+   }
+  }
  }
 ]
