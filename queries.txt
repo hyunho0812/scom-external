@@ -1,11 +1,6 @@
-# News search queries - shared by NewsAPI and GDELT.
-# One per line. Lines starting with '#' are comments; blank lines ignored.
-# Edit here and every news collector picks up the change.
-# Keep at most 4 lines containing samsung/galaxy (MAX_BRAND); rest = external factors.
+# News search queries — shared by NewsAPI and GDELT (refreshed daily by optimize.py)
+# One per line. '#' comments and blank lines ignored. Max 10.
 
-samsung
-samsung galaxy
-smartphone market
 consumer electronics retail
 ecommerce market share
 social commerce
@@ -13,3 +8,6 @@ product discovery survey
 retail channel report
 ai shopping adoption
 brand website shopper behavior
+samsung ecommerce strategy
+galaxy device sales trends
+smartphone market share forecast

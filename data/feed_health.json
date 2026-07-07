@@ -1,0 +1,65 @@
+{
+ "checked": "2026-07-07 07:26 UTC",
+ "feeds": {
+  "OpenAI news": {
+   "status": "ok",
+   "detail": "1028 items"
+  },
+  "Gemini (Google)": {
+   "status": "ok",
+   "detail": "20 items"
+  },
+  "Google AI blog": {
+   "status": "ok",
+   "detail": "20 items"
+  },
+  "Copilot (Microsoft)": {
+   "status": "ok",
+   "detail": "10 items"
+  },
+  "Apple newsroom": {
+   "status": "ok",
+   "detail": "20 items"
+  },
+  "IDC Press Releases": {
+   "status": "ok",
+   "detail": "10 items"
+  },
+  "Gartner Newsroom": {
+   "status": "error",
+   "detail": "HTTP 403"
+  },
+  "TrendForce Consumer Electronics": {
+   "status": "empty",
+   "detail": "fetched OK but 0 items — parses as XML-ish but empty, or not RSS/Atom at all"
+  },
+  "TrendForce Semiconductors": {
+   "status": "ok",
+   "detail": "10 items"
+  },
+  "Pew Research Internet & Tech": {
+   "status": "ok",
+   "detail": "100 items"
+  },
+  "Search Engine Land": {
+   "status": "error",
+   "detail": "HTTP 403"
+  },
+  "Search Engine Journal": {
+   "status": "ok",
+   "detail": "20 items"
+  },
+  "Retail Dive": {
+   "status": "ok",
+   "detail": "10 items"
+  },
+  "Practical Ecommerce": {
+   "status": "ok",
+   "detail": "30 items"
+  },
+  "Digiday": {
+   "status": "ok",
+   "detail": "15 items"
+  }
+ }
+}
