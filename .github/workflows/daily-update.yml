@@ -25,6 +25,10 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: gemini-2.5-flash
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_MODEL: openai/gpt-oss-120b
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          MISTRAL_MODEL: mistral-small-latest
         run: python scripts/check_model.py
 
       # ---- Layer 0: daily query & keyword-filter optimizer (Gemini) ----
@@ -75,6 +79,11 @@ jobs:
         if: ${{ steps.statday.outputs.run_stats == 'true' || github.event_name == 'workflow_dispatch' }}
         run: python scripts/collect_imf.py
 
+      # ---- Daily feed health check (catches a feed silently parsing to 0
+      # items, e.g. an HTML page mistaken for RSS — see check_feeds.py docstring) ----
+      - name: Feed health check (daily → catches silently-broken feeds)
+        run: python scripts/check_feeds.py
+
       - name: Rebuild dashboard
         run: python scripts/build.py
 
@@ -82,7 +91,7 @@ jobs:
         run: |
           git config user.name  "github-actions"
           git config user.email "actions@github.com"
-          git add data/events.json data/feed_state.json data/model_status.json data/wiki_series.json data/gdelt_pool.json data/imf_series.json data/query_performance.json data/kw_filters.json data/optimize_log.json queries.txt index.html
+          git add data/events.json data/feed_state.json data/model_status.json data/wiki_series.json data/gdelt_pool.json data/imf_series.json data/query_performance.json data/kw_filters.json data/optimize_log.json data/feed_health.json queries.txt index.html
           git commit -m "daily update $(date -u +%F)" || echo "no changes"
           git push
 
