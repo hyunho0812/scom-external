@@ -158,6 +158,8 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
    <button class="btn" id="uploadBtn" title="국가,날짜,트래픽 형식의 CSV. 브라우저에서만 처리되며 저장되지 않습니다.">Upload Traffic</button></div>
   <div class="btnwrap"><label>.</label>
    <button class="btn" id="clearTrafficBtn">Clear Upload</button></div>
+ </div>
+ <div class="filterrow" style="justify-content:flex-end">
   <div class="btnwrap"><label>.</label>
    <button class="btn" id="csvbtn">Download Events</button></div>
  </div>
@@ -367,6 +369,26 @@ function trendVerdict(){
  return {pct, dir: pct<0?'-':(pct>0?'+':'neutral'),
          baseFrom:csd.value, baseTo:ced.value, curFrom:sd.value, curTo:ed.value};
 }
+// Same idea as trendVerdict(), but for the competitor aggregate — lets us tell
+// "market-wide" moves (competitors moved the same direction) apart from
+// "samsung.com-only" moves (competitors didn't).
+function compVerdict(){
+ if(!(csd.value && ced.value && sd.value && ed.value)) return null;
+ const names=compNames(); if(!names.length) return null;
+ const avgSum=(from,to)=>{
+  let total=0, any=false;
+  names.forEach(n=>{
+   const vals=wikiSeries(n).filter(p=>p.date>=from&&p.date<=to).map(p=>p.views);
+   if(vals.length){ any=true; total+=vals.reduce((a,b)=>a+b,0)/vals.length; }
+  });
+  return any?total:null;
+ };
+ const baseAvg=avgSum(csd.value, ced.value);
+ const curAvg=avgSum(sd.value, ed.value);
+ if(baseAvg==null || curAvg==null || baseAvg===0) return null;
+ const pct=(curAvg-baseAvg)/baseAvg*100;
+ return {pct, dir: pct<0?'-':(pct>0?'+':'neutral')};
+}
 region.innerHTML=Object.keys(REGIONS).map((r,i)=>`<option value="${r}"${i===0?' selected':''}>${r==='ALL'?'전체':r}</option>`).join('');
 function syncCountries(){const reg=REGIONS[region.value];
  const list=reg?COUNTRIES.filter(c=>c[0]==='ALL'||reg.includes(c[0])):COUNTRIES;
@@ -562,20 +584,25 @@ function drawTrend(evSortedAsc, numByDate){
   let xIdx=null; for(let k=0;k<curDates.length;k++){ if(curDates[k]<=cp.date) xIdx=xLabels[k]; }
   return Object.assign({},cp,{xIdx});
  });
- const dataMax=Math.max(1,...curData.filter(v=>v!=null),...cmpData.filter(v=>v!=null),...total);
+ const dataMax=Math.max(1,...curData.filter(v=>v!=null),...cmpData.filter(v=>v!=null));
  const yMax=Math.ceil(dataMax*1.25/1000)*1000;
+ const compMax=Math.max(1,...total);
+ const compYMax=Math.ceil(compMax*1.25/1000)*1000;
+ // Format a YYYY-MM-DD date as "7/7" for x-axis ticks (current-period date at
+ // that index; the comparison line's own real date still shows in tooltips).
+ const fmtMD=(d)=>{ if(!d) return ''; const p=d.split('-'); return `${+p[1]}/${+p[2]}`; };
  // Pins: map each CURRENT-period event to its day-index on the 현재 기간 line
  const pins=[];
  evSortedAsc.forEach((e)=>{
   if(!curDates.length || e.date<curDates[0] || e.date>curDates[curDates.length-1]) return;
   let nearIdx=0; for(let k=0;k<curDates.length;k++){ if(curDates[k]<=e.date) nearIdx=k; }
-  const sv=curData[nearIdx], tv=total[nearIdx];
-  pins.push({n:(numByDate&&numByDate[e.date])||'',xLabel:xLabels[nearIdx],anchorY:Math.max(sv==null?0:sv, tv||0),color:DIRC[e.impact_direction]||'#999'});
+  const sv=curData[nearIdx];
+  pins.push({n:(numByDate&&numByDate[e.date])||'',xLabel:xLabels[nearIdx],anchorY:sv==null?0:sv,color:DIRC[e.impact_direction]||'#999'});
  });
  document.getElementById('legend').innerHTML=
   `<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#1428A0;display:inline-block"></span>Samsung 현재 기간</span>`+
-  (hasCmp?`<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;border-top:2px dashed #1428A0;display:inline-block"></span>Samsung 비교 기간</span>`:'')+
-  `<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#888;display:inline-block"></span>${compLabel()} (현재)</span>`+
+  (hasCmp?`<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;border-top:2px dashed #9a9a96;display:inline-block"></span>Samsung 비교 기간</span>`:'')+
+  `<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#D9A441;display:inline-block"></span>${compLabel()} (현재)</span>`+
   (hasUpload?`<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#D0392B;display:inline-block"></span>실제 트래픽(현재)</span>`:'')+
   (hasUpload&&hasCmp?`<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;border-top:2px dashed #D0392B;display:inline-block"></span>실제 트래픽(비교)</span>`:'');
  document.getElementById('tsub').textContent=hasCmp?`(현재·비교 기간을 일자 기준 나란히 비교, 각 ${N}일)`:`(현재 기간, ${N}일)`;
@@ -583,9 +610,9 @@ function drawTrend(evSortedAsc, numByDate){
  const dsets=[
    {label:'Samsung 현재 기간',data:curData,borderColor:'#1428A0',backgroundColor:'#1428A014',tension:0.35,pointRadius:0,borderWidth:2.5,spanGaps:true,yAxisID:'y'}];
  if(hasCmp){
-   dsets.push({label:'Samsung 비교 기간',data:cmpData,borderColor:'#1428A0',backgroundColor:'transparent',tension:0.35,pointRadius:0,borderWidth:2,borderDash:[5,4],spanGaps:true,yAxisID:'y'});
+   dsets.push({label:'Samsung 비교 기간',data:cmpData,borderColor:'#9a9a96',backgroundColor:'transparent',tension:0.35,pointRadius:0,borderWidth:2,borderDash:[5,4],spanGaps:true,yAxisID:'y'});
  }
- dsets.push({label:compLabel()+' (현재)',data:total,borderColor:'#888780',backgroundColor:'#88878014',tension:0.35,pointRadius:0,borderWidth:2,yAxisID:'y'});
+ dsets.push({label:compLabel()+' (현재)',data:total,borderColor:'#D9A441',backgroundColor:'#D9A44114',tension:0.35,pointRadius:0,borderWidth:2,yAxisID:'yComp'});
  if(hasUpload){
    dsets.push({label:'실제 트래픽(현재)',data:upCurData,borderColor:'#D0392B',backgroundColor:'#D0392B12',
      tension:0.35,pointRadius:0,borderWidth:2.5,spanGaps:true,yAxisID:'yUpload'});
@@ -620,8 +647,9 @@ function drawTrend(evSortedAsc, numByDate){
          const d=isCmp?(cmpDates[i]||''):(curDates[i]||'');
          return `${lbl}${d?' ('+d+')':''}: ${(c.parsed.y||0).toLocaleString()}회`;
        }}}},
-   scales:{x:{ticks:{color:'#888780',font:{size:11},maxTicksLimit:8,callback:(v,i)=>xLabels[i]},grid:{display:false}},
+   scales:{x:{ticks:{color:'#888780',font:{size:11},maxTicksLimit:8,callback:(v,i)=>fmtMD(curDates[i])},grid:{display:false}},
      y:{suggestedMax:yMax,ticks:{color:'#888780',font:{size:11},callback:v=>(v/1000)+'k'},grid:{color:'rgba(136,135,128,0.10)'}},
+     yComp:{display:true,position:'right',suggestedMax:compYMax,ticks:{color:'#D9A441',font:{size:10},callback:v=>(v/1000)+'k'},grid:{display:false},title:{display:true,text:compLabel(),color:'#D9A441',font:{size:10}}},
      yUpload:{display:hasUpload,position:'right',ticks:{color:'#D0392B',font:{size:10},callback:v=>(v/1000)+'k'},grid:{display:false},title:{display:true,text:'실제 트래픽',color:'#D0392B',font:{size:10}}}}},
   plugins:[pinPlugin,cpPlugin]});
  chart._pins=pins; chart._changePoints=chartChangePoints; chart.update();
@@ -645,9 +673,20 @@ function render(){
     || (b.date||'').localeCompare(a.date||''));
   const vc=vd.dir==='-'?'#E24B4A':'#1D9E75';
   const arrow=vd.dir==='-'?'▼':'▲';
-  const pickLabel=vd.dir==='-'?'트래픽 하락 → negative 요인 우선':'트래픽 상승 → positive 요인 우선';
+  const dirWord=vd.dir==='-'?'하락':'상승';
+  const cv=compVerdict();
+  let marketLabel;
+  if(!cv){
+    marketLabel=`${compLabel()} 비교 데이터 없음`;
+  } else if(cv.dir==='neutral'){
+    marketLabel=`${compLabel()} 변화 미미 → Samsung.com 단독 ${dirWord}`;
+  } else if(cv.dir===vd.dir){
+    marketLabel=`${compLabel()}도 동반 ${dirWord} → 시장 전체 ${dirWord}`;
+  } else {
+    marketLabel=`${compLabel()}는 반대 방향 → Samsung.com 단독 ${dirWord}`;
+  }
   vbox.style.display='block'; vbox.style.background=vc+'14'; vbox.style.border='1px solid '+vc+'44';
-  vbox.innerHTML=`<span style="color:${vc};font-weight:600">Samsung ${arrow} ${vd.pct.toFixed(1)}%</span> · <span style="color:var(--muted)">${pickLabel}, 신뢰도순 정렬 · 비교 ${vd.baseFrom}~${vd.baseTo} → 현재 ${vd.curFrom}~${vd.curTo}</span>`;
+  vbox.innerHTML=`<span style="color:${vc};font-weight:600">Samsung ${arrow} ${vd.pct.toFixed(1)}%</span> · <span style="color:var(--muted)">${marketLabel}</span>`;
  } else if(vd){
   // Negligible change: sort by confidence (neutral last)
   r.sort((a,b)=> confRank(b)-confRank(a) || ((a.impact_direction==='neutral'?1:0)-(b.impact_direction==='neutral'?1:0)) || (b.date||'').localeCompare(a.date||''));
@@ -790,7 +829,7 @@ function render(){
    const src=e.source||'';
    const llm=e.llm||'';
    const bottomLine=(src||llm)?
-     `<div class="srcline">${llm?`<span class="llmtag">llm: ${llm}</span>`:''}${src?`<span>source: ${src}</span>`:''}</div>`:'';
+     `<div class="srcline">${llm?`<span class="llmtag">LLM: ${llm}</span>`:''}${src?`<span>source: ${src}</span>`:''}</div>`:'';
    return `<div class="evt ${cls}" id="evt-${i+1}"><div class="top"><span class="ttl">${badge}${e.title}</span><span class="meta">${e.date||''}</span></div>
      <div class="indent">${meta.join('')}</div>${imp?'<div class="indent">'+imp+'</div>':''}
      <div class="desc indent">${desc}</div>
