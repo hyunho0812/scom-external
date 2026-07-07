@@ -1,18 +1,1 @@
-{
- "gemini": {
-  "model": "gemini-2.5-flash",
-  "status": "ok",
-  "note": "Model responds and supports generateContent."
- },
- "groq": {
-  "model": "openai/gpt-oss-120b",
-  "status": "error",
-  "note": "HTTP 403."
- },
- "mistral": {
-  "model": "mistral-small-latest",
-  "status": "ok",
-  "note": "Model found in the account's available model list."
- },
- "last_checked": "2026-07-07 06:25 UTC"
-}
+{}
