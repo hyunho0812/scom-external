@@ -45,7 +45,6 @@ DATA = os.path.join(HERE, "..", "data", "events.json")
 NEWS_KEY = os.environ.get("NEWS_API_KEY", "")
 
 MARKETS = ["US","GB","DE","FR","ES","PT","BR","MX_C","AU","IN","TR","KR"]  # no GLOBAL; MX_C=Mexico (division MX is Apple)
-DIVISIONS = {"MX":"Apple","VD":"LG","DA":"Whirlpool"}
 
 
 def load_queries():
@@ -73,11 +72,12 @@ from llm_common import INTERESTS
 # Prefer data/kw_filters.json (refreshed daily by optimize.py); else use defaults below.
 _DEFAULT_KEEP = [
     "samsung","galaxy","smartphone","electronics","iphone","apple","foldable",
+    "xiaomi","vivo","oppo","tcl","hisense","bosch",
     "chatgpt","gemini","ai search","ad","advertis","gdpr","privacy","regulation",
     "oil","inflation","economy","tariff","holiday","sale","ecommerce","retail",
     "search","ranking","platform","tiktok","social","aging","consumer","tv","appliance",
 ]
-_DEFAULT_DROP = ["football","cricket","soccer","obituary","horoscope","celebrity gossip"]
+_DEFAULT_DROP = ["obituary","horoscope","celebrity gossip"]
 def _load_kw_filters():
     path = os.path.join(HERE, "..", "data", "kw_filters.json")
     try:

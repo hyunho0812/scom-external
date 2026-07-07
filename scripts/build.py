@@ -101,10 +101,9 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem;box-shadow:0 1px 2px rgba(20,40,160,0.04)}
 .card .lbl{font-size:12px;color:var(--muted);margin-bottom:6px}.card .val{font-size:24px;font-weight:600}
-.srcline{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:#9aa0a6}
-.srcline>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.srcline{display:flex;flex-direction:column;align-items:flex-end;gap:2px;margin-top:10px;font-size:11px;color:#9aa0a6}
+.srcline>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
 .llmtag{color:#b0b0aa;font-style:italic}
-.funnel{font-size:11px;color:var(--muted);margin-bottom:16px}
 .evt{position:relative;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--neu);border-radius:12px;padding:15px 17px;margin-bottom:12px;box-shadow:0 1px 2px rgba(20,40,160,0.04)}
 .evt.pos{border-left-color:var(--pos)}.evt.neg{border-left-color:var(--neg)}
 .evt .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:5px}
@@ -152,7 +151,9 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
   </div>
   <div class="ctrl" id="pickerWrap"></div>
   <div class="ctrl"><label>비교 기간</label><select id="cmpBasis"></select></div>
-  <div class="btnwrap" style="margin-left:auto"><label>.</label>
+ </div>
+ <div class="filterrow" style="justify-content:flex-end">
+  <div class="btnwrap"><label>.</label>
    <input type="file" id="trafficFile" accept=".csv" style="display:none">
    <button class="btn" id="uploadBtn" title="국가,날짜,트래픽 형식의 CSV. 브라우저에서만 처리되며 저장되지 않습니다.">Upload Traffic</button></div>
   <div class="btnwrap"><label>.</label>
@@ -195,7 +196,6 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
 <div id="topfactors" style="display:none;margin-bottom:16px"></div>
 
 <div class="cards" id="cards"></div>
-<div class="funnel">KPI 퍼널: 노출(Impression) → 클릭(Click) → 트래픽(Traffic) → 주문(Order) · 전환율(CVR) → 매출(Revenue) · 객단가(AOV)</div>
 <div id="list"></div>
 <div class="foot">이벤트는 samsung.com 관련성 기준으로 자동 수집·필터링됩니다.</div>
 </div><!-- /tab-factors -->
@@ -225,7 +225,7 @@ const WIKI=__WIKI__;
 const STATS=__STATS__;
 const REGIONS={"ALL":null,"북미":["US"],"유럽":["GB","DE","FR","ES","PT"],"중남미":["BR","MX_C"],"동남아":["AU"],"서남아":["IN"],"중동":["TR"],"한국":["KR"]};
 const COUNTRIES=[["ALL","전체"],["US","미국"],["GB","영국"],["DE","독일"],["FR","프랑스"],["ES","스페인"],["PT","포르투갈"],["BR","브라질"],["MX_C","멕시코"],["AU","호주"],["IN","인도"],["TR","튀르키예"],["KR","한국"]];
-const DIV2COMP={MX:"Apple",VD:"LG",DA:"Whirlpool"};
+const DIV2COMP={MX:["Apple","Xiaomi","vivo","OPPO"],VD:["LG","TCL","Hisense"],DA:["LG","Whirlpool","Bosch"]};
 const ALL_COUNTRIES=["US","GB","DE","FR","ES","PT","BR","MX_C","AU","IN","TR","KR"];
 const ALL_DIVS=["MX","VD","DA"];
 const C2KO={US:"미국",GB:"영국",DE:"독일",FR:"프랑스",ES:"스페인",PT:"포르투갈",BR:"브라질",MX_C:"멕시코",AU:"호주",IN:"인도",TR:"튀르키예",KR:"한국"};
@@ -244,6 +244,7 @@ function divLabel(divs){
  return arr.join(', ');
 }
 const DIRC={"-":"#E24B4A","+":"#1D9E75","neutral":"#9a9a96","unknown":"#9a9a96"};
+const CONFC={"high":"#1D9E75","med":"#EF9F27","low":"#9a9a96"};
 const DIRCLS={"-":"neg","+":"pos","neutral":"","unknown":""};
 const region=document.getElementById('region'),country=document.getElementById('country'),dv=document.getElementById('div'),sd=document.getElementById('sd'),ed=document.getElementById('ed'),csd=document.getElementById('csd'),ced=document.getElementById('ced');
 const ptype=document.getElementById('ptype'),cmpBasis=document.getElementById('cmpBasis'),pickerWrap=document.getElementById('pickerWrap');
@@ -456,8 +457,14 @@ function samSeries(){
  return up||wikiSeries("Samsung");
 }
 function trafficSourceLabel(){ return UPLOADED_TRAFFIC?'실제 트래픽(업로드)':'위키 조회수(대리지표)'; }
-function compNames(){return dv.value==='ALL'?["Apple","LG","Whirlpool"]:[DIV2COMP[dv.value]];}
-function compLabel(){return dv.value==='ALL'?'기업 합산':compNames()[0];}
+function compNames(){
+ if(dv.value==='ALL'){
+   const all=Object.values(DIV2COMP).flat();
+   return all.filter((v,i)=>all.indexOf(v)===i);  // dedupe (LG appears in VD & DA)
+ }
+ return DIV2COMP[dv.value]||[];
+}
+function compLabel(){const n=compNames();return n.length>1?'경쟁사 합산':(n[0]||'');}
 let chart;
 // Custom plugin drawing event pins (circle body + tail + glowing anchor + connector)
 const cpPlugin={
@@ -466,7 +473,7 @@ const cpPlugin={
   const cps=(c._changePoints)||[]; if(!cps.length) return;
   const ctx=c.ctx, x=c.scales.x, y=c.scales.y;
   cps.forEach(cp=>{
-   const px=x.getPixelForValue(cp.date); if(px==null||isNaN(px)) return;
+   const px=x.getPixelForValue(cp.xIdx); if(px==null||isNaN(px)) return;
    const py=y.getPixelForValue(cp.after);
    const color=cp.dir==='-'?'#E24B4A':'#1D9E75';
    ctx.save();
@@ -521,50 +528,74 @@ function scrollToCard(n){
 function drawTrend(evSortedAsc, numByDate){
  const sam=wikiSeries("Samsung");
  const upSeries=uploadedSeriesForFilter();  // real traffic for current country filter, or null
- // Display range: comparison-start .. current-end (if comparison set), else current only
- let fromDate=sd.value||'', toDate=ed.value||'';
- if(csd.value) fromDate=csd.value;          // start from comparison-period start if set
- if(ed.value)  toDate=ed.value;             // up to current-period end
- else if(ced.value) toDate=ced.value;
+ const hasCmp=!!(csd.value && ced.value);
+ // Instead of one long line spanning comparison-start..current-end (which could be
+ // many months/years apart), show CURRENT and COMPARISON periods as two lines aligned
+ // by relative day position (1일차, 2일차, ...) — this keeps the visible x-axis span
+ // as short as a single period, and makes the two periods directly overlay-comparable.
+ function datesInRange(from,to){
+  return sam.map(p=>p.date).filter(dt=>(!from||dt>=from)&&(!to||dt<=to));
+ }
+ const curDates=datesInRange(sd.value, ed.value);
+ const cmpDates=hasCmp?datesInRange(csd.value, ced.value):[];
+ const N=Math.max(curDates.length, cmpDates.length, 1);
+ const xLabels=Array.from({length:N},(_,i)=>i+1);
+ const valAt=(dates,ser,i)=>{ if(i>=dates.length) return null; const f=ser.find(p=>p.date===dates[i]); return f?f.views:null; };
+ const curData=xLabels.map((_,i)=>valAt(curDates,sam,i));
+ const cmpData=hasCmp?xLabels.map((_,i)=>valAt(cmpDates,sam,i)):[];
+ // Competitor total: current period only (kept as context; not duplicated for the
+ // comparison period, to avoid an overly busy chart).
+ const names=compNames();
+ const total=xLabels.map((_,i)=>{
+  if(i>=curDates.length) return 0;
+  return names.reduce((s,n)=>{const ser=wikiSeries(n);const f=ser.find(p=>p.date===curDates[i]);return s+(f?f.views:0);},0);
+ });
+ // Uploaded real traffic, aligned the same way as Samsung wiki above.
+ const upAt=(dates,i)=>{ if(!upSeries||i>=dates.length) return null; const f=upSeries.find(p=>p.date===dates[i]); return f?f.views:null; };
+ const upCurData=xLabels.map((_,i)=>upAt(curDates,i));
+ const upCmpData=hasCmp?xLabels.map((_,i)=>upAt(cmpDates,i)):[];
+ const hasUpload=upSeries&&(upCurData.some(v=>v!=null)||upCmpData.some(v=>v!=null));
  // Change-points within the CURRENT period (sd~ed), threshold 8% (on active source)
  const changePoints=detectChangePoints(sd.value, ed.value, 8);
- window._changePoints=changePoints;  // used by render() for cause cards
- let pts=sam.map(p=>p.date);
- if(fromDate)pts=pts.filter(dt=>dt>=fromDate);
- if(toDate)pts=pts.filter(dt=>dt<=toDate);
- const labels=pts;
- const samData=labels.map(dt=>{const f=sam.find(p=>p.date===dt);return f?f.views:null;});
- // Uploaded real traffic mapped onto the same labels (right axis, separate scale)
- const upMap={}; if(upSeries) upSeries.forEach(p=>upMap[p.date]=p.views);
- const upData=labels.map(dt=>upMap[dt]!=null?upMap[dt]:null);
- const hasUpload=upSeries&&upData.some(v=>v!=null);
- const names=compNames();
- const total=labels.map(dt=>names.reduce((s,n)=>{const ser=wikiSeries(n);const f=ser.find(p=>p.date===dt);return s+(f?f.views:0);},0));
- // Set y-max 25% above the data peak to leave room for pins
- const dataMax=Math.max(1,...samData.filter(v=>v!=null),...total);
+ window._changePoints=changePoints;  // real dates — used by render() for cause cards
+ const chartChangePoints=changePoints.map(cp=>{
+  let xIdx=null; for(let k=0;k<curDates.length;k++){ if(curDates[k]<=cp.date) xIdx=xLabels[k]; }
+  return Object.assign({},cp,{xIdx});
+ });
+ const dataMax=Math.max(1,...curData.filter(v=>v!=null),...cmpData.filter(v=>v!=null),...total);
  const yMax=Math.ceil(dataMax*1.25/1000)*1000;
+ // Pins: map each CURRENT-period event to its day-index on the 현재 기간 line
  const pins=[];
  evSortedAsc.forEach((e)=>{
-  if(labels.length && (e.date<labels[0] || e.date>labels[labels.length-1])) return; // skip events outside the visible range
-  let nearIdx=0; for(let k=0;k<labels.length;k++){ if(labels[k]<=e.date) nearIdx=k; }
-  const sv=samData[nearIdx], tv=total[nearIdx];
-  pins.push({n:(numByDate&&numByDate[e.date])||'',xLabel:labels[nearIdx],anchorY:Math.max(sv==null?0:sv, tv),color:DIRC[e.impact_direction]||'#999'});
+  if(!curDates.length || e.date<curDates[0] || e.date>curDates[curDates.length-1]) return;
+  let nearIdx=0; for(let k=0;k<curDates.length;k++){ if(curDates[k]<=e.date) nearIdx=k; }
+  const sv=curData[nearIdx], tv=total[nearIdx];
+  pins.push({n:(numByDate&&numByDate[e.date])||'',xLabel:xLabels[nearIdx],anchorY:Math.max(sv==null?0:sv, tv||0),color:DIRC[e.impact_direction]||'#999'});
  });
  document.getElementById('legend').innerHTML=
-  `<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#1428A0;display:inline-block"></span>Samsung 위키 (기준)</span>`+
-  `<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#888;display:inline-block"></span>${compLabel()}</span>`+
-  (hasUpload?`<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#D0392B;display:inline-block"></span>실제 트래픽(업로드)</span>`:'');
- document.getElementById('tsub').textContent=hasUpload?'(위키 조회수 + 업로드 실제 트래픽)':'(위키 일별 조회수)';
+  `<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#1428A0;display:inline-block"></span>Samsung 현재 기간</span>`+
+  (hasCmp?`<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;border-top:2px dashed #1428A0;display:inline-block"></span>Samsung 비교 기간</span>`:'')+
+  `<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#888;display:inline-block"></span>${compLabel()} (현재)</span>`+
+  (hasUpload?`<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#D0392B;display:inline-block"></span>실제 트래픽(현재)</span>`:'')+
+  (hasUpload&&hasCmp?`<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;border-top:2px dashed #D0392B;display:inline-block"></span>실제 트래픽(비교)</span>`:'');
+ document.getElementById('tsub').textContent=hasCmp?`(현재·비교 기간을 일자 기준 나란히 비교, 각 ${N}일)`:`(현재 기간, ${N}일)`;
  if(chart)chart.destroy();
  const dsets=[
-   {label:'Samsung 위키',data:samData,borderColor:'#1428A0',backgroundColor:'#1428A014',tension:0.35,pointRadius:0,borderWidth:2.5,spanGaps:true,yAxisID:'y'},
-   {label:compLabel(),data:total,borderColor:'#888780',backgroundColor:'#88878014',tension:0.35,pointRadius:0,borderWidth:2,yAxisID:'y'}];
+   {label:'Samsung 현재 기간',data:curData,borderColor:'#1428A0',backgroundColor:'#1428A014',tension:0.35,pointRadius:0,borderWidth:2.5,spanGaps:true,yAxisID:'y'}];
+ if(hasCmp){
+   dsets.push({label:'Samsung 비교 기간',data:cmpData,borderColor:'#1428A0',backgroundColor:'transparent',tension:0.35,pointRadius:0,borderWidth:2,borderDash:[5,4],spanGaps:true,yAxisID:'y'});
+ }
+ dsets.push({label:compLabel()+' (현재)',data:total,borderColor:'#888780',backgroundColor:'#88878014',tension:0.35,pointRadius:0,borderWidth:2,yAxisID:'y'});
  if(hasUpload){
-   dsets.push({label:'실제 트래픽(업로드)',data:upData,borderColor:'#D0392B',backgroundColor:'#D0392B12',
+   dsets.push({label:'실제 트래픽(현재)',data:upCurData,borderColor:'#D0392B',backgroundColor:'#D0392B12',
      tension:0.35,pointRadius:0,borderWidth:2.5,spanGaps:true,yAxisID:'yUpload'});
+   if(hasCmp){
+     dsets.push({label:'실제 트래픽(비교)',data:upCmpData,borderColor:'#D0392B',backgroundColor:'transparent',
+       tension:0.35,pointRadius:0,borderWidth:2,borderDash:[5,4],spanGaps:true,yAxisID:'yUpload'});
+   }
  }
  chart=new Chart(document.getElementById('trend'),{type:'line',
-  data:{labels,datasets:dsets},
+  data:{labels:xLabels,datasets:dsets},
   options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:30}},
    onClick:(evt)=>{
      const rect=evt.chart.canvas.getBoundingClientRect();
@@ -581,12 +612,19 @@ function drawTrend(evSortedAsc, numByDate){
      if(best && bestD<24){ scrollToCard(best.n); }
    },
    plugins:{legend:{display:false},
-     tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.parsed.y||0).toLocaleString()+'회'}}},
-   scales:{x:{ticks:{color:'#888780',font:{size:11},maxTicksLimit:8},grid:{display:false}},
+     tooltip:{callbacks:{
+       title:(items)=>(items[0]?items[0].label+'일차':''),
+       label:(c)=>{
+         const i=c.dataIndex; const lbl=c.dataset.label;
+         const isCmp=lbl.indexOf('비교')>=0;
+         const d=isCmp?(cmpDates[i]||''):(curDates[i]||'');
+         return `${lbl}${d?' ('+d+')':''}: ${(c.parsed.y||0).toLocaleString()}회`;
+       }}}},
+   scales:{x:{ticks:{color:'#888780',font:{size:11},maxTicksLimit:8,callback:(v,i)=>xLabels[i]},grid:{display:false}},
      y:{suggestedMax:yMax,ticks:{color:'#888780',font:{size:11},callback:v=>(v/1000)+'k'},grid:{color:'rgba(136,135,128,0.10)'}},
      yUpload:{display:hasUpload,position:'right',ticks:{color:'#D0392B',font:{size:10},callback:v=>(v/1000)+'k'},grid:{display:false},title:{display:true,text:'실제 트래픽',color:'#D0392B',font:{size:10}}}}},
   plugins:[pinPlugin,cpPlugin]});
- chart._pins=pins; chart._changePoints=changePoints; chart.update();
+ chart._pins=pins; chart._changePoints=chartChangePoints; chart.update();
 }
 
 
@@ -737,7 +775,8 @@ function render(){
  const shown=showAll?r:r.slice(0,LIMIT);
  const cardsHtml = r.length? shown.map((e,i)=>{
    const cls=DIRCLS[e.impact_direction]||'';const bc=DIRC[e.impact_direction]||'#9a9a96';
-   const meta=[e.confidence?`신뢰도: ${e.confidence}`:''].filter(x=>x);
+   const cc=CONFC[e.confidence]||'#9a9a96';
+   const meta=e.confidence?[`<span class="tag" style="background:${cc}22;color:${cc}">신뢰도: ${e.confidence}</span>`]:[];
    const imp=e.impact?`<div class="imp" style="color:${bc};background:${bc}14">${e.impact}</div>`:'';
    const badge=`<span class="numbadge" style="background:${bc}">${i+1}</span>`;
    // Strip source/filter tags and legacy markers from the body text
@@ -751,9 +790,9 @@ function render(){
    const src=e.source||'';
    const llm=e.llm||'';
    const bottomLine=(src||llm)?
-     `<div class="srcline"><span>${src?'source: '+src:''}</span><span class="llmtag">${llm?'요약: '+llm:''}</span></div>`:'';
+     `<div class="srcline">${llm?`<span class="llmtag">llm: ${llm}</span>`:''}${src?`<span>source: ${src}</span>`:''}</div>`:'';
    return `<div class="evt ${cls}" id="evt-${i+1}"><div class="top"><span class="ttl">${badge}${e.title}</span><span class="meta">${e.date||''}</span></div>
-     <div class="indent">${meta.map(t=>`<span class="tag">${t}</span>`).join('')}</div>${imp?'<div class="indent">'+imp+'</div>':''}
+     <div class="indent">${meta.join('')}</div>${imp?'<div class="indent">'+imp+'</div>':''}
      <div class="desc indent">${desc}</div>
      <div class="kline indent"><span class="klbl">영향 국가:</span><span class="metaval">${scopeLabelKo(e.scope)}</span></div>
      <div class="kline indent"><span class="klbl">영향 사업부:</span><span class="metaval">${divLabel(e.divisions)}</span></div>

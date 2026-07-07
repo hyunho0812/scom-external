@@ -43,6 +43,7 @@ KEYWORDS = [
     "region","country","available","deprecat","shutdown","sunset","partnership",
     "model","gpt","gemini","claude","copilot","perplexity","foldable","galaxy",
     "iphone","appliance","fridge","washer","tv","smartphone","tariff","regulation",
+    "xiaomi","vivo","oppo","tcl","hisense","bosch",
 ]
 # Drop an entry if it's clearly irrelevant noise.
 NEGATIVE = ["job","hiring","career","obituary","sponsorship of","charity run"]

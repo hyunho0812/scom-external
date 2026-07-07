@@ -14,6 +14,23 @@ things simple and free, we let collect_news.py read this raw pool too.
 
 Endpoint: https://api.gdeltproject.org/api/v2/doc/doc
 Docs: scattered, but the query form is simple. We request ArtList JSON.
+
+GDELT calls from GitHub Actions' shared runner IP sometimes get rate-limited
+(HTTP 429) more than our own request count alone would predict — other
+users' unrelated traffic on the same IP pool likely contributes. Rather than
+pre-emptively limiting how many queries we even attempt, we just try all of
+them and let failures skip gracefully (a failed query simply contributes 0
+articles; it doesn't block the rest or fail the run) — this keeps maximum
+potential coverage on the many runs where the shared IP isn't under pressure,
+since capping the attempt count would only ever lower the ceiling, not
+reliably improve the success rate of a rate limit driven by traffic we don't
+control.
+
+Retry backoff is intentionally short (10s, then 20s): observed runs show some
+queries still fail even after a full 60s of backoff (20s+40s), meaning a
+longer wait doesn't reliably clear the block — so a shorter wait costs little
+in success rate while cutting total workflow runtime roughly in half on runs
+with many failures.
 """
 import os, json, time, urllib.request, urllib.parse, urllib.error
 from datetime import datetime, timezone
@@ -21,7 +38,7 @@ from datetime import datetime, timezone
 HERE = os.path.dirname(__file__)
 RAW = os.path.join(HERE, "..", "data", "gdelt_pool.json")
 
-# Queries: shared with NewsAPI via queries.txt (edit one file, both update)
+# Queries: shared with NewsAPI via queries.txt (edit one file, both update).
 def load_queries():
     path = os.path.join(HERE, "..", "queries.txt")
     out = []
@@ -71,7 +88,7 @@ def fetch_one(q, retries=2):
             return out
         except urllib.error.HTTPError as e:
             if e.code == 429 and attempt < retries:
-                wait = 20 * (attempt + 1)  # 20s, then 40s
+                wait = 10 * (attempt + 1)  # 10s, then 20s
                 print(f"  GDELT 429 for '{q}' — backing off {wait}s "
                       f"(retry {attempt+1}/{retries})")
                 time.sleep(wait)
@@ -84,7 +101,7 @@ def fetch_one(q, retries=2):
             # blip) are usually transient too — retry them the same as 429 instead
             # of giving up on the first hit, which was silently dropping queries.
             if attempt < retries:
-                wait = 20 * (attempt + 1)
+                wait = 10 * (attempt + 1)
                 print(f"  GDELT network error for '{q}': {e} — retrying in {wait}s "
                       f"({attempt+1}/{retries})")
                 time.sleep(wait)

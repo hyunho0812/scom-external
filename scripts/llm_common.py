@@ -72,26 +72,28 @@ INTERESTS = load_interests()
 
 FILTER_SYSTEM = (
  "Judge if this news item could plausibly affect samsung.com web traffic or "
- "revenue (direct or indirect). Reject generic PR, sports, gossip, stock "
- "noise, unrelated same-name entities.\n"
+ "revenue (direct or indirect). Reject generic PR, gossip, stock noise, "
+ "unrelated same-name entities.\n"
  "RULES:\n"
- "1) Keep only a SPECIFIC dated event (launch, regulation, named report, "
- "supply-chain/market shift). Reject recurring seasonal generalities "
- "(Christmas shopping, summer demand, back-to-school, year-end slowdown) — "
- "not datable events, return relevant:false.\n"
+ "1) Keep SPECIFIC dated events (launch, regulation, named report, "
+ "supply-chain/market shift) AND general/gradual trend analysis backed by "
+ "real data or research (e.g. a market-research firm's periodic report on a "
+ "structural shift), even without one single anchor date. Recurring seasonal "
+ "topics (holiday shopping, back-to-school) are fine too if there's a real "
+ "data point or finding attached, not just a generic mention.\n"
  "2) 'date' = when the event/phenomenon ACTUALLY began/took effect (not the "
- "article's publish date). Use the effective/launch/impact-start date implied "
- "by the content.\n"
+ "article's publish date) if there is one. For general trend analysis with "
+ "no single event date, use the report's publish date instead.\n"
  "3) KEEP dated stats/surveys on how people discover/research/buy electronics "
  "(retail-channel share, brand-site vs marketplace behavior, social product "
- "discovery, AI-shopping adoption) IF they have a datable anchor (report date "
- "or a period like 'Q3'/'BFCM'). Reject vague always-true claims with no anchor.\n"
+ "discovery, AI-shopping adoption, market research reports).\n"
  "Respond with ONLY this JSON, no markdown:\n"
  '{"relevant":true|false,"date":"YYYY-MM-DD","category":"culture|marketing|'
  'platform|holiday|economy|social_issue|geopolitics|AI|company|regulation",'
  '"scope":[country codes from US,GB,DE,FR,ES,PT,BR,MX_C,AU,IN,TR,KR; full '
- 'list if worldwide],"divisions":[MX=Apple,VD=LG,DA=Whirlpool-relevant; '
- 'empty if none],"kpi":[from Impression,Click,Traffic,Order,CVR,Revenue,AOV],'
+ 'list if worldwide],"divisions":[MX=mobile/phones (Apple,Xiaomi,vivo,OPPO-relevant),'
+ 'VD=TV/display (LG,TCL,Hisense-relevant),DA=home appliances (LG,Whirlpool,'
+ 'Bosch-relevant); empty if none],"kpi":[from Impression,Click,Traffic,Order,CVR,Revenue,AOV],'
  '"title":"<=12 words","impact":"one line: what shifts -> which KPIs, how",'
  '"description":"2-3 plain sentences naming the KPIs, in SIMPLE everyday '
  'Korean words a non-expert would use (avoid stiff/formal or technical '
@@ -170,11 +172,20 @@ def gemini_filter(article):
         _gemini_stats["ok"] += 1
         return verdict
     except urllib.error.HTTPError as e:
+        body = ""
+        try:
+            body = e.read().decode("utf-8", "replace")[:200]
+        except Exception:
+            pass
         if e.code == 429:
             print("  Gemini quota hit (429) — falling back to Groq.")
             _gemini_off["flag"] = True
+        elif e.code in (401, 403):
+            print(f"  Gemini auth/permission error {e.code} — {body} "
+                  f"— disabling Gemini for the rest of this run.")
+            _gemini_off["flag"] = True
         else:
-            print("  Gemini error", e.code)
+            print(f"  Gemini error {e.code} — {body}")
         _gemini_stats["error"] += 1
         return None
     except Exception as e:
@@ -199,11 +210,20 @@ def groq_filter(article):
             _groq_stats["ok"] += 1
         return verdict
     except urllib.error.HTTPError as e:
+        body = ""
+        try:
+            body = e.read().decode("utf-8", "replace")[:200]
+        except Exception:
+            pass
         if e.code == 429:
             print("  Groq quota hit (429) — falling back to Mistral.")
             _groq_off["flag"] = True
+        elif e.code in (401, 403):
+            print(f"  Groq auth/permission error {e.code} — {body} "
+                  f"— disabling Groq for the rest of this run.")
+            _groq_off["flag"] = True
         else:
-            print("  Groq filter error", e.code)
+            print(f"  Groq filter error {e.code} — {body}")
         _groq_stats["error"] += 1
         return None
     except Exception as e:
@@ -229,11 +249,20 @@ def mistral_filter(article):
             _mistral_stats["ok"] += 1
         return verdict
     except urllib.error.HTTPError as e:
+        body = ""
+        try:
+            body = e.read().decode("utf-8", "replace")[:200]
+        except Exception:
+            pass
         if e.code == 429:
             print("  Mistral quota hit (429) — no LLM judge left this run.")
             _mistral_off["flag"] = True
+        elif e.code in (401, 403):
+            print(f"  Mistral auth/permission error {e.code} — {body} "
+                  f"— disabling Mistral for the rest of this run.")
+            _mistral_off["flag"] = True
         else:
-            print("  Mistral filter error", e.code)
+            print(f"  Mistral filter error {e.code} — {body}")
         _mistral_stats["error"] += 1
         return None
     except Exception as e:
