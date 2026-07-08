@@ -133,7 +133,8 @@ def call_openai_chat_json(url, api_key, model, prompt, max_tokens=600, temperatu
     }).encode()
     req = urllib.request.Request(
         url, data=body,
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"},
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}",
+                 "User-Agent": "scom-external/1.0 (+https://github.com/hyunho0812/scom-external)"},
         method="POST")
     with urllib.request.urlopen(req, timeout=timeout) as r:
         data = json.loads(r.read().decode())
@@ -160,7 +161,9 @@ def gemini_filter(article):
     }).encode()
     try:
         req = urllib.request.Request(url, data=body,
-              headers={"Content-Type": "application/json"}, method="POST")
+              headers={"Content-Type": "application/json",
+                       "User-Agent": "scom-external/1.0 (+https://github.com/hyunho0812/scom-external)"},
+              method="POST")
         with urllib.request.urlopen(req, timeout=60) as r:
             data = json.loads(r.read().decode())
         cand = (data.get("candidates") or [{}])[0]
