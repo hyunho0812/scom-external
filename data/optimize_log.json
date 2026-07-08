@@ -54,5 +54,33 @@
    "online retail ai adoption"
   ],
   "rationale": "기존 성능이 저조한 쿼리들을 제거하고, 최근 관련 기사에서 나타난 AI, 반도체 시장, 경쟁사(Apple) 전략, 지속 가능성 트렌드 및 유망 키워드를 반영하여 쿼리와 KW_KEEP을 업데이트했습니다."
+ },
+ {
+  "date": "2026-07-08",
+  "old_queries": [
+   "consumer electronics retail",
+   "social commerce",
+   "product discovery survey",
+   "retail channel report",
+   "brand website shopper behavior",
+   "galaxy device innovation",
+   "smartphone market share trend",
+   "apple intelligence strategy",
+   "semiconductor memory market trend",
+   "online retail ai adoption"
+  ],
+  "new_queries": [
+   "consumer electronics retail",
+   "social commerce",
+   "retail channel report",
+   "galaxy device innovation",
+   "apple intelligence strategy",
+   "semiconductor memory market trend",
+   "online retail ai adoption",
+   "samsung galaxy innovation",
+   "smartphone memory market trend",
+   "social commerce growth report"
+  ],
+  "rationale": "낮은 통과율 및 중복률 쿼리 교체, 최근 관련 기사에서 언급된 키워드 (중고폰, 숏폼 영상, 파운드리)를 중심으로 외부 요인 추적 쿼리를 보강하고, 삼성 직접 언급 쿼리를 1개로 조정하여 외부 환경에 집중했습니다."
  }
 ]

@@ -1,9 +1,9 @@
 {
- "checked": "2026-07-07 22:58 UTC",
+ "checked": "2026-07-08 22:38 UTC",
  "feeds": {
   "OpenAI news": {
    "status": "ok",
-   "detail": "1035 items"
+   "detail": "1033 items"
   },
   "Gemini (Google)": {
    "status": "ok",
@@ -14,6 +14,14 @@
    "detail": "20 items"
   },
   "Copilot (Microsoft)": {
+   "status": "ok",
+   "detail": "10 items"
+  },
+  "Google Search Status": {
+   "status": "ok",
+   "detail": "1 items"
+  },
+  "Google Search Central Blog": {
    "status": "ok",
    "detail": "10 items"
   },

@@ -94,5 +94,63 @@
     "kept": 0
    }
   }
+ },
+ {
+  "date": "2026-07-08",
+  "total_raw": 115,
+  "total_dup": 21,
+  "total_kept": 22,
+  "per_query": {
+   "consumer electronics retail": {
+    "raw": 18,
+    "dup": 0,
+    "kept": 4
+   },
+   "social commerce": {
+    "raw": 20,
+    "dup": 1,
+    "kept": 2
+   },
+   "retail channel report": {
+    "raw": 10,
+    "dup": 3,
+    "kept": 1
+   },
+   "galaxy device innovation": {
+    "raw": 7,
+    "dup": 0,
+    "kept": 6
+   },
+   "apple intelligence strategy": {
+    "raw": 15,
+    "dup": 0,
+    "kept": 3
+   },
+   "semiconductor memory market trend": {
+    "raw": 7,
+    "dup": 1,
+    "kept": 0
+   },
+   "online retail ai adoption": {
+    "raw": 10,
+    "dup": 2,
+    "kept": 0
+   },
+   "samsung galaxy innovation": {
+    "raw": 7,
+    "dup": 4,
+    "kept": 3
+   },
+   "smartphone memory market trend": {
+    "raw": 4,
+    "dup": 2,
+    "kept": 2
+   },
+   "social commerce growth report": {
+    "raw": 17,
+    "dup": 8,
+    "kept": 1
+   }
+  }
  }
 ]

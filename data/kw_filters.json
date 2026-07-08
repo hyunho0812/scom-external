@@ -72,7 +72,13 @@
   "indexing",
   "crawling",
   "serp",
-  "ai overview"
+  "ai overview",
+  "lg",
+  "mediatek",
+  "qualcomm",
+  "consumer behavior",
+  "product discovery",
+  "online shopping"
  ],
  "KW_DROP": [
   "football",
@@ -84,6 +90,7 @@
   "movie review",
   "music album",
   "sport event",
-  "election result"
+  "election result",
+  "political"
  ]
 }
