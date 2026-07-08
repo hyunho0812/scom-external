@@ -16,6 +16,16 @@ Gemini (Google) | https://blog.google/products/gemini/rss/
 Google AI blog | https://blog.google/technology/ai/rss/
 Copilot (Microsoft) | https://www.microsoft.com/en-us/microsoft-copilot/blog/feed/
 
+# ---------- Search platform: Google (2, fixed - the single most direct
+# external driver of samsung.com organic traffic: algorithm updates, ranking
+# incidents, and search-feature changes like AI Overviews) ----------
+# Both URLs browser-verified 2026-07-08 (session egress blocked direct fetch,
+# so the owner confirmed each loads as XML; other candidate URLs 404'd:
+# status.search.google.com/incidents.rss, developers.google.com/search/blog/rss.xml).
+# FeedBurner is Google-owned, so the blog feed still counts as first-party.
+Google Search Status | https://status.search.google.com/en/feed.atom
+Google Search Central Blog | https://feeds.feedburner.com/blogspot/amDG
+
 # ---------- Companies (1, fixed) ----------
 Apple newsroom | https://www.apple.com/newsroom/rss-feed.rss
 # The following competitors are tracked via Wikipedia pageviews (collect_wiki.py)

@@ -29,7 +29,7 @@ scripts/
   build.py             모든 data/*.json → index.html 재빌드 (대시보드 JS 전부 여기 있음)
 
 data/                 자동 생성/갱신되는 JSON들 (스키마는 각 스크립트 상단 docstring 참고)
-feeds.txt             1차 소스 RSS 목록 (15개: AI플랫폼4 + 회사1 + 트렌드10)
+feeds.txt             1차 소스 RSS 목록 (17개: AI플랫폼4 + 검색플랫폼(Google)2 + 회사1 + 트렌드10)
 queries.txt           뉴스 검색어 10개 (optimize.py가 매일 조정)
 interests.txt         우선순위 토픽 (LLM 프롬프트에 자동 반영)
 index.html            빌드 산출물 — 직접 수정 금지, 항상 build.py로 재생성
@@ -111,13 +111,20 @@ python3 -c "import yaml; yaml.safe_load(open('.github/workflows/daily-update.yml
 python3 scripts/build.py
 ```
 
-## 현재 데이터 상태
-- `data/events.json`: 57건 시드 (E101~E157), 전부 `llm: "Claude Sonnet 5"`로 표시(수기
-  큐레이션). 실제 파이프라인이 돌면 Gemini/Groq/Mistral 중 하나의 모델명이 채워짐.
-- `feeds.txt`: 15개 (AI플랫폼 4 고정 + 회사 1 고정 + 트렌드소스 10, 후자만 주기적 재검토
-  대상 — 재검토 시 `data/query_performance.json`의 kept 수를 참고)
-- `data/wiki_series.json`, `data/gdelt_pool.json` 등은 로컬에선 비어있거나 최소 상태 —
-  실제 값은 GitHub Actions에서 처음 돌 때 채워짐 (네트워크 제약 때문에 로컬에서 검증 불가)
+## 현재 데이터 상태 (2026-07-08 기준 실측)
+- `data/events.json`: 총 107건. 시드 57건(E101~E157, 전부 `llm: "Claude Sonnet 5"`로
+  표시된 수기 큐레이션)에 더해, GitHub Actions 파이프라인이 실제로 여러 번 돌면서 자동
+  수집된 50건(`FP...` 형식 event_id, `llm` 값은 `gemini-2.5-flash`/`mistral-small-latest`
+  등 실제 판단에 쓰인 모델명)이 이미 누적됨.
+- `feeds.txt`: 17개 (AI플랫폼 4 고정 + 검색플랫폼(Google) 2 고정 + 회사 1 고정 + 트렌드소스
+  10, 트렌드소스만 주기적 재검토 대상 — 재검토 시 `data/query_performance.json`의 kept 수를
+  참고). 검색플랫폼 2개(Search Status Dashboard Atom, Search Central Blog FeedBurner)는
+  2026-07-08 소유자가 브라우저로 직접 XML 로드를 확인해 검증함.
+- `data/wiki_series.json`(dict, 3개 시리즈), `data/gdelt_pool.json`(list, 33건),
+  `data/feed_state.json`(dict, 13개), `data/imf_series.json`(dict, 4개) 등은 더 이상
+  비어있지 않음 — GitHub Actions가 이미 여러 차례 돌면서 채워진 상태. 로컬 클론 직후에는
+  git에 커밋된 최신 스냅샷이 그대로 보이므로, "비어있다"고 가정하지 말고 실제 파일을
+  확인할 것.
 
 ## 하지 말아야 할 것
 - `index.html`을 직접 편집 — 항상 `build.py`가 생성
