@@ -152,5 +152,58 @@
     "kept": 1
    }
   }
+ },
+ {
+  "date": "2026-07-09",
+  "total_raw": 93,
+  "total_dup": 25,
+  "total_kept": 17,
+  "per_query": {
+   "consumer electronics retail": {
+    "raw": 20,
+    "dup": 6,
+    "kept": 4
+   },
+   "social commerce": {
+    "raw": 20,
+    "dup": 0,
+    "kept": 1
+   },
+   "galaxy device innovation": {
+    "raw": 13,
+    "dup": 0,
+    "kept": 11
+   },
+   "apple intelligence strategy": {
+    "raw": 7,
+    "dup": 1,
+    "kept": 1
+   },
+   "samsung galaxy innovation": {
+    "raw": 8,
+    "dup": 8,
+    "kept": 0
+   },
+   "social commerce growth report": {
+    "raw": 10,
+    "dup": 2,
+    "kept": 0
+   },
+   "samsung galaxy foldable innovation": {
+    "raw": 5,
+    "dup": 5,
+    "kept": 0
+   },
+   "apple competitive strategy": {
+    "raw": 9,
+    "dup": 3,
+    "kept": 0
+   },
+   "semiconductor memory pricing trend": {
+    "raw": 1,
+    "dup": 0,
+    "kept": 0
+   }
+  }
  }
 ]
