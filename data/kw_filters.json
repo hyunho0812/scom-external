@@ -84,7 +84,10 @@
   "wearable",
   "smartwatch",
   "tensor chip",
-  "broadcom"
+  "broadcom",
+  "neural processing unit",
+  "hvac",
+  "ai shopping"
  ],
  "KW_DROP": [
   "football",
