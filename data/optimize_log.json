@@ -138,5 +138,33 @@
    "smartphone memory market pricing"
   ],
   "rationale": "중복을 줄이고 외부 요인에 초점을 맞춰 관련성을 높이기 위해 실적이 저조한 쿼리를 구체적인 신규 쿼리로 교체하고 기존 쿼리를 개선했습니다."
+ },
+ {
+  "date": "2026-07-11",
+  "old_queries": [
+   "consumer electronics retail",
+   "social commerce",
+   "galaxy device innovation",
+   "apple intelligence strategy",
+   "samsung galaxy innovation",
+   "smartphone memory market trend",
+   "social commerce growth report",
+   "consumer electronics retail trends",
+   "social commerce platform shifts",
+   "smartphone memory market pricing"
+  ],
+  "new_queries": [
+   "consumer electronics retail",
+   "social commerce",
+   "galaxy device innovation",
+   "apple intelligence strategy",
+   "samsung galaxy innovation",
+   "smartphone memory market trend",
+   "smartphone memory market pricing",
+   "samsung galaxy foldable innovation",
+   "apple product strategy",
+   "ai search platform shifts"
+  ],
+  "rationale": "중복 제거 및 관련성 향상을 위해 실적이 저조한 쿼리를 구체적인 경쟁사/시장 트렌드/신흥 기술 쿼리로 교체하고, 최신 뉴스에 기반한 키워드를 추가했습니다."
  }
 ]
