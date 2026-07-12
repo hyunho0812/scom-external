@@ -166,5 +166,33 @@
    "ai search platform shifts"
   ],
   "rationale": "중복 제거 및 관련성 향상을 위해 실적이 저조한 쿼리를 구체적인 경쟁사/시장 트렌드/신흥 기술 쿼리로 교체하고, 최신 뉴스에 기반한 키워드를 추가했습니다."
+ },
+ {
+  "date": "2026-07-12",
+  "old_queries": [
+   "consumer electronics retail",
+   "social commerce",
+   "galaxy device innovation",
+   "apple intelligence strategy",
+   "samsung galaxy innovation",
+   "smartphone memory market trend",
+   "smartphone memory market pricing",
+   "samsung galaxy foldable innovation",
+   "apple product strategy",
+   "ai search platform shifts"
+  ],
+  "new_queries": [
+   "consumer electronics retail",
+   "social commerce",
+   "galaxy device innovation",
+   "apple intelligence strategy",
+   "samsung galaxy innovation",
+   "smartphone memory market trend",
+   "smartphone memory market pricing",
+   "galaxy s series production",
+   "apple iphone product strategy",
+   "smartphone memory market pricing trend"
+  ],
+  "rationale": "중복률이 높거나 성과가 낮은 쿼리를 제거하고, 관련성 높은 새 쿼리를 추가하여 삼성 관련 기사와 외부 시장 동향 수집 효율을 높였습니다."
  }
 ]

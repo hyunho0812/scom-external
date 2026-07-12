@@ -321,5 +321,63 @@
     "kept": 0
    }
   }
+ },
+ {
+  "date": "2026-07-12",
+  "total_raw": 54,
+  "total_dup": 16,
+  "total_kept": 6,
+  "per_query": {
+   "consumer electronics retail": {
+    "raw": 12,
+    "dup": 5,
+    "kept": 0
+   },
+   "social commerce": {
+    "raw": 9,
+    "dup": 0,
+    "kept": 1
+   },
+   "galaxy device innovation": {
+    "raw": 4,
+    "dup": 0,
+    "kept": 4
+   },
+   "apple intelligence strategy": {
+    "raw": 7,
+    "dup": 1,
+    "kept": 0
+   },
+   "samsung galaxy innovation": {
+    "raw": 4,
+    "dup": 3,
+    "kept": 1
+   },
+   "smartphone memory market trend": {
+    "raw": 2,
+    "dup": 0,
+    "kept": 0
+   },
+   "smartphone memory market pricing": {
+    "raw": 2,
+    "dup": 2,
+    "kept": 0
+   },
+   "galaxy s series production": {
+    "raw": 2,
+    "dup": 0,
+    "kept": 0
+   },
+   "apple iphone product strategy": {
+    "raw": 10,
+    "dup": 3,
+    "kept": 0
+   },
+   "smartphone memory market pricing trend": {
+    "raw": 2,
+    "dup": 2,
+    "kept": 0
+   }
+  }
  }
 ]
