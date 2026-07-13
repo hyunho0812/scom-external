@@ -194,5 +194,33 @@
    "smartphone memory market pricing trend"
   ],
   "rationale": "중복률이 높거나 성과가 낮은 쿼리를 제거하고, 관련성 높은 새 쿼리를 추가하여 삼성 관련 기사와 외부 시장 동향 수집 효율을 높였습니다."
+ },
+ {
+  "date": "2026-07-13",
+  "old_queries": [
+   "consumer electronics retail",
+   "social commerce",
+   "galaxy device innovation",
+   "apple intelligence strategy",
+   "samsung galaxy innovation",
+   "smartphone memory market trend",
+   "smartphone memory market pricing",
+   "galaxy s series production",
+   "apple iphone product strategy",
+   "smartphone memory market pricing trend"
+  ],
+  "new_queries": [
+   "consumer electronics retail",
+   "social commerce",
+   "galaxy device innovation",
+   "apple intelligence strategy",
+   "samsung galaxy innovation",
+   "smartphone memory market trend",
+   "smartphone memory market pricing",
+   "galaxy z fold flip innovation",
+   "apple iphone foldable strategy",
+   "ai assistant product integration"
+  ],
+  "rationale": "중복 및 낮은 관련성 쿼리를 제거하고, 폴더블, AI 어시스턴트, 웨어러블, 디스플레이 등 삼성 관련 최신 트렌드 및 외부 시장 요인에 집중하도록 쿼리를 개선하고 키워드를 추가했습니다."
  }
 ]
