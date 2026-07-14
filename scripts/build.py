@@ -677,11 +677,21 @@ const AXIS_KO={demand:'수요',share:'점유',supply:'공급'};
 const AXIS_COLOR={demand:'#185FA5',share:'#534AB7',supply:'#8a6d1a'};
 const SUPPLY_KW=['인덱싱','크롤링','indexing','crawling','다운타임','downtime','장애','outage','core web vitals','사이트 속도','robots.txt','sitemap'];
 const OWN_KW=['samsung','galaxy','삼성','갤럭시'];
+// Named-rival mentions — the signal that a platform/AI/marketing-category
+// event is actually a SHARE-axis event (redistributes visibility/traffic
+// between Samsung and a specific competitor) rather than a market-wide shift
+// that touches everyone's traffic equally (DEMAND-axis). E.g. "Google AI
+// Overviews now answer 60% of queries" cuts click-through for the whole web,
+// not just samsung.com vs named rivals -> demand. "Apple's AI feature launch
+// draws comparison-shopping traffic away from samsung.com" -> share.
+const COMPETITOR_KW=['apple','xiaomi','vivo','oppo','lg','tcl','hisense','whirlpool','bosch',
+  '아이폰','애플','샤오미','비보','오포','엘지','보쉬'];
 function axisOf(e){
  const t=((e.title||'')+' '+(e.impact||'')+' '+(e.description||'')).toLowerCase();
  if(SUPPLY_KW.some(k=>t.includes(k))) return 'supply';
  const c=e.category;
- if(c==='platform'||c==='AI'||c==='marketing') return 'share';
+ if(c==='platform'||c==='AI'||c==='marketing')
+  return COMPETITOR_KW.some(k=>t.includes(k)) ? 'share' : 'demand';
  // company: Samsung's own launches drive demand; competitor moves contest share
  if(c==='company') return OWN_KW.some(k=>t.includes(k))?'demand':'share';
  return 'demand'; // economy, holiday, culture, social_issue, geopolitics, regulation
@@ -908,7 +918,12 @@ function render(){
     marketLabel=`${compLabel()}는 반대 방향 → Samsung.com 단독 ${dirWord}`;
   }
   vbox.style.display='block'; vbox.style.background=vc+'14'; vbox.style.border='1px solid '+vc+'44';
-  vbox.innerHTML=`<span style="color:${vc};font-weight:600">Samsung ${arrow} ${vd.pct.toFixed(1)}%</span> · <span style="color:var(--muted)">${marketLabel}</span>`;
+  // Market number = competitor aggregate's own % change (cv.pct), separate
+  // from marketLabel's qualitative same-direction/opposite-direction read.
+  const cvArrow=cv?(cv.dir==='-'?'▼':(cv.dir==='+'?'▲':'―')):'';
+  const cvColor=cv?(cv.dir==='-'?'#E24B4A':(cv.dir==='+'?'#1D9E75':'#9a9a96')):'';
+  const marketNum=cv?` · <span style="color:${cvColor};font-weight:600">Market ${cvArrow} ${cv.pct.toFixed(1)}%</span>`:'';
+  vbox.innerHTML=`<span style="color:${vc};font-weight:600">Samsung ${arrow} ${vd.pct.toFixed(1)}%</span>${marketNum} · <span style="color:var(--muted)">${marketLabel}</span>`;
  } else if(vd){
   // Negligible change: sort by confidence (neutral last)
   r.sort((a,b)=> confRank(b)-confRank(a) || ((a.impact_direction==='neutral'?1:0)-(b.impact_direction==='neutral'?1:0)) || (b.date||'').localeCompare(a.date||''));
