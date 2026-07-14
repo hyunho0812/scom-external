@@ -18,10 +18,12 @@ scripts/
   collect_gdelt.py    Layer 1a — GDELT 무료 뉴스풀 (키 불필요, 10개 쿼리 전부 시도)
   collect_news.py     Layer 1  — NewsAPI+GDELT → 키워드 사전필터 → LLM 판단체인
   collect_feeds.py    Layer 2  — 1차 소스 RSS(feeds.txt) → 키워드 사전필터 → LLM 판단체인
-  llm_common.py       Gemini→Groq→Mistral 판단체인 (news/feeds 공유, FILTER_SYSTEM 프롬프트)
+  llm_common.py       Gemini→Groq→Mistral 판단체인 + 공유 설정(MARKETS/queries.txt·kw_*.txt
+                      파서/has_korean 등, 6개+ 스크립트가 여기서 import)
   collect_wiki.py     위키피디아 일별 조회수 (경쟁사 관심도 대리지표), 최초 730일 백필+이후 증분
   collect_imf.py      Layer 3 — IMF SDMX 월간 통계 (28일만 실행)
-  optimize.py         매일 Gemini가 queries.txt/kw_filters.json 자동 튜닝 (최대 브랜드쿼리 4개)
+  collect_crux.py     공급축 — CrUX 실사용자 CWV 주간 시계열 (CRUX_API_KEY 없으면 조용히 스킵)
+  optimize.py         매일 Gemini가 queries.txt/kw_news.txt/kw_feeds.txt 자동 튜닝
   check_model.py      Gemini/Groq/Mistral 3개 모델 상태 체크 (매일) → data/model_status.json
   check_feeds.py       feeds.txt의 15개 피드 파싱 상태 체크 (매일) → data/feed_health.json
   merge_past_events.py 수동 도구 — 이벤트 배치를 events.json에 병합(스키마 검증·정렬·중복제거)
@@ -29,9 +31,13 @@ scripts/
   build.py             모든 data/*.json → index.html 재빌드 (대시보드 JS 전부 여기 있음)
 
 data/                 자동 생성/갱신되는 JSON들 (스키마는 각 스크립트 상단 docstring 참고)
-feeds.txt             1차 소스 RSS 목록 (17개: AI플랫폼4 + 검색플랫폼(Google)2 + 회사1 + 트렌드10)
-queries.txt           뉴스 검색어 10개 (optimize.py가 매일 조정)
-interests.txt         우선순위 토픽 (LLM 프롬프트에 자동 반영)
+feeds.txt             1차 소스 RSS 목록 (18개: AI플랫폼4 + 검색플랫폼(Google)2 + 회사2 + 트렌드10)
+queries.txt           뉴스 검색어 10개, `category | query` 형식 (samsung/galaxy/ecommerce/
+                      smartphone/other 5개 카테고리, optimize.py가 매일 조정)
+kw_news.txt           뉴스 사전필터 KEEP/DROP (collect_news.py 전용, optimize.py가 매일 조정)
+kw_feeds.txt          피드 사전필터 KEEP/DROP (collect_feeds.py 전용, 한글 키워드 포함,
+                      optimize.py가 매일 조정) — news와 별도 파일인 이유는 아래 원칙 참고
+interests.txt         우선순위 토픽 (LLM 프롬프트 + 양쪽 사전필터 KEEP에 자동 반영)
 index.html            빌드 산출물 — 직접 수정 금지, 항상 build.py로 재생성
 ```
 
@@ -45,7 +51,20 @@ index.html            빌드 산출물 — 직접 수정 금지, 항상 build.py
 원칙 — 이 프로젝트 전체에서 일관되게 지킴).
 
 각 콜렉터는 이 판단 전에 **무료 키워드 사전필터**를 먼저 거친다 (LLM 호출 비용 절감).
-사전필터를 통과 못 하면 LLM 호출 자체를 안 함.
+사전필터를 통과 못 하면 LLM 호출 자체를 안 함. 사전필터는 news/feeds가 **별도 파일**
+(`kw_news.txt`/`kw_feeds.txt`)을 쓴다 — 같은 파일로 합치지 않는 이유는 언어가 다르기
+때문(뉴스는 NewsAPI/GDELT 둘 다 영어만 요청하지만, feeds는 Samsung KR 피드처럼 한글
+콘텐츠가 섞여 있어 한글 키워드가 필요함). `interests.txt`(우선순위 토픽)는 이 둘 모두의
+KEEP 리스트에 로드 시점에 자동으로 합쳐짐. 둘 다 `optimize.py`가 매일 자동 튜닝.
+
+두 콜렉터의 변수명도 동일(`KW_KEEP`/`KW_DROP`) — 예전엔 collect_feeds.py만 `KEYWORDS`/
+`NEGATIVE`라는 다른 이름을 썼는데 2026-07-08 통일함. `queries.txt`/`kw_*.txt` 파싱,
+`MARKETS`(12개국 리스트), `has_korean()` 같은 조각들은 전부 `llm_common.py`에만 정의돼
+있고 나머지 스크립트(collect_news/collect_gdelt/collect_feeds/optimize/check_model/
+merge_past_events/check_feed_translation)는 거기서 import — 예전엔 3~4곳에 따로
+복붙돼 있어서 한 곳만 고치고 나머지를 깜빡하는 사고(Samsung KR 피드 사전필터 버그가
+정확히 이런 식으로 생겼었음)가 났었음. **새 설정 상수나 파일 파서를 또 추가해야 하면
+`llm_common.py`에 먼저 넣고 각 스크립트는 import만 하는 걸 기본으로 할 것.**
 
 - Gemini: `GEMINI_API_KEY`, `GEMINI_MODEL` (기본 `gemini-2.5-flash`)
 - Groq: `GROQ_API_KEY`, `GROQ_MODEL` (기본 `openai/gpt-oss-120b` — llama-3.3-70b-versatile은
@@ -69,10 +88,14 @@ URL을 넣지 말고, feeds.txt에 "확인했지만 없음" 주석으로 남길 
 미치는 영향"이 아니라 **"samsung.com 트래픽 자체에 미치는 영향"**을 다뤄야 함. 쉬운
 일상 단어 사용(전문용어·딱딱한 문어체 금지).
 
-### 5. 키워드 필터에서 거르지 않는 것 (2026-07 변경)
+### 5. 키워드 필터에서 거르지 않는 것 (2026-07 변경, 2026-07-08 정정)
 스포츠와 계절성/일반론 콘텐츠를 더 이상 자동으로 거르지 않음 — IDC/TrendForce/Gartner/
 Pew Research 같은 정기 트렌드 리서치 소스를 새로 추가하면서, 이들의 콘텐츠(점진적 트렌드
 분석)가 옛 규칙("특정 날짜있는 사건만") 때문에 계속 걸러지는 문제를 발견해서 완화함.
+(정정: 이 정책이 FILTER_SYSTEM 프롬프트에는 반영됐지만 `KW_DROP`에는 football/cricket/
+soccer/sport event가 그대로 남아있던 실제 불일치가 2026-07-08 발견돼 `kw_news.txt`에서
+제거함 — 문서화된 정책과 실제 동작이 몇 주간 어긋나 있었다는 뜻이니, 이 항목을 다시 건드릴
+땐 코드도 같이 확인할 것.)
 
 ### 6. GitHub Actions 공유 IP의 레이트리밋
 GDELT가 종종 429를 낸다 — 우리 요청량보다는 같은 IP 대역을 쓰는 다른 워크플로들 때문일
@@ -112,14 +135,25 @@ python3 scripts/build.py
 ```
 
 ## 현재 데이터 상태 (2026-07-08 기준 실측)
-- `data/events.json`: 총 107건. 시드 57건(E101~E157, 전부 `llm: "Claude Sonnet 5"`로
-  표시된 수기 큐레이션)에 더해, GitHub Actions 파이프라인이 실제로 여러 번 돌면서 자동
-  수집된 50건(`FP...` 형식 event_id, `llm` 값은 `gemini-2.5-flash`/`mistral-small-latest`
-  등 실제 판단에 쓰인 모델명)이 이미 누적됨.
-- `feeds.txt`: 17개 (AI플랫폼 4 고정 + 검색플랫폼(Google) 2 고정 + 회사 1 고정 + 트렌드소스
+- `data/events.json`: 총 104건 (중복 3건 제거 후). 시드 57건(E101~E157, 전부
+  `llm: "Claude Sonnet 5"`로 표시된 수기 큐레이션)에 더해, GitHub Actions 파이프라인이
+  실제로 여러 번 돌면서 자동 수집된 47건(`FP...`/`A...` 형식 event_id, `llm` 값은
+  `gemini-2.5-flash`/`mistral-small-latest` 등 실제 판단에 쓰인 모델명)이 이미 누적됨.
+  Mistral이 `impact` 필드에서만 "IN KOREAN" 지시를 어긴 과거 15건은 재번역 완료, 재발
+  방지 가드(`llm_common.py`의 `_korean_fields_ok`)도 추가됨.
+- `feeds.txt`: 18개 (AI플랫폼 4 고정 + 검색플랫폼(Google) 2 고정 + 회사 2 고정 + 트렌드소스
   10, 트렌드소스만 주기적 재검토 대상 — 재검토 시 `data/query_performance.json`의 kept 수를
-  참고). 검색플랫폼 2개(Search Status Dashboard Atom, Search Central Blog FeedBurner)는
-  2026-07-08 소유자가 브라우저로 직접 XML 로드를 확인해 검증함.
+  참고). 검색플랫폼 2개(Search Status Dashboard Atom, Search Central Blog FeedBurner)와
+  Samsung newsroom KR은 2026-07-08 소유자가 브라우저로 직접 XML 로드를 확인해 검증함.
+  Samsung KR 피드는 한국어 콘텐츠라 `kw_feeds.txt` KEEP에 한글 키워드(삼성/갤럭시/
+  비스포크)가 들어있음 — 이 키워드들을 지우면 KR 피드 항목이 사전필터에서 전멸하니 주의.
+- 사전필터/검색어 구조가 2026-07-08 대대적으로 개편됨: `data/kw_filters.json`(뉴스 전용,
+  JSON) 삭제, `kw_news.txt`+`kw_feeds.txt`(콜렉터별 분리, txt) 신설. `queries.txt`는
+  `category | query` 형식으로 바뀌어 samsung/galaxy/ecommerce/smartphone/other 5개
+  카테고리를 명시적으로 태그함 — `optimize.py`는 이제 카테고리별 최대 1개 교체, 브랜드
+  카테고리(samsung/galaxy/ecommerce/smartphone)는 각자 카테고리명을 포함한 쿼리를 최소
+  1개 항상 유지하도록 강제함(자세한 내용은 `optimize.py`의 `apply_query_constraints()`
+  docstring 참고).
 - `data/wiki_series.json`(dict, 3개 시리즈), `data/gdelt_pool.json`(list, 33건),
   `data/feed_state.json`(dict, 13개), `data/imf_series.json`(dict, 4개) 등은 더 이상
   비어있지 않음 — GitHub Actions가 이미 여러 차례 돌면서 채워진 상태. 로컬 클론 직후에는

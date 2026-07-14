@@ -1,0 +1,132 @@
+# First-party feed pre-filter keywords (refreshed daily by optimize.py) —
+# cheap relevance gate before spending an LLM call. Checked against
+# lowercased title+summary. KEEP (below, until the DROP marker): item
+# passes if ANY of these appear (plus interests.txt topics, folded in
+# automatically at load time). Includes Korean keywords (삼성/갤럭시/비스포크)
+# for the Samsung newsroom KR feed — do not remove them, KR items have no
+# other way to pass this filter.
+# One keyword per line. '#' comments and blank lines ignored.
+
+samsung
+galaxy
+smartphone
+electronics
+iphone
+apple
+foldable
+chatgpt
+gemini
+ai search
+ad
+advertis
+gdpr
+privacy
+regulation
+inflation
+economy
+tariff
+holiday
+sale
+ecommerce
+retail
+search
+ranking
+platform
+tiktok
+social
+aging
+consumer
+tv
+appliance
+supply chain
+market share
+shipping
+logistics
+interest rate
+macroeconomic
+temu
+shein
+aliexpress
+black friday
+cyber monday
+prime day
+walmart
+paypal
+perplexity
+google ai
+android
+memory chip
+semiconductor
+refurbished
+used smartphone
+live commerce
+short-form video
+chatbot
+sustainability
+green consumption
+copilot
+apple intelligence
+tsmc
+trendforce
+mlcc
+ddr
+nand
+asic
+foundry
+inference chip
+core update
+algorithm
+indexing
+crawling
+serp
+ai overview
+삼성
+갤럭시
+비스포크
+launch
+release
+update
+rollout
+feature
+redesign
+ui
+interface
+policy
+ads
+advertising
+citation
+price
+pricing
+discount
+store
+checkout
+payment
+shopping
+subscription
+region
+country
+available
+deprecat
+shutdown
+sunset
+partnership
+model
+gpt
+claude
+fridge
+washer
+xiaomi
+vivo
+oppo
+tcl
+hisense
+bosch
+
+# ---DROP--- (everything below: reject if present, checked before KEEP)
+
+job
+hiring
+career
+obituary
+sponsorship of
+charity run

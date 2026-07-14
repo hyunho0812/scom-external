@@ -26,8 +26,16 @@ Copilot (Microsoft) | https://www.microsoft.com/en-us/microsoft-copilot/blog/fee
 Google Search Status | https://status.search.google.com/en/feed.atom
 Google Search Central Blog | https://feeds.feedburner.com/blogspot/amDG
 
-# ---------- Companies (1, fixed) ----------
+# ---------- Companies (2, fixed) ----------
 Apple newsroom | https://www.apple.com/newsroom/rss-feed.rss
+# Samsung's own newsroom: own product launches/announcements are the single
+# biggest demand-side driver of samsung.com traffic; first-party beats
+# catching them indirectly via news queries. KR chosen by the owner
+# (browser-verified 2026-07-08); a global English feed also exists at
+# news.samsung.com/global/feed if ever preferred. NOTE: KR items are in
+# Korean, so kw_filters.json KW_KEEP carries Korean keywords (삼성, 갤럭시,
+# 비스포크) — without them the pre-filter would drop most KR items.
+Samsung newsroom (KR) | https://news.samsung.com/kr/feed
 # The following competitors are tracked via Wikipedia pageviews (collect_wiki.py)
 # and news/RSS keyword matching, but do NOT have a verified official RSS feed
 # as of 2026-07 (checked directly, not guessed) - their newsrooms are modern

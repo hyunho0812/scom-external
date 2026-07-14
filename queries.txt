@@ -1,13 +1,18 @@
 # News search queries — shared by NewsAPI and GDELT (refreshed daily by optimize.py)
+# Format: category | query text
+# Categories: samsung, galaxy, ecommerce, smartphone, other (exactly these 5)
 # One per line. '#' comments and blank lines ignored. Max 10.
+# optimize.py replaces AT MOST 1 query per category per day (not 3 total), and
+# for samsung/galaxy/ecommerce/smartphone (not "other") always keeps at least
+# 1 query that literally contains the category's own name as a word.
 
-consumer electronics retail
-social commerce
-galaxy device innovation
-apple intelligence strategy
-samsung galaxy innovation
-smartphone memory market trend
-smartphone memory market pricing
-galaxy z fold flip innovation
-apple iphone foldable strategy
-ai assistant product integration
+samsung | samsung galaxy new product launch
+samsung | samsung electronics quarterly earnings
+galaxy | galaxy device innovation
+smartphone | smartphone market share trend
+ecommerce | ecommerce market trend
+ecommerce | ecommerce ai shopping adoption
+other | product discovery survey
+other | retail channel report
+other | apple intelligence strategy
+other | semiconductor memory market trend
