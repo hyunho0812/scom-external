@@ -100,7 +100,7 @@ jobs:
         run: |
           git config user.name  "github-actions"
           git config user.email "actions@github.com"
-          git add data/events.json data/feed_state.json data/model_status.json data/wiki_series.json data/gdelt_pool.json data/imf_series.json data/crux_series.json data/query_performance.json data/optimize_log.json data/feed_health.json queries.txt kw_news.txt kw_feeds.txt index.html
+          git add data/events.json data/feed_state.json data/model_status.json data/wiki_series.json data/gdelt_pool.json data/imf_series.json data/crux_series.json data/query_performance.json data/feed_performance.json data/optimize_log.json data/feed_health.json queries.txt kw_news.txt kw_feeds.txt index.html
           git commit -m "daily update $(date -u +%F)" || echo "no changes"
           git push
 
