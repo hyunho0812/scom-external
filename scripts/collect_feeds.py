@@ -188,6 +188,10 @@ def main():
             existing_ids.add(eid); added += 1; bump(label, "kept")
             print("  + kept:", events[-1]["title"])
         state[label] = list({it["link"] for it in items if it["link"]})[:300]
+    # New events are appended above with whatever date the LLM extracted
+    # (often in the past relative to today) — re-sort by date every write so
+    # the file-level invariant (CLAUDE.md's integrity checklist) never breaks.
+    events.sort(key=lambda e: e.get("date", ""))
     json.dump(events, open(DATA,"w",encoding="utf-8"), ensure_ascii=False, indent=1)
     json.dump(state,  open(STATE,"w",encoding="utf-8"), ensure_ascii=False, indent=1)
     statrec = {"date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),

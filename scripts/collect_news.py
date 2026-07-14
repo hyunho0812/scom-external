@@ -209,7 +209,11 @@ def main():
         ev = to_event(art, verdict, llm_used)
         events.append(ev); seen.add(key); added += 1; bump(q, "kept")
         print("  + kept:", ev["title"])
-    # Events accumulate permanently (no pruning)
+    # Events accumulate permanently (no pruning). New events are appended
+    # above with whatever date the LLM extracted (often in the past relative
+    # to today, e.g. a phenomenon-start date) — re-sort by date every write so
+    # the file-level invariant (CLAUDE.md's integrity checklist) never breaks.
+    events.sort(key=lambda e: e.get("date", ""))
     json.dump(events, open(DATA,"w",encoding="utf-8"), ensure_ascii=False, indent=1)
     # Save per-query performance (optimize.py uses it next day)
     total_raw = sum(p["raw"] for p in perf.values())
