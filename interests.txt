@@ -6,3 +6,16 @@
 zero click
 GDPR
 iphone
+
+# Added 2026-07-14: AI crawler bots' growing share of web traffic - a
+# market-wide (demand-axis) structural shift in what counts as "traffic" at
+# all, not something specific to samsung.com.
+AI crawler
+bot traffic
+
+# Added 2026-07-14: web vs app channel shift - if people increasingly use a
+# Samsung app instead of visiting samsung.com in a browser, that shows up as
+# a "web traffic" decline that isn't really a decline in interest.
+app
+mobile app
+web app
