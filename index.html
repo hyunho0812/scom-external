@@ -83,7 +83,7 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
 .foot{font-size:12px;color:#8a6d1a;margin-top:16px;padding:12px;background:#fff8e8;border:1px solid #f0e2b8;border-radius:10px}
 </style></head><body>
 <div class="brandbar"><h1>External Event Dashboard</h1>
-  <div class="sub">S.com 외부 요인 모니터링 대시보드 · 매일 자동 갱신 · 마지막 빌드 2026-07-14 05:44 UTC</div></div>
+  <div class="sub">S.com 외부 요인 모니터링 대시보드 · 매일 자동 갱신 · 마지막 빌드 2026-07-14 07:13 UTC</div></div>
 <div class="tabbar">
   <button class="tab active" data-tab="factors">외부 요인</button>
   <button class="tab" data-tab="stats">국가별 통계</button>
@@ -776,9 +776,25 @@ function renderAxisPanel(r,vd,numByDate){
     <div style="margin-top:3px"><span class="cp-tag">영향강도 ${Math.max(1,Math.min(5,+e.impact_strength||2))}/5</span><span class="cp-tag">신뢰도 ${e.confidence||'-'}</span></div>
   </div>`;
  };
- const evList=(axis)=>{
+ // frac (optional): this axis's attribution share (attr.fD/fSh/fSu), so an
+ // empty event list can distinguish "genuinely nothing going on" from "the
+ // wiki-based quantitative split says this axis matters, but no collected
+ // news article explains why" — those look identical without this check,
+ // and the gap is real: the %s come from an exact log-decomposition of the
+ // wiki data, while the event list only reflects whatever news/feed items
+ // happened to be collected and LLM-tagged that axis in this window. A large
+ // % with zero events is not a bug, just an unexplained (yet) data-backed shift.
+ const evList=(axis,frac)=>{
   const items=byAxis[axis].slice().sort((a,b)=>wOf(b)-wOf(a));
-  if(!items.length) return `<div style="font-size:12px;color:var(--muted);padding:6px 0">이 기간 ${AXIS_KO[axis]} 축 이벤트 없음</div>`;
+  if(!items.length){
+   if(attr && Math.abs(frac||0)>=0.1){
+    return `<div style="font-size:12px;color:#8a6d1a;background:#fff8e8;border:1px solid #f0e2b8;border-radius:8px;padding:8px 10px;margin-top:4px">`
+      +`⚠ 위키 데이터상으로는 이 축이 전체 변화의 ${Math.abs(frac*100).toFixed(0)}%를 차지하지만, `
+      +`이 기간 수집된 뉴스·피드 중 ${AXIS_KO[axis]} 축으로 분류된 이벤트가 없습니다 — `
+      +`구체적 원인 기사를 아직 못 찾았다는 뜻이지, 수치가 잘못됐다는 뜻은 아닙니다.</div>`;
+   }
+   return `<div style="font-size:12px;color:var(--muted);padding:6px 0">이 기간 ${AXIS_KO[axis]} 축 이벤트 없음</div>`;
+  }
   const top=items.slice(0,3), rest=items.slice(3);
   return top.map(evItem).join('')+
    `<div id="axis-full-${axis}" style="display:none">${rest.map(evItem).join('')}</div>`+
@@ -813,17 +829,17 @@ function renderAxisPanel(r,vd,numByDate){
     <div style="font-size:12px;font-weight:600;color:${AXIS_COLOR.demand}">수요 — 시장 전체 관심</div>
     <div style="font-size:21px;font-weight:600;color:${AXIS_COLOR.demand}">${bigOf(attr?attr.fD:0,fmtSigned(dPct,'%',1))}</div>
     <div style="font-size:11px;color:var(--muted)">관심량 ${fmtSigned(dPct,'%',1)} (삼성+경쟁사 합, 비교 기간 대비)</div>
-    ${spark('axis-spark-demand')}${evList('demand')}</div>`+
+    ${spark('axis-spark-demand')}${evList('demand',attr?attr.fD:0)}</div>`+
   `<div id="axis-card-share" style="border:1px solid var(--line);border-left:3px solid ${AXIS_COLOR.share};border-radius:10px;padding:12px 14px">
     <div style="font-size:12px;font-weight:600;color:${AXIS_COLOR.share}">점유 — 삼성이 가져가는 몫</div>
     <div style="font-size:21px;font-weight:600;color:${AXIS_COLOR.share}">${bigOf(attr?attr.fSh:0,fmtSigned(sPpt,'%p',2))}</div>
     <div style="font-size:11px;color:var(--muted)">몫 ${fmtSigned(sPpt,'%p',2)} (현재 ${sCur==null?'—':sCur.toFixed(1)+'%'} · 비교 ${sCmp==null?'—':sCmp.toFixed(1)+'%'})</div>
-    ${spark('axis-spark-share')}${evList('share')}</div>`+
+    ${spark('axis-spark-share')}${evList('share',attr?attr.fSh:0)}</div>`+
   `<div id="axis-card-supply" style="border:1px solid var(--line);border-left:3px solid ${AXIS_COLOR.supply};border-radius:10px;padding:12px 14px">
     <div style="font-size:12px;font-weight:600;color:${AXIS_COLOR.supply}">공급 — 사이트 성능·인덱싱 신호</div>
     ${supplyQuant}
     <div style="font-size:11px;color:var(--muted);margin-bottom:2px">공급측 이벤트 ${byAxis.supply.length}건 (Google Search Status 등)</div>
-    ${evList('supply')}</div>`;
+    ${evList('supply',attr?attr.fSu:0)}</div>`;
  // Sparklines for the two quantitative axes, current period only
  const mkSpark=(id,ser,unit)=>{
   const pts=ser.filter(p=>(!sd.value||p.date>=sd.value)&&(!ed.value||p.date<=ed.value));
