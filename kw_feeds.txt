@@ -121,6 +121,11 @@ oppo
 tcl
 hisense
 bosch
+ai chip
+processor
+component
+manufacturing
+supply
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

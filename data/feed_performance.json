@@ -1,1 +1,19 @@
-[]
+[
+ {
+  "date": "2026-07-14",
+  "total_raw": 20,
+  "total_kept": 2,
+  "per_feed": {
+   "OpenAI news": {
+    "raw": 10,
+    "kw_pass": 9,
+    "kept": 0
+   },
+   "Samsung newsroom (KR)": {
+    "raw": 10,
+    "kw_pass": 9,
+    "kept": 2
+   }
+  }
+ }
+]

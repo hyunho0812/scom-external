@@ -1,5 +1,5 @@
 {
- "checked": "2026-07-13 22:21 UTC",
+ "checked": "2026-07-14 02:00 UTC",
  "feeds": {
   "OpenAI news": {
    "status": "ok",
@@ -29,17 +29,13 @@
    "status": "ok",
    "detail": "20 items"
   },
+  "Samsung newsroom (KR)": {
+   "status": "ok",
+   "detail": "20 items"
+  },
   "IDC Press Releases": {
    "status": "ok",
    "detail": "10 items"
-  },
-  "Gartner Newsroom": {
-   "status": "error",
-   "detail": "HTTP 403"
-  },
-  "TrendForce Consumer Electronics": {
-   "status": "empty",
-   "detail": "fetched OK but 0 items — parses as XML-ish but empty, or not RSS/Atom at all"
   },
   "TrendForce Semiconductors": {
    "status": "ok",
@@ -48,10 +44,6 @@
   "Pew Research Internet & Tech": {
    "status": "ok",
    "detail": "100 items"
-  },
-  "Search Engine Land": {
-   "status": "error",
-   "detail": "HTTP 403"
   },
   "Search Engine Journal": {
    "status": "ok",

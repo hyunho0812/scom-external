@@ -77,6 +77,11 @@ indexing
 crawling
 serp
 ai overview
+price hike
+inventory
+shortage
+innovation
+new model
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
