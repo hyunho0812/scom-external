@@ -24,11 +24,13 @@ as a word — if a proposal would violate that, that category's change is
 reverted for the day. This keeps collection stable and avoids Gemini churning
 the whole set daily.
 
-Query-performance basis = NEWS pipeline only (Gemini-judged, tracked per
-query in data/query_performance.json). First-party feeds don't have a
-per-item performance log (they don't run per distinct "query"), so their
-keyword-list tuning is based on a sample of recently-kept feed event titles
-instead.
+Query-performance basis = NEWS pipeline (per-query stats in
+data/query_performance.json). Feed keyword-list tuning uses the analogous
+per-SOURCE stats in data/feed_performance.json (written by collect_feeds.py:
+raw/kw_pass/kept per feed label) plus a sample of recently-kept feed event
+titles — this distinguishes "wrong keywords" (low kw_pass_rate) from "source
+is on-topic but its content keeps getting judged out" (low keep_rate, e.g. a
+forecast-heavy trend source after the 2026-07-08 forecast-reject rule).
 
 Writes:
   - queries.txt            (10 'category | query' lines; shared by
@@ -50,6 +52,7 @@ QFILE = os.path.join(HERE, "..", "queries.txt")
 KW_NEWS_FILE = os.path.join(HERE, "..", "kw_news.txt")
 KW_FEEDS_FILE = os.path.join(HERE, "..", "kw_feeds.txt")
 STATFILE = os.path.join(HERE, "..", "data", "query_performance.json")
+FEED_STATFILE = os.path.join(HERE, "..", "data", "feed_performance.json")
 EVFILE = os.path.join(HERE, "..", "data", "events.json")
 LOGFILE = os.path.join(HERE, "..", "data", "optimize_log.json")
 
@@ -132,6 +135,29 @@ def recent_perf():
     for q, a in agg.items():
         a["pass_rate"] = round(a["kept"]/a["raw"], 3) if a["raw"] else 0.0
         a["dup_rate"]  = round(a["dup"]/a["raw"], 3) if a["raw"] else 0.0
+    return agg
+
+def recent_feed_perf():
+    """Aggregate per-feed-source performance over recent days (written by
+    collect_feeds.py) -> {label: {raw,kw_pass,kept,kw_pass_rate,keep_rate}}.
+    keep_rate = kept/kw_pass — a source that's on-topic (high kw_pass) but has
+    a low keep_rate is one whose content keeps getting judged out by the LLM
+    (e.g. a forecast-heavy trend source since the 2026-07-08 forecast-reject
+    rule), worth a human look even though it's not "broken" like check_feeds.py
+    would flag."""
+    try:
+        hist = json.load(open(FEED_STATFILE, encoding="utf-8"))
+        if isinstance(hist, dict): hist = [hist]
+    except Exception:
+        return {}
+    agg = {}
+    for rec in hist[-7:]:  # last 7 days
+        for label, p in (rec.get("per_feed") or {}).items():
+            a = agg.setdefault(label, {"raw": 0, "kw_pass": 0, "kept": 0})
+            a["raw"] += p.get("raw", 0); a["kw_pass"] += p.get("kw_pass", 0); a["kept"] += p.get("kept", 0)
+    for label, a in agg.items():
+        a["kw_pass_rate"] = round(a["kw_pass"]/a["raw"], 3) if a["raw"] else 0.0
+        a["keep_rate"] = round(a["kept"]/a["kw_pass"], 3) if a["kw_pass"] else 0.0
     return agg
 
 def recent_kept_titles(n=25, prefix=None):
@@ -263,6 +289,7 @@ def main():
     cur_tagged = load_queries_tagged()
     cur_q = [q for _, q in cur_tagged]
     perf = recent_perf()
+    feed_perf = recent_feed_perf()
     kept_news = recent_kept_titles(prefix="A")
     kept_feeds = recent_kept_titles(prefix="FP")
     cur_keep_news, cur_drop_news = load_kw_file(KW_NEWS_FILE)
@@ -274,6 +301,11 @@ def main():
         perf_lines.append(f'- "{q}": raw={p.get("raw",0)}, kept={p.get("kept",0)}, '
                           f'pass={p.get("pass_rate",0)}, dup={p.get("dup_rate",0)}')
     perf_txt = "\n".join(perf_lines) if perf_lines else "(no performance data yet)"
+    feed_perf_lines = [f'- "{label}": raw={p["raw"]}, kw_pass_rate={p["kw_pass_rate"]}, '
+                        f'keep_rate={p["keep_rate"]} (kept/kw_pass — low means content is '
+                        f'on-topic but often judged out, e.g. forecast-heavy)'
+                        for label, p in feed_perf.items()]
+    feed_perf_txt = "\n".join(feed_perf_lines) if feed_perf_lines else "(no feed performance data yet)"
     kept_news_txt = "\n".join(f"- {t}" for t in kept_news) if kept_news else "(no recently kept news articles)"
     kept_feeds_txt = "\n".join(f"- {t}" for t in kept_feeds) if kept_feeds else "(no recently kept feed items)"
     cur_q_txt = "\n".join(f"- [{cat}] {q}" for cat, q in cur_tagged)
@@ -285,6 +317,7 @@ def main():
         "pre-filters (news vs. first-party feeds — feeds include a Korean-language\n"
         "Samsung newsroom, so its keyword list must keep Korean terms).\n\n"
         f"[Current query performance (last 7 days)]\n{perf_txt}\n\n"
+        f"[Current feed source performance (last 7 days)]\n{feed_perf_txt}\n\n"
         f"[Sample of recently kept news article titles]\n{kept_news_txt}\n\n"
         f"[Sample of recently kept first-party feed item titles]\n{kept_feeds_txt}\n\n"
         f"[Current queries, with category]\n{cur_q_txt}\n\n"

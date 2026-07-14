@@ -33,6 +33,7 @@ from llm_common import llm_filter, diag_summary, INTERESTS, MARKETS, load_kw_fil
 DATA = os.path.join(HERE, "..", "data", "events.json")
 STATE = os.path.join(HERE, "..", "data", "feed_state.json")
 FEEDS_FILE = os.path.join(HERE, "..", "feeds.txt")
+PERF = os.path.join(HERE, "..", "data", "feed_performance.json")
 
 # Keep an entry if its text contains any of these (cheap relevance gate,
 # before spending an LLM call on it). Loaded from kw_feeds.txt (refreshed
@@ -122,6 +123,16 @@ def main():
     feeds = load_feeds()
     print(f"loaded {len(feeds)} feeds from feeds.txt")
     added = 0
+    # Per-source performance: raw (fresh items seen) -> kw_pass (survived the
+    # keyword pre-filter) -> kept (survived LLM judgement too). Lets a source
+    # be diagnosed precisely: low kw_pass = wrong keywords or off-topic
+    # source; kw_pass high but kept low = source is on-topic but its content
+    # (e.g. forecasts) keeps getting judged out — see optimize.py, which uses
+    # this file the same way it uses data/query_performance.json for news.
+    perf = {}
+    def bump(label, field):
+        perf.setdefault(label, {"raw": 0, "kw_pass": 0, "kept": 0})
+        perf[label][field] += 1
     for label, url in feeds.items():
         seen_links = set(state.get(label, []))
         try:
@@ -130,9 +141,11 @@ def main():
             print("  feed error", label, e); continue
         fresh = [it for it in items if it["link"] and it["link"] not in seen_links][:10]
         for it in fresh:
+            bump(label, "raw")
             text = it["title"] + " " + it["summary"]
             if not it["title"] or not relevant(text):
                 continue  # obvious noise, never reaches any LLM
+            bump(label, "kw_pass")
             eid = "FP" + hashlib.md5((label + it["title"]).encode()).hexdigest()[:8]
             if eid in existing_ids:
                 continue
@@ -172,11 +185,21 @@ def main():
                 "raw_desc": it.get("summary", ""),
                 "raw_url": it.get("link", ""),
             })
-            existing_ids.add(eid); added += 1
+            existing_ids.add(eid); added += 1; bump(label, "kept")
             print("  + kept:", events[-1]["title"])
         state[label] = list({it["link"] for it in items if it["link"]})[:300]
     json.dump(events, open(DATA,"w",encoding="utf-8"), ensure_ascii=False, indent=1)
     json.dump(state,  open(STATE,"w",encoding="utf-8"), ensure_ascii=False, indent=1)
+    statrec = {"date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+               "total_raw": sum(p["raw"] for p in perf.values()),
+               "total_kept": added, "per_feed": perf}
+    try:
+        hist = json.load(open(PERF, encoding="utf-8"))
+        if not isinstance(hist, list): hist = [hist]
+    except Exception:
+        hist = []
+    hist.append(statrec); hist = hist[-30:]  # keep last 30 days only
+    json.dump(hist, open(PERF, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print(f"first-party (free) done. added {added}, total {len(events)}")
     diag_summary("collect_feeds")
 

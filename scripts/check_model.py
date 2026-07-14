@@ -33,6 +33,11 @@ from llm_common import (GEMINI_KEY, GEMINI_MODEL, GROQ_KEY, GROQ_MODEL,
                          MISTRAL_KEY, MISTRAL_MODEL)
 
 OUT  = os.path.join(HERE, "..", "data", "model_status.json")
+# Same UA llm_common.py's real judgement calls send — Groq's Cloudflare front
+# blocks the default Python-urllib UA (see llm_common.py's call_openai_chat_json).
+# Without it here too, this health check reports Groq as down even on days
+# collection successfully used Groq as a fallback.
+UA = "scom-external/1.0 (+https://github.com/hyunho0812/scom-external)"
 
 
 def check_gemini():
@@ -42,7 +47,8 @@ def check_gemini():
     url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
            f"{GEMINI_MODEL}?key={GEMINI_KEY}")
     try:
-        with urllib.request.urlopen(urllib.request.Request(url), timeout=30) as r:
+        req = urllib.request.Request(url, headers={"User-Agent": UA})
+        with urllib.request.urlopen(req, timeout=30) as r:
             info = json.loads(r.read().decode())
         methods = info.get("supportedGenerationMethods", [])
         if "generateContent" in methods or not methods:
@@ -65,7 +71,7 @@ def check_groq():
                 "note": "No GROQ_API_KEY set — 2nd fallback unavailable."}
     url = f"https://api.groq.com/openai/v1/models/{GROQ_MODEL}"
     try:
-        req = urllib.request.Request(url, headers={"Authorization": f"Bearer {GROQ_KEY}"})
+        req = urllib.request.Request(url, headers={"Authorization": f"Bearer {GROQ_KEY}", "User-Agent": UA})
         with urllib.request.urlopen(req, timeout=30) as r:
             info = json.loads(r.read().decode())
         if info.get("active", True):
@@ -90,7 +96,7 @@ def check_mistral():
     # cheap call and won't meaningfully eat into that budget.
     url = "https://api.mistral.ai/v1/models"
     try:
-        req = urllib.request.Request(url, headers={"Authorization": f"Bearer {MISTRAL_KEY}"})
+        req = urllib.request.Request(url, headers={"Authorization": f"Bearer {MISTRAL_KEY}", "User-Agent": UA})
         with urllib.request.urlopen(req, timeout=30) as r:
             info = json.loads(r.read().decode())
         ids = [m.get("id") for m in info.get("data", [])]
