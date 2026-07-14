@@ -195,6 +195,9 @@ tv
 가상현실
 증강현실
 메타버스
+리뷰
+분석
+차세대
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

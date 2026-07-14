@@ -97,6 +97,9 @@ product launch
 earnings report
 patent
 acquisition
+review
+analysis
+next-gen
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

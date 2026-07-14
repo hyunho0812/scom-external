@@ -493,5 +493,43 @@
     "kept": 0
    }
   }
+ },
+ {
+  "date": "2026-07-14",
+  "total_raw": 47,
+  "total_dup": 6,
+  "total_kept": 4,
+  "per_query": {
+   "galaxy AI device innovation trends": {
+    "raw": 1,
+    "dup": 0,
+    "kept": 0
+   },
+   "global smartphone market share trends": {
+    "raw": 6,
+    "dup": 0,
+    "kept": 0
+   },
+   "ecommerce ai shopping adoption": {
+    "raw": 6,
+    "dup": 4,
+    "kept": 2
+   },
+   "retail channel report": {
+    "raw": 10,
+    "dup": 2,
+    "kept": 0
+   },
+   "apple intelligence strategy": {
+    "raw": 9,
+    "dup": 0,
+    "kept": 0
+   },
+   "semiconductor memory market trend": {
+    "raw": 15,
+    "dup": 0,
+    "kept": 2
+   }
+  }
  }
 ]

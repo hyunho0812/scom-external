@@ -278,5 +278,33 @@
    "semiconductor memory market trend"
   ],
   "rationale": "실적 낮은 쿼리는 구체성을 높여 재수집을 유도하고, KW_NEWS 및 KW_FEEDS에 주요 제품 및 시장 관련 키워드를 추가하여 관련성 및 포괄성을 개선했습니다."
+ },
+ {
+  "date": "2026-07-14",
+  "old_queries": [
+   "samsung new product launch event",
+   "samsung electronics quarterly earnings report",
+   "galaxy AI device innovation trends",
+   "global smartphone market share trends",
+   "ecommerce market trend analysis",
+   "ecommerce ai shopping adoption",
+   "consumer electronics product discovery insights",
+   "retail channel report",
+   "apple intelligence strategy",
+   "semiconductor memory market trend"
+  ],
+  "new_queries": [
+   "samsung new product launch event review",
+   "samsung electronics quarterly earnings report",
+   "galaxy AI device innovation trends",
+   "global smartphone market share trends",
+   "ecommerce ai shopping adoption",
+   "ecommerce ai shopping adoption",
+   "consumer electronics product discovery insights",
+   "retail channel report",
+   "apple intelligence strategy",
+   "semiconductor memory market trend"
+  ],
+  "rationale": "낮은 통과율 및 중복율 쿼리를 개선하고, 뉴스 및 피드 키워드에 'review', 'analysis', 'next-gen' 등 기사 내용을 포괄하는 용어를 추가하여 관련성 높은 외부 요인을 더 잘 포착하도록 업데이트했습니다. 한국어 키워드는 유지했습니다."
  }
 ]
