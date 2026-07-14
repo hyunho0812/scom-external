@@ -16,10 +16,19 @@ Env (set as GitHub Secrets):
   GEMINI_API_KEY, GEMINI_MODEL   — aistudio.google.com/apikey (free, no card)
   GROQ_API_KEY, GROQ_MODEL       — console.groq.com/keys (free, no card)
   MISTRAL_API_KEY, MISTRAL_MODEL — console.mistral.ai (free, no card)
+
+Also the single home for small pieces of config shared by 3+ scripts, so they
+don't drift out of sync the way the old per-collector keyword lists did:
+MARKETS, load_queries()/load_queries_tagged() (queries.txt), load_kw_file()
+(kw_news.txt/kw_feeds.txt), has_korean(), clip_sentence().
 """
 import os, json, time, urllib.request, urllib.parse, urllib.error
 
 HERE = os.path.dirname(__file__)
+
+# Countries the dashboard tracks (no GLOBAL scope value; MX_C=Mexico, since
+# the division code MX is reserved for the mobile/phones business unit).
+MARKETS = ["US", "GB", "DE", "FR", "ES", "PT", "BR", "MX_C", "AU", "IN", "TR", "KR"]
 
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
@@ -70,6 +79,53 @@ def load_interests():
 
 INTERESTS = load_interests()
 
+
+# --- queries.txt ('category | query text') — shared by collect_news.py,
+# collect_gdelt.py and optimize.py so all three read the exact same file the
+# exact same way. ---
+def load_queries_tagged(path=None):
+    """Returns [(category, query_text), ...] in file order."""
+    path = path or os.path.join(HERE, "..", "queries.txt")
+    out = []
+    try:
+        for line in open(path, encoding="utf-8"):
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            cat, q = [p.strip() for p in line.split("|", 1)] if "|" in line else ("other", line)
+            if q:
+                out.append((cat, q))
+    except Exception:
+        pass
+    return out
+
+def load_queries(path=None):
+    """Query text only (category tag stripped) — for collectors that just
+    fetch with these queries and don't need the category (optimize.py is the
+    only caller that needs load_queries_tagged() directly, for tuning)."""
+    out = [q for _, q in load_queries_tagged(path)]
+    return out or ["samsung", "samsung galaxy", "smartphone market", "ecommerce"]
+
+
+# --- kw_news.txt / kw_feeds.txt ('KEEP' lines, then a '# ---DROP---' marker
+# line, then 'DROP' lines) — shared by collect_news.py, collect_feeds.py and
+# optimize.py. ---
+def load_kw_file(path):
+    keep, drop, in_drop = [], [], False
+    try:
+        for line in open(path, encoding="utf-8"):
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith("#"):
+                if "---DROP---" in line:
+                    in_drop = True
+                continue
+            (drop if in_drop else keep).append(line.lower())
+    except Exception:
+        return [], []
+    return keep, drop
+
 FILTER_SYSTEM = (
  "Judge if this news item could plausibly affect samsung.com web traffic or "
  "revenue (direct or indirect). Reject generic PR, gossip, stock noise, "
@@ -118,8 +174,11 @@ FILTER_SYSTEM = (
 def _build_filter_prompt(article):
     interest_note = ("\n\nPRIORITY TOPICS (treat as especially relevant if related): "
                      + ", ".join(INTERESTS)) if INTERESTS else ""
+    # Most article summaries are already short (NewsAPI/RSS truncate their
+    # own way), but clip defensively — an occasional long one would otherwise
+    # bloat every judgement call's token cost for no benefit to the verdict.
     return (FILTER_SYSTEM + interest_note + "\n\nITEM:\nTITLE: " + article["title"] +
-            "\nSUMMARY: " + article["desc"] + "\nSOURCE: " + article["source"])
+            "\nSUMMARY: " + clip_sentence(article["desc"], 400) + "\nSOURCE: " + article["source"])
 
 
 def call_openai_chat_json(url, api_key, model, prompt, max_tokens=600, temperature=0, timeout=30):
@@ -278,6 +337,21 @@ def mistral_filter(article):
         return None
 
 
+def _korean_fields_ok(verdict):
+    """The prompt requires title/impact/description IN KOREAN. Mistral in
+    particular has been observed to comply for title/description but slip
+    English into 'impact' — silently storing that would violate the
+    no-English-text policy, so treat it the same as a failed judgement and
+    let the chain fall through to the next LLM."""
+    if not verdict.get("relevant", True):
+        return True  # nothing to check when the item was judged not relevant
+    for field in ("title", "impact", "description"):
+        val = verdict.get(field)
+        if val and not has_korean(val):
+            return False
+    return True
+
+
 def llm_filter(article):
     """Run the full judgement chain: Gemini -> Groq -> Mistral. Returns
     (verdict_dict, model_name) or (None, "") if all three are unavailable —
@@ -286,6 +360,10 @@ def llm_filter(article):
     for fn, model in ((gemini_filter, GEMINI_MODEL), (groq_filter, GROQ_MODEL),
                       (mistral_filter, MISTRAL_MODEL)):
         verdict = fn(article)
+        if verdict is not None and not _korean_fields_ok(verdict):
+            print(f"  {model} returned non-Korean title/impact/description — "
+                  f"treating as a failed judgement, trying next LLM.")
+            verdict = None
         if verdict is not None:
             return verdict, model
     return None, ""

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import re
 """
 Layer 1 — news collection with a FREE hybrid filter.
 
@@ -34,42 +33,22 @@ Env (set as GitHub Secrets):
                      since this only handles public news/RSS text.
   MISTRAL_MODEL    — optional; defaults to mistral-small-latest
 """
-import os, sys, json, time, hashlib, urllib.request, urllib.parse, urllib.error
+import os, re, sys, json, time, hashlib, urllib.request, urllib.parse, urllib.error
 from datetime import datetime, timedelta, timezone
 
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
-from llm_common import llm_filter, diag_summary
+from llm_common import llm_filter, diag_summary, INTERESTS, MARKETS, load_queries, load_kw_file
 
 DATA = os.path.join(HERE, "..", "data", "events.json")
 NEWS_KEY = os.environ.get("NEWS_API_KEY", "")
 
-MARKETS = ["US","GB","DE","FR","ES","PT","BR","MX_C","AU","IN","TR","KR"]  # no GLOBAL; MX_C=Mexico (division MX is Apple)
-
-
-def load_queries():
-    """Load shared search queries from queries.txt (used by both news + GDELT)."""
-    path = os.path.join(HERE, "..", "queries.txt")
-    out = []
-    try:
-        for line in open(path, encoding="utf-8"):
-            line = line.strip()
-            if line and not line.startswith("#"):
-                out.append(line)
-    except Exception:
-        pass
-    # Safe defaults if the file is missing or empty
-    return out or ["samsung", "samsung galaxy", "smartphone market", "ecommerce"]
-
 QUERIES = load_queries()
 
-# Interest keywords (interests.txt) are loaded once in llm_common.py (shared
-# with collect_feeds.py and folded into the judgement prompt there); reuse
-# the same list here to also seed the keyword pre-filter's KW_KEEP below.
-from llm_common import INTERESTS
-
 # --- keyword pre-filter (free) ---
-# Prefer data/kw_filters.json (refreshed daily by optimize.py); else use defaults below.
+# kw_news.txt is refreshed daily by optimize.py; collect_feeds.py has its own
+# SEPARATE kw_feeds.txt (feed items differ in language/style — e.g. the
+# Samsung newsroom KR feed needs Korean keywords news articles never do).
 _DEFAULT_KEEP = [
     "samsung","galaxy","smartphone","electronics","iphone","apple","foldable",
     "xiaomi","vivo","oppo","tcl","hisense","bosch",
@@ -78,18 +57,9 @@ _DEFAULT_KEEP = [
     "search","ranking","platform","tiktok","social","aging","consumer","tv","appliance",
 ]
 _DEFAULT_DROP = ["obituary","horoscope","celebrity gossip"]
-def _load_kw_filters():
-    path = os.path.join(HERE, "..", "data", "kw_filters.json")
-    try:
-        d = json.load(open(path, encoding="utf-8"))
-        keep = [k.lower() for k in d.get("KW_KEEP",[]) if k.strip()]
-        drop = [k.lower() for k in d.get("KW_DROP",[]) if k.strip()]
-        if keep and drop:
-            return keep, drop
-    except Exception:
-        pass
-    return list(_DEFAULT_KEEP), list(_DEFAULT_DROP)
-KW_KEEP, KW_DROP = _load_kw_filters()
+KW_KEEP, KW_DROP = load_kw_file(os.path.join(HERE, "..", "kw_news.txt"))
+if not (KW_KEEP and KW_DROP):
+    KW_KEEP, KW_DROP = list(_DEFAULT_KEEP), list(_DEFAULT_DROP)
 # Add interest keywords to the keep list (lowercased)
 for _kw in INTERESTS:
     if _kw.lower() not in KW_KEEP:

@@ -32,24 +32,14 @@ longer wait doesn't reliably clear the block — so a shorter wait costs little
 in success rate while cutting total workflow runtime roughly in half on runs
 with many failures.
 """
-import os, json, time, urllib.request, urllib.parse, urllib.error
+import os, sys, json, time, urllib.request, urllib.parse, urllib.error
 from datetime import datetime, timezone
 
 HERE = os.path.dirname(__file__)
-RAW = os.path.join(HERE, "..", "data", "gdelt_pool.json")
+sys.path.insert(0, HERE)
+from llm_common import load_queries  # queries.txt ('category | query'), shared with collect_news.py
 
-# Queries: shared with NewsAPI via queries.txt (edit one file, both update).
-def load_queries():
-    path = os.path.join(HERE, "..", "queries.txt")
-    out = []
-    try:
-        for line in open(path, encoding="utf-8"):
-            line = line.strip()
-            if line and not line.startswith("#"):
-                out.append(line)
-    except Exception:
-        pass
-    return out or ["samsung", "samsung galaxy", "smartphone market", "ecommerce"]
+RAW = os.path.join(HERE, "..", "data", "gdelt_pool.json")
 
 QUERIES = load_queries()
 MAX_PER_QUERY = 10   # 10 articles per query, same as NewsAPI

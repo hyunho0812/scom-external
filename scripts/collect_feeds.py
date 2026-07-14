@@ -22,21 +22,25 @@ Env (set as GitHub Secrets):
 
 Feeds are read from feeds.txt (edit that file to add/remove sources).
 """
-import os, sys, json, time, hashlib, urllib.request, urllib.parse, urllib.error, re
+import os, sys, json, hashlib, urllib.request, urllib.parse, urllib.error, re
 from datetime import datetime, timezone
 from xml.etree import ElementTree as ET
 
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
-from llm_common import llm_filter, diag_summary
+from llm_common import llm_filter, diag_summary, INTERESTS, MARKETS, load_kw_file
 
 DATA = os.path.join(HERE, "..", "data", "events.json")
 STATE = os.path.join(HERE, "..", "data", "feed_state.json")
 FEEDS_FILE = os.path.join(HERE, "..", "feeds.txt")
 
 # Keep an entry if its text contains any of these (cheap relevance gate,
-# before spending an LLM call on it).
-KEYWORDS = [
+# before spending an LLM call on it). Loaded from kw_feeds.txt (refreshed
+# daily by optimize.py; collect_news.py has its own SEPARATE kw_news.txt,
+# since feed items differ in language/style — e.g. the Samsung newsroom KR
+# feed needs Korean keywords news articles never do). Same variable names
+# (KW_KEEP/KW_DROP) as collect_news.py for consistency across both collectors.
+_DEFAULT_KEEP = [
     "launch","release","update","rollout","feature","redesign","ui","interface",
     "policy","privacy","ads","advertising","citation","search","ranking","price",
     "pricing","discount","store","checkout","payment","shopping","subscription",
@@ -45,10 +49,15 @@ KEYWORDS = [
     "iphone","appliance","fridge","washer","tv","smartphone","tariff","regulation",
     "xiaomi","vivo","oppo","tcl","hisense","bosch",
 ]
-# Drop an entry if it's clearly irrelevant noise.
-NEGATIVE = ["job","hiring","career","obituary","sponsorship of","charity run"]
-
-MARKETS = ["US","GB","DE","FR","ES","PT","BR","MX_C","AU","IN","TR","KR"]  # no GLOBAL; MX_C=Mexico (division MX is Apple)
+_DEFAULT_DROP = ["job","hiring","career","obituary","sponsorship of","charity run"]
+KW_KEEP, KW_DROP = load_kw_file(os.path.join(HERE, "..", "kw_feeds.txt"))
+if not (KW_KEEP and KW_DROP):
+    KW_KEEP, KW_DROP = list(_DEFAULT_KEEP), list(_DEFAULT_DROP)
+# Add interest keywords (interests.txt), same as collect_news.py does for its
+# own KEEP list — previously only news got this boost, feeds did not.
+for _kw in INTERESTS:
+    if _kw.lower() not in KW_KEEP:
+        KW_KEEP.append(_kw.lower())
 
 def http(url):
     req = urllib.request.Request(url, headers={
@@ -99,9 +108,9 @@ def load_feeds():
 
 def relevant(text):
     t = text.lower()
-    if any(n in t for n in NEGATIVE):
+    if any(n in t for n in KW_DROP):
         return False
-    return any(k in t for k in KEYWORDS)
+    return any(k in t for k in KW_KEEP)
 
 
 def main():

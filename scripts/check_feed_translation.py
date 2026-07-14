@@ -1,11 +1,11 @@
 # events.json에서 피드 이벤트 번역 실패 여부를 점검하는 진단 스크립트
-import json, sys
+import os, json, sys
+
+sys.path.insert(0, os.path.dirname(__file__))
+from llm_common import has_korean
 
 path = sys.argv[1] if len(sys.argv) > 1 else "data/events.json"
 ev = json.load(open(path, encoding="utf-8"))
-
-def has_korean(s):
-    return any('\uac00' <= c <= '\ud7a3' for c in (s or ""))
 
 feeds = [e for e in ev if e.get("event_id","").startswith("FP")]
 print(f"피드 이벤트(FP): {len(feeds)}건")

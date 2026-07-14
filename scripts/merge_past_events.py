@@ -15,9 +15,12 @@ values to the allowed sets, and drops malformed records.
 """
 import os, sys, json, glob, re
 
+sys.path.insert(0, os.path.dirname(__file__))
+from llm_common import MARKETS  # single source of truth for the 12 tracked countries
+
 ALLOWED_CAT = {"culture","marketing","platform","holiday","economy",
                "social_issue","geopolitics","AI","company","regulation"}
-ALLOWED_SCOPE = {"US","GB","DE","FR","ES","PT","BR","MX_C","AU","IN","TR","KR"}
+ALLOWED_SCOPE = set(MARKETS)
 ALLOWED_DIV = {"MX","VD","DA"}
 ALLOWED_KPI = {"Impression","Click","Traffic","Order","CVR","Revenue","AOV"}
 ALLOWED_DIR = {"+","-","neutral","unknown"}

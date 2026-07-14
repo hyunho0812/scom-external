@@ -24,18 +24,15 @@ badge per LLM; if any shows "retired", swap that provider's *_MODEL env var
 for a current model. Collection still runs meanwhile via the next LLM in the
 chain, or the keyword-only fallback if all three are down.
 """
-import os, json, urllib.request, urllib.error
+import os, sys, json, urllib.request, urllib.error
 from datetime import datetime, timezone
 
 HERE = os.path.dirname(__file__)
-OUT  = os.path.join(HERE, "..", "data", "model_status.json")
+sys.path.insert(0, HERE)
+from llm_common import (GEMINI_KEY, GEMINI_MODEL, GROQ_KEY, GROQ_MODEL,
+                         MISTRAL_KEY, MISTRAL_MODEL)
 
-GEMINI_KEY   = os.environ.get("GEMINI_API_KEY", "")
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
-GROQ_KEY     = os.environ.get("GROQ_API_KEY", "")
-GROQ_MODEL   = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
-MISTRAL_KEY   = os.environ.get("MISTRAL_API_KEY", "")
-MISTRAL_MODEL = os.environ.get("MISTRAL_MODEL", "mistral-small-latest")
+OUT  = os.path.join(HERE, "..", "data", "model_status.json")
 
 
 def check_gemini():
@@ -78,8 +75,8 @@ def check_groq():
     except urllib.error.HTTPError as e:
         if e.code == 404:
             return {"model": GROQ_MODEL, "status": "retired",
-                    "note": f"Model not found (HTTP 404) — likely deprecated. "
-                            f"Check console.groq.com/docs/deprecations and update GROQ_MODEL."}
+                    "note": "Model not found (HTTP 404) — likely deprecated. "
+                            "Check console.groq.com/docs/deprecations and update GROQ_MODEL."}
         return {"model": GROQ_MODEL, "status": "error", "note": f"HTTP {e.code}."}
     except Exception as e:
         return {"model": GROQ_MODEL, "status": "error", "note": f"Check failed: {e}"}

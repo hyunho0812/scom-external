@@ -35,6 +35,8 @@ def _mstat_of(name):
     return mstat.get(name, _MSTAT_DEFAULT) or _MSTAT_DEFAULT
 try: imf_series=json.load(open(os.path.join(HERE,"..","data","imf_series.json"),encoding="utf-8"))
 except Exception: imf_series={"countries":{},"indicators":{},"data":{}}
+try: crux=json.load(open(os.path.join(HERE,"..","data","crux_series.json"),encoding="utf-8"))
+except Exception: crux={"metrics":{}}
 # The country-statistics tab uses IMF monthly data only (World Bank removed)
 stats_series=imf_series
 
@@ -192,6 +194,13 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
 </div>
 
 <div id="verdict" style="display:none;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:14px"></div>
+
+<div class="panel" id="axisPanel" style="display:none">
+  <div class="phead"><div class="ptitle">3축 진단 — 수요 · 점유 · 공급 <span style="font-size:11px;color:#999;font-weight:400">(위키 관심도 기준 추정)</span></div></div>
+  <div id="axisSummary" style="font-size:13px;padding:11px 14px;border-radius:10px;background:var(--bg);margin-bottom:12px"></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px" id="axisCards"></div>
+  <div class="note">수요 = 시장 전체 관심량(삼성+경쟁사 위키 조회수 합) · 점유 = 그중 삼성이 가져가는 몫(%) · 공급 = 실사용자 사이트 성능(CrUX CWV) + 인덱싱·크롤링·장애 이벤트 · 기여도(%)는 "삼성 관심량 = 시장 전체 × 점유율" 항등식의 로그 분해로 계산 — 수요·점유 합이 전체 변화를 정확히 설명하며, 공급은 CrUX 성능 회귀가 감지될 때만 휴리스틱으로 배분 · 카드의 요인 목록에서 "펼치기"로 축별 전체 이벤트를 딥다이브할 수 있습니다 · 대리지표 기반이며 인과 입증이 아닙니다</div>
+</div>
 <div id="analysis" style="display:none;margin-bottom:16px">
   <div id="ana-period"></div>
 </div>
@@ -225,6 +234,7 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
 const EV=__DATA__;
 const WIKI=__WIKI__;
 const STATS=__STATS__;
+const CRUX=__CRUX__;
 const REGIONS={"ALL":null,"북미":["US"],"유럽":["GB","DE","FR","ES","PT"],"중남미":["BR","MX_C"],"동남아":["AU"],"서남아":["IN"],"중동":["TR"],"한국":["KR"]};
 const COUNTRIES=[["ALL","전체"],["US","미국"],["GB","영국"],["DE","독일"],["FR","프랑스"],["ES","스페인"],["PT","포르투갈"],["BR","브라질"],["MX_C","멕시코"],["AU","호주"],["IN","인도"],["TR","튀르키예"],["KR","한국"]];
 const DIV2COMP={MX:["Apple","Xiaomi","vivo","OPPO"],VD:["LG","TCL","Hisense"],DA:["LG","Whirlpool","Bosch"]};
@@ -657,6 +667,218 @@ function drawTrend(evSortedAsc, numByDate){
 
 
 
+// ===== 3-axis diagnosis (demand / share / supply) =====
+// Decomposition frame: organic-traffic change = demand shift (how much the
+// whole topic space is searched) x share shift (samsung.com's slice of it)
+// x supply shift (indexing/site issues). Each event gets ONE primary axis so
+// a drop can be triaged: demand -> market-wide causes, share -> competitor/
+// search-result causes, supply -> crawl/site causes.
+const AXIS_KO={demand:'수요',share:'점유',supply:'공급'};
+const AXIS_COLOR={demand:'#185FA5',share:'#534AB7',supply:'#8a6d1a'};
+const SUPPLY_KW=['인덱싱','크롤링','indexing','crawling','다운타임','downtime','장애','outage','core web vitals','사이트 속도','robots.txt','sitemap'];
+const OWN_KW=['samsung','galaxy','삼성','갤럭시'];
+function axisOf(e){
+ const t=((e.title||'')+' '+(e.impact||'')+' '+(e.description||'')).toLowerCase();
+ if(SUPPLY_KW.some(k=>t.includes(k))) return 'supply';
+ const c=e.category;
+ if(c==='platform'||c==='AI'||c==='marketing') return 'share';
+ // company: Samsung's own launches drive demand; competitor moves contest share
+ if(c==='company') return OWN_KW.some(k=>t.includes(k))?'demand':'share';
+ return 'demand'; // economy, holiday, culture, social_issue, geopolitics, regulation
+}
+function _wikiMaps(names){
+ return names.map(n=>{const m={};wikiSeries(n).forEach(q=>m[q.date]=q.views);return m;});
+}
+// Whole-market attention: Samsung + selected-division competitors, summed per day
+function marketTotalSeries(){
+ const maps=_wikiMaps(compNames());
+ return wikiSeries('Samsung').map(p=>({date:p.date,views:maps.reduce((s,m)=>s+(m[p.date]||0),p.views)}));
+}
+// Samsung's share of that attention, as a % per day
+function shareSeries(){
+ const maps=_wikiMaps(compNames());
+ return wikiSeries('Samsung').map(p=>{
+  const tot=maps.reduce((s,m)=>s+(m[p.date]||0),p.views);
+  return {date:p.date,views:tot?p.views/tot*100:null};
+ }).filter(p=>p.views!=null);
+}
+function avgInRange(ser,from,to){
+ const vals=ser.filter(p=>(!from||p.date>=from)&&(!to||p.date<=to)).map(p=>p.views);
+ return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
+}
+let axisCharts=[];
+// Expand/collapse an axis card's full event list and bring the card into view
+function toggleAxisList(axis){
+ const el=document.getElementById('axis-full-'+axis);
+ if(el) el.style.display = el.style.display==='none' ? 'block' : 'none';
+ const card=document.getElementById('axis-card-'+axis);
+ if(card) card.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function renderAxisPanel(r,vd,numByDate){
+ const panel=document.getElementById('axisPanel');
+ if(!(csd.value&&ced.value&&sd.value&&ed.value)){panel.style.display='none';return;}
+ axisCharts.forEach(c=>c.destroy()); axisCharts=[];
+ const mkt=marketTotalSeries(), shr=shareSeries();
+ const dCur=avgInRange(mkt,sd.value,ed.value), dCmp=avgInRange(mkt,csd.value,ced.value);
+ const sCur=avgInRange(shr,sd.value,ed.value), sCmp=avgInRange(shr,csd.value,ced.value);
+ const dPct=(dCur!=null&&dCmp)?(dCur-dCmp)/dCmp*100:null;
+ const sPpt=(sCur!=null&&sCmp!=null)?(sCur-sCmp):null;
+ const inCur=e=>(!sd.value||(e.date||'')>=sd.value)&&(!ed.value||(e.date||'')<=ed.value);
+ const byAxis={demand:[],share:[],supply:[]};
+ r.filter(inCur).forEach(e=>byAxis[axisOf(e)].push(e));
+ const lcpSer=((CRUX.metrics||{}).lcp_ms)||[];
+ const inpSer=((CRUX.metrics||{}).inp_ms)||[];
+ const clsSer=((CRUX.metrics||{}).cls)||[];
+
+ // ---- Attribution: split the total change into axis contribution shares ----
+ // Identity: Samsung attention = market total x Samsung's share, so in log
+ // space log(S ratio) = log(M ratio) + log(share ratio) EXACTLY. Therefore
+ // demand frac = gM/gS and share frac = 1 - demand frac — an accounting
+ // identity, not an estimate. Supply sits OUTSIDE the identity (the wiki
+ // proxy can't see site health), so when CrUX shows a period-over-period
+ // LCP regression beyond 10%, a heuristic slice (1%p of weight per 1% of
+ // regression beyond 10%, capped at 25%) is carved out on down-moves and
+ // demand/share are scaled down proportionally.
+ let attr=null;
+ if(vd && Math.abs(vd.pct)>=1 && dCur!=null && dCmp && sCur!=null && sCmp){
+  const gS=Math.log(1+vd.pct/100), gM=Math.log(dCur/dCmp);
+  if(Math.abs(gS)>1e-6){
+   let fD=gM/gS, fSh=1-fD, fSu=0, lcpDelta=null;
+   const lcpAsViews=lcpSer.map(p=>({date:p.date,views:p.p75}));
+   const lCur=avgInRange(lcpAsViews,sd.value,ed.value), lCmp=avgInRange(lcpAsViews,csd.value,ced.value);
+   if(lCur!=null&&lCmp){
+    lcpDelta=(lCur-lCmp)/lCmp*100;
+    if(lcpDelta>10 && vd.dir==='-'){ fSu=Math.min(0.25,(lcpDelta-10)/100); fD*=(1-fSu); fSh*=(1-fSu); }
+   }
+   attr={fD,fSh,fSu,lcpDelta};
+  }
+ }
+
+ // Qualitative reading (kept as the headline sentence above the bar)
+ const D_SIG=2.0, S_SIG=0.5; // thresholds: % for demand, %p for share
+ let summary;
+ if(!vd||vd.dir==='neutral'){
+  summary='Samsung 관심량 변화가 미미해 축별 원인 진단은 참고용입니다.';
+ } else {
+  const word=vd.dir==='-'?'하락':'상승';
+  const dHit=dPct!=null&&(vd.dir==='-'?dPct<=-D_SIG:dPct>=D_SIG);
+  const sHit=sPpt!=null&&(vd.dir==='-'?sPpt<=-S_SIG:sPpt>=S_SIG);
+  if(dHit&&sHit) summary=`<strong>수요·점유 동시 ${word}</strong> — 시장 전체 관심과 삼성 몫이 함께 움직였습니다.`;
+  else if(dHit) summary=`<strong>수요 축 우세</strong> — 시장 전체 관심이 ${word}했고 삼성 몫은 크게 변하지 않았습니다.`;
+  else if(sHit) summary=`<strong>점유 축 우세</strong> — 시장 전체 관심은 비슷한데 삼성이 가져가는 몫이 ${word}했습니다.`;
+  else summary=`수요·점유 모두 뚜렷한 변화가 없습니다 — 공급 축 신호와 대리지표의 한계를 함께 확인하세요.`;
+  if(byAxis.supply.length) summary+=` <span style="color:#8a6d1a">공급측 신호 ${byAxis.supply.length}건 감지.</span>`;
+ }
+ const fmtSigned=(v,unit,dec)=>v==null?'—':`${v>=0?'+':''}${v.toFixed(dec)}${unit}`;
+ // Contribution bar: one clickable segment per axis, width = |frac| share
+ let barHtml='';
+ if(attr){
+  const segs=[['demand',attr.fD],['share',attr.fSh],['supply',attr.fSu]].filter(s=>Math.abs(s[1])>0.005);
+  const totW=segs.reduce((a,s)=>a+Math.abs(s[1]),0)||1;
+  const anyOff=segs.some(s=>s[1]<0);
+  barHtml=`<div style="display:flex;align-items:baseline;gap:10px;margin-top:10px">
+    <span style="font-size:20px;font-weight:600;color:${vd.pct<0?'var(--neg)':'var(--pos)'}">${fmtSigned(vd.pct,'%',1)}</span>
+    <span style="font-size:12px;color:var(--muted)">전체 변화의 축별 기여</span></div>
+   <div style="display:flex;height:30px;border-radius:9px;overflow:hidden;margin-top:6px">`+
+   segs.map(([ax,f])=>{
+    const w=Math.abs(f)/totW*100, off=f<0;
+    return `<div onclick="toggleAxisList('${ax}')" title="${AXIS_KO[ax]} 축 요인 펼쳐보기" style="width:${w.toFixed(1)}%;background:${AXIS_COLOR[ax]}${off?'55':''};display:flex;align-items:center;justify-content:center;gap:4px;font-size:11px;color:#fff;font-weight:600;cursor:pointer;overflow:hidden;white-space:nowrap">${AXIS_KO[ax]} ${(f*100).toFixed(0)}%${off?' 상쇄':''}</div>`;
+   }).join('')+`</div>
+   <div style="font-size:11px;color:#9aa0a6;margin-top:5px">수요·점유 배분은 로그 분해 항등식(삼성 관심량=시장 전체×점유율)으로 계산한 정확한 회계 분해${attr.fSu>0?' · 공급은 CrUX 성능 회귀 크기 기반 휴리스틱':''}${anyOff?' · "상쇄"=전체 방향과 반대로 작용한 축':''} · 막대 클릭 시 해당 축 요인 목록으로 이동</div>`;
+ } else if(vd && Math.abs(vd.pct)>=1){
+  barHtml=`<div style="font-size:11px;color:#9aa0a6;margin-top:8px">축별 기여도 계산 불가 — 시장(경쟁사) 시계열이 두 기간을 모두 덮지 못합니다.</div>`;
+ }
+ document.getElementById('axisSummary').innerHTML=summary+barHtml;
+
+ // Per-axis event lists: top 3 visible, rest expandable (deep-dive)
+ const wOf=e=>Math.max(1,Math.min(5,+e.impact_strength||2))*(CONFW[e.confidence]||1);
+ const evItem=(e)=>{
+  const n=numByDate[e.date]||0;
+  return `<div style="padding:7px 0;border-top:1px dashed var(--line);font-size:12px">
+    <div style="display:flex;justify-content:space-between;gap:6px">
+     <span style="cursor:pointer;font-weight:500" onclick="scrollToCard(${n})">${e.title}</span>
+     <span style="color:var(--muted);white-space:nowrap">${e.date||''}</span></div>
+    ${e.impact?`<div style="color:var(--muted);margin-top:2px">${e.impact}</div>`:''}
+    <div style="margin-top:3px"><span class="cp-tag">영향강도 ${Math.max(1,Math.min(5,+e.impact_strength||2))}/5</span><span class="cp-tag">신뢰도 ${e.confidence||'-'}</span></div>
+  </div>`;
+ };
+ const evList=(axis)=>{
+  const items=byAxis[axis].slice().sort((a,b)=>wOf(b)-wOf(a));
+  if(!items.length) return `<div style="font-size:12px;color:var(--muted);padding:6px 0">이 기간 ${AXIS_KO[axis]} 축 이벤트 없음</div>`;
+  const top=items.slice(0,3), rest=items.slice(3);
+  return top.map(evItem).join('')+
+   `<div id="axis-full-${axis}" style="display:none">${rest.map(evItem).join('')}</div>`+
+   (rest.length?`<div style="padding:6px 0;border-top:1px dashed var(--line)"><span style="font-size:11px;color:var(--blue);cursor:pointer;font-weight:500" onclick="toggleAxisList('${axis}')">외 ${rest.length}건 펼치기/접기</span></div>`:'');
+ };
+ const spark=(id)=>`<div style="height:56px;margin:8px 0"><canvas id="${id}"></canvas></div>`;
+ // Big number per card: contribution share when attributable, raw metric otherwise
+ const bigOf=(frac,fallback)=>attr?`기여 ${(frac*100).toFixed(0)}%${frac<0?' (상쇄)':''}`:fallback;
+ // Supply quantitative signal: CrUX real-user CWV (weekly, 28-day rolling —
+ // a slow regression detector, not a day-of incident detector)
+ let supplyQuant;
+ if(lcpSer.length>=3){
+  const latest=lcpSer[lcpSer.length-1].p75;
+  const prev=lcpSer.slice(-9,-1).map(p=>p.p75).sort((a,b)=>a-b);
+  const med=prev.length?prev[Math.floor(prev.length/2)]:null;
+  const dPctL=med?(latest-med)/med*100:null;
+  // CWV thresholds: LCP good <=2.5s, poor >4s
+  const lcpCol=latest<=2500?'var(--pos)':(latest>4000?'var(--neg)':'#8a6d1a');
+  const worse=dPctL!=null&&dPctL>10;
+  const chips=[inpSer.length?`INP ${Math.round(inpSer[inpSer.length-1].p75)}ms`:'',
+               clsSer.length?`CLS ${clsSer[clsSer.length-1].p75.toFixed(2)}`:''].filter(Boolean).join(' · ');
+  supplyQuant=`<div style="font-size:21px;font-weight:600;color:${AXIS_COLOR.supply}">${bigOf(attr?attr.fSu:0,`LCP ${(latest/1000).toFixed(2)}s`)}</div>
+   <div style="font-size:11px;color:${worse?'var(--neg)':'var(--muted)'}">LCP ${(latest/1000).toFixed(2)}s <span style="color:${lcpCol}">●</span> 모바일 p75, 8주 중앙값 대비 ${dPctL==null?'—':(dPctL>=0?'+':'')+dPctL.toFixed(1)+'%'}${worse?' ⚠ 성능 회귀 의심':''}${chips?' · '+chips:''}</div>
+   ${spark('axis-spark-supply')}`;
+ } else {
+  supplyQuant=`<div style="font-size:21px;font-weight:600;color:${attr?AXIS_COLOR.supply:'var(--muted)'}">${bigOf(attr?attr.fSu:0,byAxis.supply.length+'건')}</div>
+   <div style="font-size:11px;color:var(--muted)">${attr?'CrUX 미연동 — 성능 신호 없이 0%로 처리':'이 기간 감지된 공급측 이벤트'}</div>
+   <div style="height:56px;margin:8px 0;display:flex;align-items:center;font-size:11px;color:#9aa0a6">CrUX 미연동 — CRUX_API_KEY 등록 시 실사용자 성능(CWV) 시리즈가 표시됩니다</div>`;
+ }
+ document.getElementById('axisCards').innerHTML=
+  `<div id="axis-card-demand" style="border:1px solid var(--line);border-left:3px solid ${AXIS_COLOR.demand};border-radius:10px;padding:12px 14px">
+    <div style="font-size:12px;font-weight:600;color:${AXIS_COLOR.demand}">수요 — 시장 전체 관심</div>
+    <div style="font-size:21px;font-weight:600;color:${AXIS_COLOR.demand}">${bigOf(attr?attr.fD:0,fmtSigned(dPct,'%',1))}</div>
+    <div style="font-size:11px;color:var(--muted)">관심량 ${fmtSigned(dPct,'%',1)} (삼성+경쟁사 합, 비교 기간 대비)</div>
+    ${spark('axis-spark-demand')}${evList('demand')}</div>`+
+  `<div id="axis-card-share" style="border:1px solid var(--line);border-left:3px solid ${AXIS_COLOR.share};border-radius:10px;padding:12px 14px">
+    <div style="font-size:12px;font-weight:600;color:${AXIS_COLOR.share}">점유 — 삼성이 가져가는 몫</div>
+    <div style="font-size:21px;font-weight:600;color:${AXIS_COLOR.share}">${bigOf(attr?attr.fSh:0,fmtSigned(sPpt,'%p',2))}</div>
+    <div style="font-size:11px;color:var(--muted)">몫 ${fmtSigned(sPpt,'%p',2)} (현재 ${sCur==null?'—':sCur.toFixed(1)+'%'} · 비교 ${sCmp==null?'—':sCmp.toFixed(1)+'%'})</div>
+    ${spark('axis-spark-share')}${evList('share')}</div>`+
+  `<div id="axis-card-supply" style="border:1px solid var(--line);border-left:3px solid ${AXIS_COLOR.supply};border-radius:10px;padding:12px 14px">
+    <div style="font-size:12px;font-weight:600;color:${AXIS_COLOR.supply}">공급 — 사이트 성능·인덱싱 신호</div>
+    ${supplyQuant}
+    <div style="font-size:11px;color:var(--muted);margin-bottom:2px">공급측 이벤트 ${byAxis.supply.length}건 (Google Search Status 등)</div>
+    ${evList('supply')}</div>`;
+ // Sparklines for the two quantitative axes, current period only
+ const mkSpark=(id,ser,unit)=>{
+  const pts=ser.filter(p=>(!sd.value||p.date>=sd.value)&&(!ed.value||p.date<=ed.value));
+  const el=document.getElementById(id);
+  if(!el||pts.length<5){ if(el)el.parentNode.style.display='none'; return; }
+  axisCharts.push(new Chart(el,{type:'line',
+   data:{labels:pts.map(p=>p.date),datasets:[{data:pts.map(p=>p.views),
+     borderColor:AXIS_COLOR[id.includes('demand')?'demand':'share'],borderWidth:1.5,pointRadius:0,tension:0.35,fill:false}]},
+   options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.y.toFixed(unit==='%'?1:0)}${unit==='%'?'%':'회'}`}}},
+    scales:{x:{display:false},y:{display:false}}}}));
+ };
+ mkSpark('axis-spark-demand',mkt,'');
+ mkSpark('axis-spark-share',shr,'%');
+ // Supply sparkline: always the last 26 weeks regardless of the selected
+ // period — CrUX's 28-day rolling window makes short-period slicing useless
+ if(lcpSer.length>=3){
+  const pts=lcpSer.slice(-26);
+  const el=document.getElementById('axis-spark-supply');
+  if(el) axisCharts.push(new Chart(el,{type:'line',
+   data:{labels:pts.map(p=>p.date),datasets:[{data:pts.map(p=>p.p75),
+     borderColor:AXIS_COLOR.supply,borderWidth:1.5,pointRadius:0,tension:0.35,fill:false}]},
+   options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`LCP p75 ${(c.parsed.y/1000).toFixed(2)}s`}}},
+    scales:{x:{display:false},y:{display:false}}}}));
+ }
+ panel.style.display='block';
+}
+
 function render(){
  let r=rows();  // result after all active filters (region/country/division/KPI/period)
  // With a verdict: trend-direction factors first, others still shown by confidence (neutral last)
@@ -802,6 +1024,7 @@ function render(){
 
  const evAsc=r.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
  drawTrend(evAsc, numByDate);
+ renderAxisPanel(r, vd, numByDate);
 
  const neg=r.filter(x=>x.impact_direction==='-').length;
  const scopeLabel=country.value!=='ALL'?(COUNTRIES.find(c=>c[0]===country.value)||['','전체'])[1]:(region.value!=='ALL'?region.value:'전체');
@@ -815,7 +1038,9 @@ function render(){
  const cardsHtml = r.length? shown.map((e,i)=>{
    const cls=DIRCLS[e.impact_direction]||'';const bc=DIRC[e.impact_direction]||'#9a9a96';
    const cc=CONFC[e.confidence]||'#9a9a96';
-   const meta=e.confidence?[`<span class="tag" style="background:${cc}22;color:${cc}">신뢰도: ${e.confidence}</span>`]:[];
+   const ax=axisOf(e);
+   const meta=[`<span class="tag" style="background:${AXIS_COLOR[ax]}18;color:${AXIS_COLOR[ax]}">${AXIS_KO[ax]} 축</span>`]
+     .concat(e.confidence?[`<span class="tag" style="background:${cc}22;color:${cc}">신뢰도: ${e.confidence}</span>`]:[]);
    const imp=e.impact?`<div class="imp" style="color:${bc};background:${bc}14">${e.impact}</div>`:'';
    const badge=`<span class="numbadge" style="background:${bc}">${i+1}</span>`;
    // Strip source/filter tags and legacy markers from the body text
@@ -964,6 +1189,7 @@ mbadges_html = "".join(_badge(n,l) for n,l in _LLM_DISPLAY) + \
 HTML=(HTML.replace("__DATA__",json.dumps(events,ensure_ascii=False))
           .replace("__WIKI__",json.dumps(wiki,ensure_ascii=False))
           .replace("__STATS__",json.dumps(stats_series,ensure_ascii=False))
+          .replace("__CRUX__",json.dumps(crux,ensure_ascii=False))
           .replace("__MBADGES__",mbadges_html)
           .replace("__DEF_CMP_FROM__",DEF_CMP_FROM)
           .replace("__DEF_CMP_TO__",DEF_CMP_TO)
