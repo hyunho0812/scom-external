@@ -45,7 +45,7 @@ Samsung newsroom (KR) | https://news.samsung.com/kr/feed
 #   Xiaomi (mi.com/global/discover/newsroom), OPPO (oppo.com/en/newsroom),
 #   vivo, TCL, Hisense (hisense-usa.com/newsroom), Bosch/BSH Hausgeräte.
 
-# ---------- Broader trend sources (10) - this IS the category to periodically
+# ---------- Broader trend sources (7) - this IS the category to periodically
 # review/rotate. Purpose: complement NewsAPI (which already covers acute daily
 # events) with sources on GRADUAL, structural shifts affecting samsung.com -
 # not limited to ecommerce/marketing/search; anything plausibly relevant.
@@ -55,18 +55,13 @@ Samsung newsroom (KR) | https://news.samsung.com/kr/feed
 #   (b) Editorially-independent trade journalism (daily, but not vendor blogs)
 # Review cadence: no fixed schedule needed - scripts/check_feeds.py (daily)
 # catches breakage; revisit the SOURCE LIST itself occasionally (e.g. every
-# few months) using data/query_performance.json as a guide to what's actually
-# producing useful events.
+# few months) using data/feed_performance.json (kw_pass_rate/keep_rate per
+# source) as a guide to what's actually producing useful events.
 
-# -- (a) Periodic trend/market research (5) --
+# -- (a) Periodic trend/market research (3) --
 IDC Press Releases | https://www.idc.com/rss/idcpressreleases.xml
 # ^ Quarterly smartphone/PC/memory market share & shipment data - directly
 #   relevant to Samsung's core device businesses (MX/VD/DA).
-Gartner Newsroom | https://www.gartner.com/en/newsroom/rss
-# ^ IT/tech market analyst research (broader enterprise tech, not just consumer).
-TrendForce Consumer Electronics | https://www.trendforce.com/feed/Consumer_electronics.html
-# ^ TV/smartphone/notebook/tablet shipment & pricing trends - Samsung's actual
-#   product categories.
 TrendForce Semiconductors | https://www.trendforce.com/feed/Semiconductors.html
 # ^ DRAM/NAND memory price trends - directly ties to past events like memory
 #   shortages driving device price hikes.
@@ -74,8 +69,7 @@ Pew Research Internet & Tech | https://pewresearch.org/internet/feed
 # ^ Survey-based research on internet/technology adoption and behavior shifts
 #   (e.g. how people discover/research products, generational usage patterns).
 
-# -- (b) Independent trade journalism (5) --
-Search Engine Land | https://searchengineland.com/feed
+# -- (b) Independent trade journalism (4) --
 Search Engine Journal | https://www.searchenginejournal.com/feed/
 Retail Dive | https://www.retaildive.com/feeds/news/
 Practical Ecommerce | https://www.practicalecommerce.com/feed
@@ -88,3 +82,8 @@ Digiday | https://digiday.com/feed
 # outlets above for better neutrality and periodic-trend focus): Semrush,
 # Ahrefs, Moz, Shopify Blog, HubSpot Marketing, Neil Patel, Claude(Anthropic)
 # mirror, Perplexity mirror.
+# Removed 2026-07-14 (persistently broken per check_feeds.py's daily
+# data/feed_health.json — not a transient blip, confirmed over multiple days):
+#   Gartner Newsroom - HTTP 403 (blocked, not a temporary rate limit)
+#   TrendForce Consumer Electronics - fetches OK but always 0 items (not RSS/Atom)
+#   Search Engine Land - HTTP 403 (blocked, not a temporary rate limit)
