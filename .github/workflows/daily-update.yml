@@ -64,6 +64,15 @@ jobs:
       - name: Company trend — Wikipedia pageviews (free, no key)
         run: python scripts/collect_wiki.py
 
+      # ---- Supply-axis signal: samsung.com real-user CWV (CrUX, free key) ----
+      # Weekly-granularity data; running daily just refreshes the latest week.
+      # Skips quietly if CRUX_API_KEY is unset.
+      - name: Supply axis — CrUX Core Web Vitals history
+        continue-on-error: true   # CrUX 실패해도 나머지 수집은 계속
+        env:
+          CRUX_API_KEY: ${{ secrets.CRUX_API_KEY }}
+        run: python scripts/collect_crux.py
+
       # ---- Layer 3: IMF monthly macro stats (국가별 통계 탭, separate dashboard) ----
       # Runs only on the 28th (collects the PREVIOUS month's data), or manual dispatch.
       - name: Detect collection day (28th)
@@ -91,7 +100,7 @@ jobs:
         run: |
           git config user.name  "github-actions"
           git config user.email "actions@github.com"
-          git add data/events.json data/feed_state.json data/model_status.json data/wiki_series.json data/gdelt_pool.json data/imf_series.json data/query_performance.json data/kw_filters.json data/optimize_log.json data/feed_health.json queries.txt index.html
+          git add data/events.json data/feed_state.json data/model_status.json data/wiki_series.json data/gdelt_pool.json data/imf_series.json data/crux_series.json data/query_performance.json data/optimize_log.json data/feed_health.json queries.txt kw_news.txt kw_feeds.txt index.html
           git commit -m "daily update $(date -u +%F)" || echo "no changes"
           git push
 
