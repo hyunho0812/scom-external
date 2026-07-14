@@ -28,7 +28,7 @@ from xml.etree import ElementTree as ET
 
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
-from llm_common import llm_filter, diag_summary, INTERESTS, MARKETS, load_kw_file
+from llm_common import llm_filter, diag_summary, INTERESTS, MARKETS, load_kw_file, clean_axis
 
 DATA = os.path.join(HERE, "..", "data", "events.json")
 STATE = os.path.join(HERE, "..", "data", "feed_state.json")
@@ -179,6 +179,7 @@ def main():
                 "impact_strength": verdict.get("impact_strength", 2),
                 "confidence": verdict.get("confidence", "med"),
                 "metric": verdict.get("metric", "traffic"),
+                "axis": clean_axis(verdict.get("axis", "")),  # demand|share|supply|"" (build.py falls back to a heuristic if empty)
                 "llm": llm_used,  # which model judged/produced this, for the dashboard badge
                 "source": label,
                 "raw_title": it["title"],

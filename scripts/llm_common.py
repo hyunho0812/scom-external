@@ -49,6 +49,19 @@ def has_korean(s):
     return any('\uac00' <= c <= '\ud7a3' for c in (s or ""))
 
 
+# axis: which of the 3-axis-panel buckets (demand/share/supply) an event
+# mainly acts through \u2014 see FILTER_SYSTEM below for the full definitions the
+# LLM is given. clean_axis() guards against a malformed/missing value from
+# the LLM; the collectors store "" in that case, and build.py's axisOf()
+# falls back to its own keyword heuristic for any event with axis=="" (this
+# is also what makes it a safe upgrade for the 90+ events collected before
+# this field existed).
+VALID_AXES = {"demand", "share", "supply"}
+def clean_axis(v):
+    v = (v or "").strip().lower()
+    return v if v in VALID_AXES else ""
+
+
 def clip_sentence(text, limit=400):
     """Trim to <= limit chars without cutting mid-word.
     Prefer ending at the last sentence boundary; otherwise the last word."""
@@ -177,7 +190,19 @@ FILTER_SYSTEM = (
  'NOT consistency with any traffic trend). high = direct, well-established '
  'causal link (e.g. a confirmed product launch or regulation). med = plausible '
  'but indirect or partly inferred. low = speculative or weak link.",'
- '"metric":"traffic|revenue|both"}\n'
+ '"metric":"traffic|revenue|both",'
+ '"axis":"demand|share|supply — WHICH of 3 causal buckets this event mainly '
+ 'acts through. demand = a MARKET-WIDE shift in overall interest/search '
+ 'volume/traffic pool that affects everyone in the category roughly equally, '
+ 'not specific to samsung.com vs one named rival (e.g. AI Overviews cutting '
+ 'click-through industry-wide, a memory-price macro shock, a holiday '
+ 'shopping surge, a broad social-commerce trend). share = REDISTRIBUTES '
+ 'visibility/traffic specifically BETWEEN samsung.com and a NAMED competitor '
+ '(e.g. a competitor product launch/price move, an algorithm change that '
+ 'favors a named rival over Samsung). supply = about samsung.com\'s OWN site '
+ '(indexing, crawling, outage, performance/Core Web Vitals) — never about a '
+ 'third party. When torn between demand and share, pick demand UNLESS a '
+ 'specific competitor is named as directly gaining at Samsung\'s expense."}\n'
  'title/impact/description IN KOREAN (한국어). If not relevant: {"relevant":false}.'
 )
 

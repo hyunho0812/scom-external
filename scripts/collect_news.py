@@ -38,7 +38,7 @@ from datetime import datetime, timedelta, timezone
 
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
-from llm_common import llm_filter, diag_summary, INTERESTS, MARKETS, load_queries, load_kw_file
+from llm_common import llm_filter, diag_summary, INTERESTS, MARKETS, load_queries, load_kw_file, clean_axis
 
 DATA = os.path.join(HERE, "..", "data", "events.json")
 NEWS_KEY = os.environ.get("NEWS_API_KEY", "")
@@ -145,6 +145,7 @@ def to_event(article, verdict, llm_used):
         "impact_strength":(verdict.get("impact_strength",2) if verdict else 1),
         "confidence":(verdict.get("confidence","low") if verdict else "low"),
         "metric":verdict.get("metric","traffic") if verdict else "traffic",
+        "axis":clean_axis(verdict.get("axis","")) if verdict else "",  # demand|share|supply|"" (build.py falls back to a heuristic if empty)
         "llm":llm_used,  # which model produced this judgement, for the dashboard badge
         "source":article["source"] or article["url"],
         # Keep English originals (not shown on dashboard; available if needed)

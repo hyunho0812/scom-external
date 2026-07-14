@@ -16,7 +16,7 @@ values to the allowed sets, and drops malformed records.
 import os, sys, json, glob, re
 
 sys.path.insert(0, os.path.dirname(__file__))
-from llm_common import MARKETS  # single source of truth for the 12 tracked countries
+from llm_common import MARKETS, clean_axis  # single source of truth for shared config
 
 ALLOWED_CAT = {"culture","marketing","platform","holiday","economy",
                "social_issue","geopolitics","AI","company","regulation"}
@@ -86,6 +86,7 @@ def clean_record(r):
             "source": str(r.get("source","")).strip(),
             "impact": str(r.get("impact","")).strip(),
             "impact_strength": strength,
+            "axis": clean_axis(r.get("axis","")),  # demand|share|supply|"" — "" falls back to build.py's heuristic
         }
     except Exception:
         return None

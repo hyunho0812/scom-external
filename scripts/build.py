@@ -686,7 +686,13 @@ const OWN_KW=['samsung','galaxy','삼성','갤럭시'];
 // draws comparison-shopping traffic away from samsung.com" -> share.
 const COMPETITOR_KW=['apple','xiaomi','vivo','oppo','lg','tcl','hisense','whirlpool','bosch',
   '아이폰','애플','샤오미','비보','오포','엘지','보쉬'];
+const VALID_AXES=['demand','share','supply'];
 function axisOf(e){
+ // Prefer the LLM's own judgement (collected directly at classification
+ // time, with full article context) when present; only events collected
+ // before this field existed (axis=="" or missing) fall through to the
+ // keyword/category heuristic below.
+ if(VALID_AXES.includes(e.axis)) return e.axis;
  const t=((e.title||'')+' '+(e.impact||'')+' '+(e.description||'')).toLowerCase();
  if(SUPPLY_KW.some(k=>t.includes(k))) return 'supply';
  const c=e.category;
@@ -920,10 +926,11 @@ function render(){
   vbox.style.display='block'; vbox.style.background=vc+'14'; vbox.style.border='1px solid '+vc+'44';
   // Market number = competitor aggregate's own % change (cv.pct), separate
   // from marketLabel's qualitative same-direction/opposite-direction read.
+  // On its own line below Samsung's, not crowded onto the same line.
   const cvArrow=cv?(cv.dir==='-'?'▼':(cv.dir==='+'?'▲':'―')):'';
   const cvColor=cv?(cv.dir==='-'?'#E24B4A':(cv.dir==='+'?'#1D9E75':'#9a9a96')):'';
-  const marketNum=cv?` · <span style="color:${cvColor};font-weight:600">Market ${cvArrow} ${cv.pct.toFixed(1)}%</span>`:'';
-  vbox.innerHTML=`<span style="color:${vc};font-weight:600">Samsung ${arrow} ${vd.pct.toFixed(1)}%</span>${marketNum} · <span style="color:var(--muted)">${marketLabel}</span>`;
+  const marketLine=cv?`<div style="margin-top:4px"><span style="color:${cvColor};font-weight:600">Market ${cvArrow} ${cv.pct.toFixed(1)}%</span></div>`:'';
+  vbox.innerHTML=`<div><span style="color:${vc};font-weight:600">Samsung ${arrow} ${vd.pct.toFixed(1)}%</span></div>${marketLine}<div style="margin-top:4px"><span style="color:var(--muted)">${marketLabel}</span></div>`;
  } else if(vd){
   // Negligible change: sort by confidence (neutral last)
   r.sort((a,b)=> confRank(b)-confRank(a) || ((a.impact_direction==='neutral'?1:0)-(b.impact_direction==='neutral'?1:0)) || (b.date||'').localeCompare(a.date||''));
