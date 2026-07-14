@@ -82,6 +82,21 @@ inventory
 shortage
 innovation
 new model
+wearable
+smartwatch
+tablet
+laptop
+display
+camera
+processor
+battery
+ecosystem
+market forecast
+consumer behavior
+product launch
+earnings report
+patent
+acquisition
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -91,3 +106,7 @@ celebrity gossip
 movie review
 music album
 election result
+sports score
+political commentary
+stock market specific
+celebrity endorsement
