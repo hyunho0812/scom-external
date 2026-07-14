@@ -82,6 +82,12 @@ URL을 넣지 말고, feeds.txt에 "확인했지만 없음" 주석으로 남길 
 - `confidence`: 이 판단(impact_direction/strength)이 맞다는 **확신도** (high/med/low).
   기사 정확도나 트렌드 일관성이 아님. FILTER_SYSTEM 프롬프트에 명시돼 있음.
 - `impact_strength`: samsung.com **웹 트래픽**에 대한 영향 크기(1~5). revenue 아님.
+- `axis`: 대시보드 3축 진단 패널(수요/점유/공급)이 이 이벤트를 어느 축에 배정할지 —
+  `demand|share|supply` 중 하나, LLM이 판단 시점에 직접 분류(FILTER_SYSTEM, 2026-07-14
+  추가). demand=시장 전체에 고르게 영향(특정 경쟁사 대상 아님), share=삼성 vs **특정
+  경쟁사** 간 재분배, supply=samsung.com 자체 사이트 이슈. 값이 비어있으면(이 필드
+  추가 이전 수집분) `build.py`의 `axisOf()`가 카테고리/키워드 휴리스틱으로 대체 추정함
+  — 즉 값이 있으면 LLM 판단을 신뢰하고, 없으면만 휴리스틱으로 폴백.
 
 ### 4. 한글 번역 스타일
 `description`은 "다/했다/이다"체로 끝나야 함(요/습니다체 금지), 두 번째 문장은 "구매에
