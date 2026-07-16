@@ -306,5 +306,33 @@
    "semiconductor memory market trend"
   ],
   "rationale": "낮은 통과율 및 중복율 쿼리를 개선하고, 뉴스 및 피드 키워드에 'review', 'analysis', 'next-gen' 등 기사 내용을 포괄하는 용어를 추가하여 관련성 높은 외부 요인을 더 잘 포착하도록 업데이트했습니다. 한국어 키워드는 유지했습니다."
+ },
+ {
+  "date": "2026-07-16",
+  "old_queries": [
+   "samsung new product launch event review",
+   "samsung electronics quarterly earnings report",
+   "galaxy AI device innovation trends",
+   "global smartphone market share trends",
+   "ecommerce ai shopping adoption",
+   "ecommerce ai shopping adoption",
+   "consumer electronics product discovery insights",
+   "retail channel report",
+   "apple intelligence strategy",
+   "semiconductor memory market trend"
+  ],
+  "new_queries": [
+   "samsung electronics product launch analysis",
+   "samsung electronics quarterly earnings report",
+   "galaxy AI device innovation trends",
+   "global smartphone market share trends",
+   "ecommerce AI shopping adoption",
+   "ecommerce ai shopping adoption",
+   "consumer electronics product discovery insights",
+   "retail channel report",
+   "apple intelligence strategy",
+   "semiconductor memory market trend"
+  ],
+  "rationale": "실적이 좋지 않은 쿼리를 개선하고, 중복을 줄이며, 삼성닷컴 트래픽 및 수익에 더 직접적으로 관련되도록 키워드를 미세 조정했습니다. 'samsung new product launch event review' 쿼리를 'samsung electronics product launch analysis'로 변경하여 분석 중심의 콘텐츠를 더 잘 포착하도록 했습니다."
  }
 ]

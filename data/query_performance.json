@@ -564,5 +564,58 @@
     "kept": 0
    }
   }
+ },
+ {
+  "date": "2026-07-16",
+  "total_raw": 46,
+  "total_dup": 3,
+  "total_kept": 3,
+  "per_query": {
+   "samsung electronics product launch analysis": {
+    "raw": 1,
+    "dup": 0,
+    "kept": 0
+   },
+   "samsung electronics quarterly earnings report": {
+    "raw": 5,
+    "dup": 0,
+    "kept": 1
+   },
+   "global smartphone market share trends": {
+    "raw": 8,
+    "dup": 0,
+    "kept": 0
+   },
+   "ecommerce AI shopping adoption": {
+    "raw": 1,
+    "dup": 0,
+    "kept": 1
+   },
+   "ecommerce ai shopping adoption": {
+    "raw": 1,
+    "dup": 1,
+    "kept": 0
+   },
+   "consumer electronics product discovery insights": {
+    "raw": 2,
+    "dup": 1,
+    "kept": 0
+   },
+   "retail channel report": {
+    "raw": 10,
+    "dup": 0,
+    "kept": 1
+   },
+   "apple intelligence strategy": {
+    "raw": 8,
+    "dup": 1,
+    "kept": 0
+   },
+   "semiconductor memory market trend": {
+    "raw": 10,
+    "dup": 0,
+    "kept": 0
+   }
+  }
  }
 ]
