@@ -173,5 +173,42 @@
     "kept": 0
    }
   }
+ },
+ {
+  "date": "2026-07-17",
+  "total_raw": 27,
+  "total_kept": 2,
+  "per_feed": {
+   "OpenAI news": {
+    "raw": 10,
+    "kw_pass": 8,
+    "kept": 1
+   },
+   "Pew Research Internet & Tech": {
+    "raw": 1,
+    "kw_pass": 0,
+    "kept": 0
+   },
+   "Search Engine Journal": {
+    "raw": 6,
+    "kw_pass": 6,
+    "kept": 1
+   },
+   "Retail Dive": {
+    "raw": 6,
+    "kw_pass": 6,
+    "kept": 0
+   },
+   "Practical Ecommerce": {
+    "raw": 1,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Digiday": {
+    "raw": 3,
+    "kw_pass": 3,
+    "kept": 0
+   }
+  }
  }
 ]

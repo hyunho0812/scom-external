@@ -198,6 +198,9 @@ tv
 리뷰
 분석
 차세대
+ai assistant
+shopping experience
+digital retail
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

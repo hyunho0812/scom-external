@@ -101,6 +101,9 @@ review
 analysis
 next-gen
 pricing
+ai assistant
+shopping experience
+digital retail
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
