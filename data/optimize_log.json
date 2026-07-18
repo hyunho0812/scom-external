@@ -362,5 +362,33 @@
    "semiconductor memory market trend"
   ],
   "rationale": "낮은 통과율 및 높은 중복률 쿼리를 개선하고, '쇼핑 어시스턴트'와 '디지털 리테일' 등 새로운 외부 요인 키워드를 추가하여 삼성 닷컴 트래픽 및 매출과의 관련성을 높였습니다."
+ },
+ {
+  "date": "2026-07-18",
+  "old_queries": [
+   "samsung electronics product launch impact",
+   "samsung electronics quarterly earnings report",
+   "galaxy AI device market adoption",
+   "global smartphone market share shifts",
+   "ecommerce AI shopping assistant adoption trends",
+   "ecommerce ai shopping adoption",
+   "consumer electronics product discovery trends",
+   "retail channel report",
+   "apple intelligence strategy",
+   "semiconductor memory market trend"
+  ],
+  "new_queries": [
+   "samsung electronics product launch impact",
+   "samsung electronics quarterly earnings report",
+   "galaxy AI device market adoption",
+   "global smartphone market share shifts",
+   "ai agentic shopping experience trends",
+   "ecommerce ai shopping adoption",
+   "consumer electronics product discovery trends",
+   "retail channel report",
+   "apple intelligence strategy",
+   "semiconductor memory market trend"
+  ],
+  "rationale": "'ecommerce AI shopping assistant adoption trends' 쿼리의 낮은 실적을 개선하고, 최근 KEEP된 기사에서 'agentic commerce' 키워드가 자주 등장하여 'ai agentic shopping experience trends'로 변경했습니다. 중복이 높은 'ecommerce ai shopping adoption'은 유지하고, AI 관련 기사의 포괄적인 필터링을 위해 'agentic' 키워드를 kw_news와 kw_feeds KEEP 목록에 추가했습니다."
  }
 ]

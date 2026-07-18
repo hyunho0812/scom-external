@@ -10,7 +10,7 @@ samsung | samsung electronics product launch impact
 samsung | samsung electronics quarterly earnings report
 galaxy | galaxy AI device market adoption
 smartphone | global smartphone market share shifts
-ecommerce | ecommerce AI shopping assistant adoption trends
+ecommerce | ai agentic shopping experience trends
 ecommerce | ecommerce ai shopping adoption
 other | consumer electronics product discovery trends
 other | retail channel report

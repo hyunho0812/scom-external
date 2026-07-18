@@ -201,6 +201,7 @@ tv
 ai assistant
 shopping experience
 digital retail
+agentic
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
