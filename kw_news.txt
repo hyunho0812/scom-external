@@ -105,6 +105,7 @@ ai assistant
 shopping experience
 digital retail
 agentic
+ai agent
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

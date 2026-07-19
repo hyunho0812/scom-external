@@ -698,5 +698,28 @@
     "kept": 0
    }
   }
+ },
+ {
+  "date": "2026-07-19",
+  "total_raw": 6,
+  "total_dup": 0,
+  "total_kept": 1,
+  "per_query": {
+   "samsung electronics quarterly earnings report": {
+    "raw": 2,
+    "dup": 0,
+    "kept": 0
+   },
+   "apple intelligence strategy": {
+    "raw": 3,
+    "dup": 0,
+    "kept": 1
+   },
+   "retail channel innovation report": {
+    "raw": 1,
+    "dup": 0,
+    "kept": 0
+   }
+  }
  }
 ]
