@@ -206,6 +206,7 @@ ai agent
 trend
 outlook
 forecast
+ai device
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

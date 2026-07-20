@@ -106,6 +106,7 @@ shopping experience
 digital retail
 agentic
 ai agent
+ai device
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
