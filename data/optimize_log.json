@@ -446,5 +446,33 @@
    "semiconductor memory market trend"
   ],
   "rationale": "'galaxy AI device market adoption' 쿼리 개선 및 'ai device' 키워드 추가를 통해 관련성이 높은 외부 AI 기기 트렌드 정보를 더 효과적으로 수집하고 중복을 최소화합니다."
+ },
+ {
+  "date": "2026-07-21",
+  "old_queries": [
+   "samsung electronics product launch impact",
+   "samsung electronics quarterly earnings report",
+   "galaxy ai market adoption trends",
+   "global smartphone market share shifts",
+   "agentic ai shopping experience trends",
+   "ecommerce ai shopping adoption",
+   "consumer electronics product discovery trends",
+   "retail channel innovation report",
+   "apple intelligence strategy",
+   "semiconductor memory market trend"
+  ],
+  "new_queries": [
+   "samsung electronics product launch impact",
+   "samsung electronics quarterly earnings report",
+   "galaxy ai market adoption trends",
+   "global smartphone market share shifts",
+   "agentic ai commerce adoption trends",
+   "ecommerce ai shopping adoption",
+   "consumer electronics product discovery trends",
+   "retail channel innovation report",
+   "apple intelligence strategy",
+   "semiconductor memory market trend"
+  ],
+  "rationale": "낮은 성과 쿼리를 대체하고, 중복을 줄이며, 삼성닷컴 트래픽 및 수익에 대한 외부 요인 추적기 관련성을 높였습니다."
  }
 ]

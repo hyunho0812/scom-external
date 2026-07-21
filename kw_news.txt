@@ -107,6 +107,7 @@ digital retail
 agentic
 ai agent
 ai device
+commerce
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
