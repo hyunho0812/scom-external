@@ -474,5 +474,33 @@
    "semiconductor memory market trend"
   ],
   "rationale": "낮은 성과 쿼리를 대체하고, 중복을 줄이며, 삼성닷컴 트래픽 및 수익에 대한 외부 요인 추적기 관련성을 높였습니다."
+ },
+ {
+  "date": "2026-07-22",
+  "old_queries": [
+   "samsung electronics product launch impact",
+   "samsung electronics quarterly earnings report",
+   "galaxy ai market adoption trends",
+   "global smartphone market share shifts",
+   "agentic ai commerce adoption trends",
+   "ecommerce ai shopping adoption",
+   "consumer electronics product discovery trends",
+   "retail channel innovation report",
+   "apple intelligence strategy",
+   "semiconductor memory market trend"
+  ],
+  "new_queries": [
+   "samsung electronics product launch impact",
+   "samsung electronics quarterly earnings report",
+   "galaxy ai market adoption trends",
+   "global smartphone market share shifts",
+   "agentic ai commerce adoption trends",
+   "ecommerce ai shopping adoption",
+   "consumer electronics product discovery trends",
+   "retail channel innovation report",
+   "apple intelligence strategy",
+   "semiconductor memory market trend"
+  ],
+  "rationale": "기존 쿼리 및 키워드 필터의 성능이 양호하여 큰 변경 없이 유지합니다. 특히 한국어 키워드는 삼성 뉴스룸(KR) 피드 필터링에 필수적이므로 보존합니다."
  }
 ]
