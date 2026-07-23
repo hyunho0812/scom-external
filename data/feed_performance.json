@@ -400,5 +400,52 @@
     "kept": 0
    }
   }
+ },
+ {
+  "date": "2026-07-23",
+  "total_raw": 44,
+  "total_kept": 6,
+  "per_feed": {
+   "OpenAI news": {
+    "raw": 10,
+    "kw_pass": 8,
+    "kept": 1
+   },
+   "Apple newsroom": {
+    "raw": 1,
+    "kw_pass": 1,
+    "kept": 1
+   },
+   "Samsung newsroom (KR)": {
+    "raw": 3,
+    "kw_pass": 3,
+    "kept": 2
+   },
+   "Pew Research Internet & Tech": {
+    "raw": 10,
+    "kw_pass": 10,
+    "kept": 0
+   },
+   "Search Engine Journal": {
+    "raw": 8,
+    "kw_pass": 8,
+    "kept": 2
+   },
+   "Retail Dive": {
+    "raw": 6,
+    "kw_pass": 6,
+    "kept": 0
+   },
+   "Practical Ecommerce": {
+    "raw": 1,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Digiday": {
+    "raw": 5,
+    "kw_pass": 3,
+    "kept": 0
+   }
+  }
  }
 ]

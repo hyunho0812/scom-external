@@ -108,6 +108,8 @@ agentic
 ai agent
 ai device
 commerce
+ai feature
+fold
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
