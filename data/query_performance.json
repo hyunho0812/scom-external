@@ -888,5 +888,33 @@
     "kept": 1
    }
   }
+ },
+ {
+  "date": "2026-07-24",
+  "total_raw": 26,
+  "total_dup": 0,
+  "total_kept": 1,
+  "per_query": {
+   "retail channel innovation report": {
+    "raw": 6,
+    "dup": 0,
+    "kept": 0
+   },
+   "apple intelligence strategy": {
+    "raw": 10,
+    "dup": 0,
+    "kept": 0
+   },
+   "semiconductor memory market trend": {
+    "raw": 6,
+    "dup": 0,
+    "kept": 0
+   },
+   "samsung electronics product launch impact": {
+    "raw": 4,
+    "dup": 0,
+    "kept": 1
+   }
+  }
  }
 ]
