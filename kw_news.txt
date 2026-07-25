@@ -110,6 +110,7 @@ ai device
 commerce
 ai feature
 fold
+foldable phone
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

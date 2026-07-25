@@ -558,5 +558,33 @@
    "semiconductor memory market trend"
   ],
   "rationale": "현재 쿼리 성능이 낮은 '다른' 카테고리 쿼리 3개를 유지하되, 전체적인 중복을 줄이고 외부 요인과의 관련성을 높이기 위해 'apple intelligence strategy'와 'semiconductor memory market trend' 쿼리를 유지하고 키워드 목록을 확장했습니다. 쿼리는 변경하지 않았습니다."
+ },
+ {
+  "date": "2026-07-25",
+  "old_queries": [
+   "samsung electronics product launch impact",
+   "samsung electronics quarterly earnings report",
+   "galaxy ai feature adoption trends",
+   "global smartphone market share shifts",
+   "agentic ai commerce adoption trends",
+   "ecommerce ai shopping adoption",
+   "consumer electronics product discovery trends",
+   "retail channel innovation report",
+   "apple intelligence strategy",
+   "semiconductor memory market trend"
+  ],
+  "new_queries": [
+   "samsung electronics product launch impact",
+   "samsung electronics quarterly earnings report",
+   "galaxy ai feature adoption trends",
+   "global foldable smartphone market share shifts",
+   "agentic ai commerce adoption trends",
+   "ecommerce ai shopping adoption",
+   "consumer electronics product discovery trends",
+   "retail channel innovation report",
+   "apple intelligence strategy",
+   "semiconductor memory market trend"
+  ],
+  "rationale": "저조한 실적을 보인 'global smartphone market share shifts' 쿼리에 'foldable'을 추가하여 폴더블 스마트폰 시장 변화에 대한 관련성을 높였고, 키워드에는 'foldable phone'을 추가하여 최신 트렌드를 반영했습니다."
  }
 ]
