@@ -111,6 +111,7 @@ commerce
 ai feature
 fold
 foldable phone
+personalized shopping
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

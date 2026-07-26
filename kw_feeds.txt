@@ -211,6 +211,31 @@ commerce
 ai feature
 fold
 foldable phone
+price hike
+inventory
+shortage
+innovation
+new model
+wearable
+smartwatch
+tablet
+laptop
+display
+camera
+processor
+battery
+ecosystem
+market forecast
+consumer behavior
+product launch
+earnings report
+patent
+acquisition
+review
+analysis
+next-gen
+pricing
+personalized shopping
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
