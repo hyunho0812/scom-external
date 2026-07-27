@@ -112,6 +112,7 @@ ai feature
 fold
 foldable phone
 personalized shopping
+generative ai
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

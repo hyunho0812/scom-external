@@ -236,6 +236,7 @@ analysis
 next-gen
 pricing
 personalized shopping
+generative ai
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

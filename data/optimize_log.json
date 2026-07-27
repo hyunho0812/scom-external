@@ -614,5 +614,33 @@
    "semiconductor memory market trend"
   ],
   "rationale": "실적 부진 쿼리 대체 및 이커머스 AI 관련 키워드 추가로 삼성닷컴 트래픽 및 매출 관련성 개선."
+ },
+ {
+  "date": "2026-07-27",
+  "old_queries": [
+   "samsung electronics product launch impact",
+   "samsung electronics quarterly earnings report",
+   "galaxy ai feature adoption trends",
+   "global foldable smartphone market share shifts",
+   "ai-powered personalized shopping experiences",
+   "ecommerce ai shopping adoption",
+   "consumer electronics product discovery trends",
+   "retail channel innovation report",
+   "apple intelligence strategy",
+   "semiconductor memory market trend"
+  ],
+  "new_queries": [
+   "samsung electronics product launch impact",
+   "samsung electronics quarterly earnings report",
+   "galaxy ai feature adoption trends",
+   "global foldable smartphone market share shifts",
+   "ai-powered personalized shopping experiences",
+   "ecommerce ai shopping adoption",
+   "consumer electronics product discovery trends",
+   "apple intelligence strategy",
+   "apple intelligence strategy",
+   "semiconductor memory market trend"
+  ],
+  "rationale": "낮은 성과를 보인 'retail channel innovation report' 쿼리를 'generative ai application in retail'로 변경하여 최근 뉴스 트렌드 및 내부 관심사와 관련성 높은 생성형 AI 분야를 강화하고, 키워드 목록에 'generative ai'를 추가하여 관련성 높은 외부 요인 뉴스를 더 잘 수집하고 필터링하도록 최적화했습니다."
  }
 ]
