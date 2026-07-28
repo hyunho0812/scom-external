@@ -196,10 +196,10 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
 <div id="verdict" style="display:none;border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:14px"></div>
 
 <div class="panel" id="axisPanel" style="display:none">
-  <div class="phead"><div class="ptitle">3축 진단 — 수요 · 점유 · 공급 <span style="font-size:11px;color:#999;font-weight:400">(위키 관심도 기준 추정)</span></div></div>
+  <div class="phead"><div class="ptitle">3축 진단 — 수요 · 점유 · 공급 <span id="axisBasis" style="font-size:11px;color:#999;font-weight:400"></span></div></div>
   <div id="axisSummary" style="font-size:13px;padding:11px 14px;border-radius:10px;background:var(--bg);margin-bottom:12px"></div>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px" id="axisCards"></div>
-  <div class="note">수요 = 시장 전체 관심량(삼성+경쟁사 위키 조회수 합) · 점유 = 그중 삼성이 가져가는 몫(%) · 공급 = 실사용자 사이트 성능(CrUX CWV) + 인덱싱·크롤링·장애 이벤트 · 기여도(%)는 "삼성 관심량 = 시장 전체 × 점유율" 항등식의 로그 분해로 계산 — 수요·점유 합이 전체 변화를 정확히 설명하며, 공급은 CrUX 성능 회귀가 감지될 때만 휴리스틱으로 배분 · 카드의 요인 목록에서 "펼치기"로 축별 전체 이벤트를 딥다이브할 수 있습니다 · 대리지표 기반이며 인과 입증이 아닙니다</div>
+  <div class="note">분석 기준은 <strong>업로드한 실측 트래픽</strong>이며, 업로드가 없을 때만 위키 관심도를 대리지표로 씁니다 · 수요 = 시장 전체 관심량(삼성+경쟁사 위키 조회수 합) — 경쟁사 실측 트래픽을 구할 무료 소스가 없어 이 축은 항상 위키 <em>지수</em>입니다 · 점유·전환 = 그 관심량 1단위가 실제로 만들어낸 유입(실측÷관심도), 업로드가 없으면 위키 점유율과 동일 · 공급 = 실사용자 사이트 성능(CrUX CWV) + 인덱싱·크롤링·장애 이벤트 · 각 축의 수치는 "전체 = 수요 × 점유·전환" 항등식의 로그 분해로 구한 <strong>단독 효과</strong>라, 곱하면 전체 변화와 정확히 일치합니다 · 카드의 요인 목록에서 "펼치기"로 축별 전체 이벤트를 딥다이브할 수 있습니다 · 인과 입증이 아니라 정황 분해입니다</div>
 </div>
 <div id="analysis" style="display:none;margin-bottom:16px">
   <div id="ana-period"></div>
@@ -718,6 +718,16 @@ function shareSeries(){
   return {date:p.date,views:tot?p.views/tot*100:null};
  }).filter(p=>p.views!=null);
 }
+// Capture rate: real traffic per unit of market attention, per day. Only used
+// for the sparkline (the headline number comes from the exact log residual);
+// the absolute level is an arbitrary unit, so only its shape/trend is read.
+function captureSeries(){
+ const mktMap={}; marketTotalSeries().forEach(p=>mktMap[p.date]=p.views);
+ return samSeries().map(p=>{
+  const m=mktMap[p.date];
+  return m?{date:p.date,views:p.views/m}:null;
+ }).filter(Boolean);
+}
 function avgInRange(ser,from,to){
  const vals=ser.filter(p=>(!from||p.date>=from)&&(!to||p.date<=to)).map(p=>p.views);
  return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
@@ -746,64 +756,121 @@ function renderAxisPanel(r,vd,numByDate){
  const inpSer=((CRUX.metrics||{}).inp_ms)||[];
  const clsSer=((CRUX.metrics||{}).cls)||[];
 
- // ---- Attribution: split the total change into axis contribution shares ----
- // Identity: Samsung attention = market total x Samsung's share, so in log
- // space log(S ratio) = log(M ratio) + log(share ratio) EXACTLY. Therefore
- // demand frac = gM/gS and share frac = 1 - demand frac — an accounting
- // identity, not an estimate. Supply sits OUTSIDE the identity (the wiki
- // proxy can't see site health), so when CrUX shows a period-over-period
- // LCP regression beyond 10%, a heuristic slice (1%p of weight per 1% of
- // regression beyond 10%, capped at 25%) is carved out on down-moves and
- // demand/share are scaled down proportionally.
+ // ---- Attribution: multiplicative decomposition of the traffic change ----
+ // Basis: REAL uploaded traffic whenever one is loaded, wiki Samsung views
+ // otherwise (samSeries() already encodes that preference) — every causal
+ // read-out in the dashboard should describe real traffic when we have it.
+ //
+ // Identity:  traffic = market attention x capture
+ //   market attention = wiki Samsung + wiki competitors (an INDEX — no free
+ //     source of real competitor traffic exists, so this axis stays wiki even
+ //     when the numerator is real traffic)
+ //   capture = traffic / market attention, i.e. how much traffic a given
+ //     level of market interest actually converts into. Defined as the LOG
+ //     RESIDUAL (gC = gT - gM) rather than a separately averaged ratio, so
+ //     the two effects multiply back to the observed change EXACTLY (an
+ //     independently averaged ratio leaves a Jensen gap).
+ //
+ // The bar allocates 100% across the axes that DROVE the move — i.e. only
+ // those pushing the same way as the total. The question being answered is
+ // "traffic went down; what drove it down?", so an axis pushing the other way
+ // is not a cause: it gets 0% and is reported separately as having cushioned
+ // the move. (Allocating in log space means that when every axis moves the
+ // same way, this reduces exactly to the plain contribution share — e.g. the
+ // wiki-only case still reads 수요 54% / 점유 46%.)
+ const basisSer=samSeries();
+ const tCur=avgInRange(basisSer,sd.value,ed.value), tCmp=avgInRange(basisSer,csd.value,ced.value);
+ const isReal=!!UPLOADED_TRAFFIC && !!uploadedSeriesForFilter();
+ // An upload that doesn't span BOTH periods can't be decomposed at all —
+ // surfaced explicitly rather than silently falling back to a different basis.
+ const basisGap=isReal && (tCur==null || !tCmp);
  let attr=null;
- if(vd && Math.abs(vd.pct)>=1 && dCur!=null && dCmp && sCur!=null && sCmp){
-  const gS=Math.log(1+vd.pct/100), gM=Math.log(dCur/dCmp);
-  if(Math.abs(gS)>1e-6){
-   let fD=gM/gS, fSh=1-fD, fSu=0, lcpDelta=null;
+ if(tCur!=null && tCmp && dCur!=null && dCmp){
+  const gT=Math.log(tCur/tCmp), gM=Math.log(dCur/dCmp);
+  if(Math.abs(gT)>1e-6){
+   let gC=gT-gM, gSu=0, lcpDelta=null;   // capture = residual -> exact by construction
    const lcpAsViews=lcpSer.map(p=>({date:p.date,views:p.p75}));
    const lCur=avgInRange(lcpAsViews,sd.value,ed.value), lCmp=avgInRange(lcpAsViews,csd.value,ced.value);
    if(lCur!=null&&lCmp){
     lcpDelta=(lCur-lCmp)/lCmp*100;
-    if(lcpDelta>10 && vd.dir==='-'){ fSu=Math.min(0.25,(lcpDelta-10)/100); fD*=(1-fSu); fSh*=(1-fSu); }
+    // A CWV regression on a down-move carves part of the capture decline out
+    // as a supply effect (capture is where site health would surface).
+    if(lcpDelta>10 && gT<0 && gC<0){
+     const frac=Math.min(0.25,(lcpDelta-10)/100);
+     gSu=gC*frac; gC=gC-gSu;
+    }
    }
-   attr={fD,fSh,fSu,lcpDelta};
+   // Same sign as the total = drove it. gT = gM + gC + gSu, so at least one
+   // axis always shares the total's sign; an empty causes list is impossible.
+   const drove=g=>(gT<0?g<-1e-9:g>1e-9);
+   const gs={demand:gM, share:gC, supply:gSu};
+   const causeSum=Object.values(gs).filter(drove).reduce((a,g)=>a+Math.abs(g),0)||1;
+   const alloc={}, eff={};
+   for(const k in gs){
+    alloc[k]=drove(gs[k])?Math.abs(gs[k])/causeSum:0;  // 0% when it cushioned
+    eff[k]=Math.exp(gs[k])-1;                          // its own standalone effect
+   }
+   attr={alloc,eff,gs,drove,lcpDelta,totalPct:(Math.exp(gT)-1)*100};
   }
  }
 
- // Qualitative reading (kept as the headline sentence above the bar)
- const D_SIG=2.0, S_SIG=0.5; // thresholds: % for demand, %p for share
+ const fmtSigned=(v,unit,dec)=>v==null?'—':`${v>=0?'+':''}${v.toFixed(dec)}${unit}`;
+ const basisLabel=isReal?'실측 트래픽':'위키 관심도(대리지표)';
+ // The share axis means something different on each basis, so name it once
+ // here and reuse everywhere (headline, bar segment, card title).
+ const shareName=isReal?'점유·전환':'점유';
+ const axName=(ax)=>ax==='share'?shareName:AXIS_KO[ax];
+ // Headline names only the axes that pushed the SAME way as the total — those
+ // are the actual causes. An axis moving the other way gets called out as
+ // having cushioned the move, which is the question "is share a problem?"
+ // answered directly.
  let summary;
- if(!vd||vd.dir==='neutral'){
-  summary='Samsung 관심량 변화가 미미해 축별 원인 진단은 참고용입니다.';
+ if(!attr){
+  summary = basisGap
+    ? '업로드한 실측 트래픽이 비교 기간을 덮지 않아 축별 분해를 할 수 없습니다 — 두 기간을 모두 포함하는 CSV를 올리거나, 업로드를 지우면 위키 기준으로 분해합니다.'
+    : 'Samsung 변화가 미미해 축별 원인 진단은 참고용입니다.';
  } else {
-  const word=vd.dir==='-'?'하락':'상승';
-  const dHit=dPct!=null&&(vd.dir==='-'?dPct<=-D_SIG:dPct>=D_SIG);
-  const sHit=sPpt!=null&&(vd.dir==='-'?sPpt<=-S_SIG:sPpt>=S_SIG);
-  if(dHit&&sHit) summary=`<strong>수요·점유 동시 ${word}</strong> — 시장 전체 관심과 삼성 몫이 함께 움직였습니다.`;
-  else if(dHit) summary=`<strong>수요 축 우세</strong> — 시장 전체 관심이 ${word}했고 삼성 몫은 크게 변하지 않았습니다.`;
-  else if(sHit) summary=`<strong>점유 축 우세</strong> — 시장 전체 관심은 비슷한데 삼성이 가져가는 몫이 ${word}했습니다.`;
-  else summary=`수요·점유 모두 뚜렷한 변화가 없습니다 — 공급 축 신호와 대리지표의 한계를 함께 확인하세요.`;
+  const word=attr.totalPct<0?'하락':'상승';
+  const NAME={demand:'수요',share:shareName,supply:'공급'};
+  const causes=Object.keys(NAME).filter(k=>attr.alloc[k]>0.005)
+    .sort((a,b)=>attr.alloc[b]-attr.alloc[a])
+    .map(k=>`${NAME[k]} ${(attr.alloc[k]*100).toFixed(0)}%`);
+  const cushions=Object.keys(NAME).filter(k=>!attr.drove(attr.gs[k]) && Math.abs(attr.eff[k])>0.005)
+    .map(k=>`${NAME[k]} ${fmtSigned(attr.eff[k]*100,'%',1)}`);
+  // "축이" works after any of the axis names, unlike 은/는 which would need
+  // per-name selection based on the final consonant.
+  summary = `<strong>${word} 요인: ${causes.join(' · ')}</strong>`
+    + (cushions.length?` <span style="font-weight:400;color:var(--muted)">(${cushions.join('·')} 축이 반대로 작용해 ${word}을 완화 — ${word} 원인은 아님)</span>`:'');
   if(byAxis.supply.length) summary+=` <span style="color:#8a6d1a">공급측 신호 ${byAxis.supply.length}건 감지.</span>`;
  }
- const fmtSigned=(v,unit,dec)=>v==null?'—':`${v>=0?'+':''}${v.toFixed(dec)}${unit}`;
- // Contribution bar: one clickable segment per axis, width = |frac| share
+ // Allocation bar: 100% split across the axes that DROVE the move. Axes that
+ // pushed the other way are excluded (0%) — they aren't causes of the move
+ // being explained — and are named in a caption instead.
  let barHtml='';
  if(attr){
-  const segs=[['demand',attr.fD],['share',attr.fSh],['supply',attr.fSu]].filter(s=>Math.abs(s[1])>0.005);
-  const totW=segs.reduce((a,s)=>a+Math.abs(s[1]),0)||1;
-  const anyOff=segs.some(s=>s[1]<0);
-  barHtml=`<div style="display:flex;align-items:baseline;gap:10px;margin-top:10px">
-    <span style="font-size:20px;font-weight:600;color:${vd.pct<0?'var(--neg)':'var(--pos)'}">${fmtSigned(vd.pct,'%',1)}</span>
-    <span style="font-size:12px;color:var(--muted)">전체 변화의 축별 기여</span></div>
+  const dn=attr.totalPct<0;
+  const segs=[['demand',attr.alloc.demand],['share',attr.alloc.share],['supply',attr.alloc.supply]]
+    .filter(s=>s[1]>0.005);
+  const cushions=['demand','share','supply']
+    .filter(k=>!attr.drove(attr.gs[k]) && Math.abs(attr.eff[k])>0.005)
+    .map(k=>`${axName(k)} ${fmtSigned(attr.eff[k]*100,'%',1)}`);
+  barHtml=`<div style="display:flex;align-items:baseline;gap:10px;margin-top:10px;flex-wrap:wrap">
+    <span style="font-size:20px;font-weight:600;color:${dn?'var(--neg)':'var(--pos)'}">${fmtSigned(attr.totalPct,'%',1)}</span>
+    <span style="font-size:12px;color:var(--muted)">${basisLabel} ${dn?'하락':'상승'} · 요인별 기여 배분</span></div>
    <div style="display:flex;height:30px;border-radius:9px;overflow:hidden;margin-top:6px">`+
-   segs.map(([ax,f])=>{
-    const w=Math.abs(f)/totW*100, off=f<0;
-    return `<div onclick="toggleAxisList('${ax}')" title="${AXIS_KO[ax]} 축 요인 펼쳐보기" style="width:${w.toFixed(1)}%;background:${AXIS_COLOR[ax]}${off?'55':''};display:flex;align-items:center;justify-content:center;gap:4px;font-size:11px;color:#fff;font-weight:600;cursor:pointer;overflow:hidden;white-space:nowrap">${AXIS_KO[ax]} ${(f*100).toFixed(0)}%${off?' 상쇄':''}</div>`;
-   }).join('')+`</div>
-   <div style="font-size:11px;color:#9aa0a6;margin-top:5px">수요·점유 배분은 로그 분해 항등식(삼성 관심량=시장 전체×점유율)으로 계산한 정확한 회계 분해${attr.fSu>0?' · 공급은 CrUX 성능 회귀 크기 기반 휴리스틱':''}${anyOff?' · "상쇄"=전체 방향과 반대로 작용한 축':''} · 막대 클릭 시 해당 축 요인 목록으로 이동</div>`;
- } else if(vd && Math.abs(vd.pct)>=1){
-  barHtml=`<div style="font-size:11px;color:#9aa0a6;margin-top:8px">축별 기여도 계산 불가 — 시장(경쟁사) 시계열이 두 기간을 모두 덮지 못합니다.</div>`;
+   segs.map(([ax,a])=>
+    `<div onclick="toggleAxisList('${ax}')" title="${axName(ax)} 축 요인 펼쳐보기 (단독 효과 ${fmtSigned(attr.eff[ax]*100,'%',1)})" style="width:${(a*100).toFixed(1)}%;background:${AXIS_COLOR[ax]};display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:600;cursor:pointer;overflow:hidden;white-space:nowrap">${axName(ax)} ${(a*100).toFixed(0)}%</div>`
+   ).join('')+`</div>
+   <div style="font-size:11px;color:#9aa0a6;margin-top:5px">${dn?'하락':'상승'}을 <strong>유발한 축들만</strong> 100%로 배분한 값입니다 (각 축 단독 효과: ${segs.map(s=>`${axName(s[0])} ${fmtSigned(attr.eff[s[0]]*100,'%',1)}`).join(' · ')})`
+   +(cushions.length?` · 반대로 작용한 <strong>${cushions.join('·')}</strong> 축은 ${dn?'하락':'상승'} 원인이 아니므로 배분에서 제외했습니다`:'')
+   +`${attr.alloc.supply>0.005?' · 공급은 CrUX 성능 회귀 기반 추정':''} · 막대 클릭 시 해당 축 요인 목록으로 이동</div>`;
+ } else if(vd && Math.abs(vd.pct)>=1 && !basisGap){
+  barHtml=`<div style="font-size:11px;color:#9aa0a6;margin-top:8px">축별 효과 계산 불가 — 시장(경쟁사) 시계열이 두 기간을 모두 덮지 못합니다.</div>`;
  }
+ const basisEl=document.getElementById('axisBasis');
+ if(basisEl) basisEl.textContent = isReal
+   ? '(업로드한 실측 트래픽 기준)'
+   : '(위키 관심도 기준 추정 — 실측 트래픽 업로드 시 자동 전환)';
  document.getElementById('axisSummary').innerHTML=summary+barHtml;
 
  // Per-axis event lists: top 3 visible, rest expandable (deep-dive)
@@ -818,7 +885,7 @@ function renderAxisPanel(r,vd,numByDate){
     <div style="margin-top:3px"><span class="cp-tag">영향강도 ${Math.max(1,Math.min(5,+e.impact_strength||2))}/5</span><span class="cp-tag">신뢰도 ${e.confidence||'-'}</span></div>
   </div>`;
  };
- // frac (optional): this axis's attribution share (attr.fD/fSh/fSu), so an
+ // frac (optional): this axis's allocation share (attr.alloc[ax]), so an
  // empty event list can distinguish "genuinely nothing going on" from "the
  // wiki-based quantitative split says this axis matters, but no collected
  // news article explains why" — those look identical without this check,
@@ -829,9 +896,9 @@ function renderAxisPanel(r,vd,numByDate){
  const evList=(axis,frac)=>{
   const items=byAxis[axis].slice().sort((a,b)=>wOf(b)-wOf(a));
   if(!items.length){
-   if(attr && Math.abs(frac||0)>=0.1){
+   if(attr && Math.abs(frac||0)>=0.02){
     return `<div style="font-size:12px;color:#8a6d1a;background:#fff8e8;border:1px solid #f0e2b8;border-radius:8px;padding:8px 10px;margin-top:4px">`
-      +`⚠ 위키 데이터상으로는 이 축이 전체 변화의 ${Math.abs(frac*100).toFixed(0)}%를 차지하지만, `
+      +`⚠ 수치상 이 축이 변화의 ${(frac*100).toFixed(0)}%를 차지하지만, `
       +`이 기간 수집된 뉴스·피드 중 ${AXIS_KO[axis]} 축으로 분류된 이벤트가 없습니다 — `
       +`구체적 원인 기사를 아직 못 찾았다는 뜻이지, 수치가 잘못됐다는 뜻은 아닙니다.</div>`;
    }
@@ -843,8 +910,16 @@ function renderAxisPanel(r,vd,numByDate){
    (rest.length?`<div style="padding:6px 0;border-top:1px dashed var(--line)"><span style="font-size:11px;color:var(--blue);cursor:pointer;font-weight:500" onclick="toggleAxisList('${axis}')">외 ${rest.length}건 펼치기/접기</span></div>`:'');
  };
  const spark=(id)=>`<div style="height:56px;margin:8px 0"><canvas id="${id}"></canvas></div>`;
- // Big number per card: contribution share when attributable, raw metric otherwise
- const bigOf=(frac,fallback)=>attr?`기여 ${(frac*100).toFixed(0)}%${frac<0?' (상쇄)':''}`:fallback;
+ // Big number per card: that axis's share of the move it helped cause. An axis
+ // that pushed the other way shows 0% (it didn't cause the move) with its own
+ // effect spelled out beside it, so "0%" can't be misread as "didn't move".
+ const dnAll=attr&&attr.totalPct<0;
+ const bigOf=(ax,fallback)=>{
+  if(!attr) return fallback;
+  const a=attr.alloc[ax], e=attr.eff[ax];
+  return a>0.005 ? `${(a*100).toFixed(0)}%`
+       : (Math.abs(e)>0.005 ? `0% <span style="font-size:12px;font-weight:500">(${fmtSigned(e*100,'%',1)} 반대작용)</span>` : '0%');
+ };
  // Supply quantitative signal: CrUX real-user CWV (weekly, 28-day rolling —
  // a slow regression detector, not a day-of incident detector)
  let supplyQuant;
@@ -858,30 +933,32 @@ function renderAxisPanel(r,vd,numByDate){
   const worse=dPctL!=null&&dPctL>10;
   const chips=[inpSer.length?`INP ${Math.round(inpSer[inpSer.length-1].p75)}ms`:'',
                clsSer.length?`CLS ${clsSer[clsSer.length-1].p75.toFixed(2)}`:''].filter(Boolean).join(' · ');
-  supplyQuant=`<div style="font-size:21px;font-weight:600;color:${AXIS_COLOR.supply}">${bigOf(attr?attr.fSu:0,`LCP ${(latest/1000).toFixed(2)}s`)}</div>
+  supplyQuant=`<div style="font-size:21px;font-weight:600;color:${AXIS_COLOR.supply}">${bigOf('supply',`LCP ${(latest/1000).toFixed(2)}s`)}</div>
    <div style="font-size:11px;color:${worse?'var(--neg)':'var(--muted)'}">LCP ${(latest/1000).toFixed(2)}s <span style="color:${lcpCol}">●</span> 모바일 p75, 8주 중앙값 대비 ${dPctL==null?'—':(dPctL>=0?'+':'')+dPctL.toFixed(1)+'%'}${worse?' ⚠ 성능 회귀 의심':''}${chips?' · '+chips:''}</div>
    ${spark('axis-spark-supply')}`;
  } else {
-  supplyQuant=`<div style="font-size:21px;font-weight:600;color:${attr?AXIS_COLOR.supply:'var(--muted)'}">${bigOf(attr?attr.fSu:0,byAxis.supply.length+'건')}</div>
+  supplyQuant=`<div style="font-size:21px;font-weight:600;color:${attr?AXIS_COLOR.supply:'var(--muted)'}">${bigOf('supply',byAxis.supply.length+'건')}</div>
    <div style="font-size:11px;color:var(--muted)">${attr?'CrUX 미연동 — 성능 신호 없이 0%로 처리':'이 기간 감지된 공급측 이벤트'}</div>
    <div style="height:56px;margin:8px 0;display:flex;align-items:center;font-size:11px;color:#9aa0a6">CrUX 미연동 — CRUX_API_KEY 등록 시 실사용자 성능(CWV) 시리즈가 표시됩니다</div>`;
  }
  document.getElementById('axisCards').innerHTML=
   `<div id="axis-card-demand" style="border:1px solid var(--line);border-left:3px solid ${AXIS_COLOR.demand};border-radius:10px;padding:12px 14px">
     <div style="font-size:12px;font-weight:600;color:${AXIS_COLOR.demand}">수요 — 시장 전체 관심</div>
-    <div style="font-size:21px;font-weight:600;color:${AXIS_COLOR.demand}">${bigOf(attr?attr.fD:0,fmtSigned(dPct,'%',1))}</div>
-    <div style="font-size:11px;color:var(--muted)">관심량 ${fmtSigned(dPct,'%',1)} (삼성+경쟁사 합, 비교 기간 대비)</div>
-    ${spark('axis-spark-demand')}${evList('demand',attr?attr.fD:0)}</div>`+
+    <div style="font-size:21px;font-weight:600;color:${AXIS_COLOR.demand}">${bigOf('demand',fmtSigned(dPct,'%',1))}</div>
+    <div style="font-size:11px;color:var(--muted)">관심량 ${fmtSigned(dPct,'%',1)} (삼성+경쟁사 위키 합, 비교 기간 대비)</div>
+    ${spark('axis-spark-demand')}${evList('demand',attr?attr.alloc.demand:0)}</div>`+
   `<div id="axis-card-share" style="border:1px solid var(--line);border-left:3px solid ${AXIS_COLOR.share};border-radius:10px;padding:12px 14px">
-    <div style="font-size:12px;font-weight:600;color:${AXIS_COLOR.share}">점유 — 삼성이 가져가는 몫</div>
-    <div style="font-size:21px;font-weight:600;color:${AXIS_COLOR.share}">${bigOf(attr?attr.fSh:0,fmtSigned(sPpt,'%p',2))}</div>
-    <div style="font-size:11px;color:var(--muted)">몫 ${fmtSigned(sPpt,'%p',2)} (현재 ${sCur==null?'—':sCur.toFixed(1)+'%'} · 비교 ${sCmp==null?'—':sCmp.toFixed(1)+'%'})</div>
-    ${spark('axis-spark-share')}${evList('share',attr?attr.fSh:0)}</div>`+
+    <div style="font-size:12px;font-weight:600;color:${AXIS_COLOR.share}">${isReal?shareName+' — 관심 대비 실제 유입':shareName+' — 삼성이 가져가는 몫'}</div>
+    <div style="font-size:21px;font-weight:600;color:${AXIS_COLOR.share}">${bigOf('share',isReal?'—':fmtSigned(sPpt,'%p',2))}</div>
+    <div style="font-size:11px;color:var(--muted)">${isReal
+      ? '시장 관심도 1단위당 실제 유입의 변화 — 실측÷위키라 절대 수준은 의미 없고 변화율만 봅니다'
+      : `몫 ${fmtSigned(sPpt,'%p',2)} (현재 ${sCur==null?'—':sCur.toFixed(1)+'%'} · 비교 ${sCmp==null?'—':sCmp.toFixed(1)+'%'})`}</div>
+    ${spark('axis-spark-share')}${evList('share',attr?attr.alloc.share:0)}</div>`+
   `<div id="axis-card-supply" style="border:1px solid var(--line);border-left:3px solid ${AXIS_COLOR.supply};border-radius:10px;padding:12px 14px">
     <div style="font-size:12px;font-weight:600;color:${AXIS_COLOR.supply}">공급 — 사이트 성능·인덱싱 신호</div>
     ${supplyQuant}
     <div style="font-size:11px;color:var(--muted);margin-bottom:2px">공급측 이벤트 ${byAxis.supply.length}건 (Google Search Status 등)</div>
-    ${evList('supply',attr?attr.fSu:0)}</div>`;
+    ${evList('supply',attr?attr.alloc.supply:0)}</div>`;
  // Sparklines for the two quantitative axes, current period only
  const mkSpark=(id,ser,unit)=>{
   const pts=ser.filter(p=>(!sd.value||p.date>=sd.value)&&(!ed.value||p.date<=ed.value));
@@ -895,7 +972,9 @@ function renderAxisPanel(r,vd,numByDate){
     scales:{x:{display:false},y:{display:false}}}}));
  };
  mkSpark('axis-spark-demand',mkt,'');
- mkSpark('axis-spark-share',shr,'%');
+ // With real traffic the share axis is a capture RATE (traffic per unit of
+ // market attention), so plot that instead of the wiki share percentage.
+ mkSpark('axis-spark-share', isReal?captureSeries():shr, isReal?'':'%');
  // Supply sparkline: always the last 26 weeks regardless of the selected
  // period — CrUX's 28-day rolling window makes short-period slicing useless
  if(lcpSer.length>=3){
