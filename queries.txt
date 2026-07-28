@@ -6,13 +6,13 @@
 # for samsung/galaxy/ecommerce/smartphone (not "other") always keeps at least
 # 1 query that literally contains the category's own name as a word.
 
-samsung | samsung electronics product launch impact
+samsung | samsung product launch event impact
 samsung | samsung electronics quarterly earnings report
-galaxy | galaxy ai feature adoption trends
-smartphone | global foldable smartphone market share shifts
+galaxy | galaxy ai feature integration consumer impact
+smartphone | foldable smartphone market share trends
 ecommerce | ai-powered personalized shopping experiences
 ecommerce | ecommerce ai shopping adoption
 other | consumer electronics product discovery trends
-other | apple intelligence strategy
+other | apple intelligence market strategy
 other | apple intelligence strategy
 other | semiconductor memory market trend

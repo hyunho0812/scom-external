@@ -995,5 +995,48 @@
     "kept": 0
    }
   }
+ },
+ {
+  "date": "2026-07-28",
+  "total_raw": 53,
+  "total_dup": 9,
+  "total_kept": 3,
+  "per_query": {
+   "samsung product launch event impact": {
+    "raw": 2,
+    "dup": 0,
+    "kept": 0
+   },
+   "samsung electronics quarterly earnings report": {
+    "raw": 1,
+    "dup": 0,
+    "kept": 0
+   },
+   "galaxy ai feature integration consumer impact": {
+    "raw": 1,
+    "dup": 1,
+    "kept": 0
+   },
+   "ai-powered personalized shopping experiences": {
+    "raw": 2,
+    "dup": 1,
+    "kept": 0
+   },
+   "apple intelligence market strategy": {
+    "raw": 19,
+    "dup": 0,
+    "kept": 2
+   },
+   "apple intelligence strategy": {
+    "raw": 9,
+    "dup": 7,
+    "kept": 0
+   },
+   "semiconductor memory market trend": {
+    "raw": 19,
+    "dup": 0,
+    "kept": 1
+   }
+  }
  }
 ]

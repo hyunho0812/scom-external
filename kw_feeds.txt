@@ -237,6 +237,7 @@ next-gen
 pricing
 personalized shopping
 generative ai
+huawei
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -258,3 +259,5 @@ charity run
 운세
 부동산
 주식 투자
+서비스 계약
+내부 소프트웨어

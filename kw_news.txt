@@ -113,6 +113,10 @@ fold
 foldable phone
 personalized shopping
 generative ai
+huawei
+xiaomi
+vivo
+oppo
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -126,3 +130,5 @@ sports score
 political commentary
 stock market specific
 celebrity endorsement
+service agreement
+internal software
