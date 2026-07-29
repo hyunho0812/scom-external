@@ -670,5 +670,33 @@
    "semiconductor memory market trend"
   ],
   "rationale": "쿼리 및 키워드를 최적화하여 삼성 관련 외부 요인에 대한 트래픽 및 매출 관련성을 높이고 중복 수집을 최소화했습니다."
+ },
+ {
+  "date": "2026-07-29",
+  "old_queries": [
+   "samsung product launch event impact",
+   "samsung electronics quarterly earnings report",
+   "galaxy ai feature integration consumer impact",
+   "foldable smartphone market share trends",
+   "ai-powered personalized shopping experiences",
+   "ecommerce ai shopping adoption",
+   "consumer electronics product discovery trends",
+   "apple intelligence market strategy",
+   "apple intelligence strategy",
+   "semiconductor memory market trend"
+  ],
+  "new_queries": [
+   "samsung product launch impact analysis",
+   "samsung electronics quarterly earnings report",
+   "galaxy ai feature consumer adoption trends",
+   "foldable smartphone market share growth",
+   "ai-powered personalized shopping experiences",
+   "ecommerce ai shopping adoption",
+   "consumer electronics product discovery trends",
+   "apple intelligence market strategy consumer impact",
+   "apple intelligence strategy",
+   "semiconductor memory market trend"
+  ],
+  "rationale": "낮은 성과 쿼리를 구체화하고 관련성 높은 일반 AI/기술 용어를 추가하여 중복을 줄이고 외부 요인에 대한 전반적인 적용 범위를 개선했습니다."
  }
 ]

@@ -238,6 +238,9 @@ pricing
 personalized shopping
 generative ai
 huawei
+tech news
+tech industry
+innovation news
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

@@ -117,6 +117,9 @@ huawei
 xiaomi
 vivo
 oppo
+tech news
+tech industry
+innovation news
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
