@@ -241,6 +241,9 @@ huawei
 tech news
 tech industry
 innovation news
+q2
+q3
+q4
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -264,3 +267,5 @@ charity run
 주식 투자
 서비스 계약
 내부 소프트웨어
+tv show
+게임 리뷰
