@@ -5,14 +5,21 @@
 # optimize.py replaces AT MOST 1 query per category per day (not 3 total), and
 # for samsung/galaxy/ecommerce/smartphone (not "other") always keeps at least
 # 1 query that literally contains the category's own name as a word.
+#
+# KEEP THESE SHORT — 4 words max, 2-3 preferred. The news APIs AND every term
+# together, so extra qualifiers shrink the result set fast: this project's own
+# logs show 3-4 word queries pulling 10-16 articles/run while 6-word ones pull
+# 0-3. Relevance is filtered later (keyword pre-filter + LLM judge), so a broad
+# query with some noise beats a precise one with no results. optimize.py now
+# rejects any proposed query over 4 words.
 
-samsung | samsung product launch consumer impact analysis
-samsung | samsung electronics quarterly earnings report
-galaxy | galaxy ai feature market adoption trends
-smartphone | foldable smartphone market share and growth
-ecommerce | ai-powered personalized shopping experiences impact
-ecommerce | ecommerce ai shopping adoption
-other | consumer electronics product discovery trends innovation
-other | apple intelligence market strategy consumer impact
+samsung | samsung product launch
+samsung | samsung electronics earnings
+galaxy | galaxy phone launch
+smartphone | smartphone market share
+ecommerce | ecommerce trends
+ecommerce | ecommerce ai shopping
 other | apple intelligence strategy
 other | semiconductor memory market trend
+other | online retail trends
+other | ai search traffic
