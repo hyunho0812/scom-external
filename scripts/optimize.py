@@ -58,6 +58,14 @@ LOGFILE = os.path.join(HERE, "..", "data", "optimize_log.json")
 
 MAX_QUERIES = 10
 MAX_BRAND = 4     # max queries (across all categories) that directly contain "samsung" or "galaxy"
+# Hard cap on query length. News APIs AND the terms together, so every extra
+# word shrinks the result set; measured on this project's own logs, 3-4 word
+# queries pulled 10-16 articles/run while 6-word ones pulled 0-3. Without a
+# cap the daily optimizer ratchets queries longer indefinitely (observed: the
+# live set drifted to 5 of 10 queries at 6 words, collecting almost nothing),
+# because "propose better wording" reads as "add qualifiers" with nothing
+# pushing back. Enforced in code, not just in the prompt, so it can't drift.
+MAX_QUERY_WORDS = 4
 BRAND_TERMS = ("samsung", "galaxy")
 CATEGORIES = ["samsung", "galaxy", "ecommerce", "smartphone", "other"]
 # Category -> the literal word that category must always keep at least 1 query
@@ -245,6 +253,11 @@ def apply_query_constraints(cur_tagged, prop_queries, perf):
             result[changed_idx[0]] = prop_list[changed_idx[0]]
         else:
             result = prop_list
+        # Reject any proposal over the word cap — keep that slot's current text
+        # instead. A shorter proposal always passes, so an already-too-long
+        # query can still be fixed, it just can't be made longer.
+        result = [cur_list[i] if len(q.split()) > MAX_QUERY_WORDS else q
+                  for i, q in enumerate(result)]
         name = CATEGORY_NAME.get(cat)
         if name and not any(name in q.lower() for q in result):
             result = list(cur_list)  # revert entirely — the swap would drop the anchor keyword
@@ -298,8 +311,10 @@ def main():
     perf_lines = []
     for q in cur_q:
         p = perf.get(q, {"raw":0,"kept":0,"pass_rate":0,"dup_rate":0})
-        perf_lines.append(f'- "{q}": raw={p.get("raw",0)}, kept={p.get("kept",0)}, '
-                          f'pass={p.get("pass_rate",0)}, dup={p.get("dup_rate",0)}')
+        # word count is shown so the model can see the length->yield relationship
+        perf_lines.append(f'- "{q}" ({len(q.split())} words): raw={p.get("raw",0)}, '
+                          f'kept={p.get("kept",0)}, pass={p.get("pass_rate",0)}, '
+                          f'dup={p.get("dup_rate",0)}')
     perf_txt = "\n".join(perf_lines) if perf_lines else "(no performance data yet)"
     feed_perf_lines = [f'- "{label}": raw={p["raw"]}, kw_pass_rate={p["kw_pass_rate"]}, '
                         f'keep_rate={p["keep_rate"]} (kept/kw_pass — low means content is '
@@ -329,15 +344,24 @@ def main():
         f"1) Return exactly {MAX_QUERIES} queries in English, each tagged with its EXISTING\n"
         "   category (do not change how many queries belong to each category — only\n"
         "   propose new WORDING within a category if you think it would perform better).\n"
-        f"2) AT MOST {MAX_BRAND} queries total may directly contain 'samsung' or 'galaxy'.\n"
+        f"2) KEEP QUERIES SHORT AND GENERAL — {MAX_QUERY_WORDS} WORDS MAX, 2-3 preferred.\n"
+        "   The news APIs AND all terms together, so every extra qualifier shrinks the\n"
+        "   result set. Check the word counts against raw= in the performance data below:\n"
+        "   short queries pull 10-16 articles per run, 6-word ones pull 0-3. NEVER add\n"
+        "   words to 'narrow', 'focus' or 'clarify' a query — that is the single most\n"
+        "   common way this set degrades. Relevance is filtered LATER by the keyword\n"
+        "   pre-filter and an LLM judge, so a broad query returning some noise is far\n"
+        "   more useful than a precise one returning nothing. Any proposal longer than\n"
+        f"   {MAX_QUERY_WORDS} words is rejected outright and that slot keeps its old text.\n"
+        f"3) AT MOST {MAX_BRAND} queries total may directly contain 'samsung' or 'galaxy'.\n"
         "   This is an EXTERNAL-factors tracker, not a Samsung-news feed.\n"
-        "3) Prefer replacing poor performers (low pass-rate, high dup-rate). Only propose\n"
-        "   a change for a category's query if you have a genuinely better wording — most\n"
-        "   categories should stay unchanged most days (at most 1 change will be applied\n"
-        "   per category regardless of how many you propose).\n"
-        "4) For samsung/galaxy/ecommerce/smartphone categories, the query text you propose\n"
+        "4) Prefer replacing poor performers — a query with raw=0-2 is failing because it\n"
+        "   is too narrow; SHORTEN it rather than rewording it. Only propose a change if\n"
+        "   you have a genuinely better wording; most categories should stay unchanged\n"
+        "   most days (at most 1 change is applied per category regardless).\n"
+        "5) For samsung/galaxy/ecommerce/smartphone categories, the query text you propose\n"
         "   should still relate to that theme; ideally contains the category's own word.\n"
-        "5) kw_news KEEP/DROP: lowercase keywords for judging relevance of ENGLISH-language\n"
+        "6) kw_news KEEP/DROP: lowercase keywords for judging relevance of ENGLISH-language\n"
         "   news articles. kw_feeds KEEP/DROP: lowercase keywords for first-party feed items\n"
         "   (may include Korean — NEVER remove existing Korean keywords, they're required\n"
         "   for the Samsung newsroom KR feed to pass the filter at all).\n\n"
