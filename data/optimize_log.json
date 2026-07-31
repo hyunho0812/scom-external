@@ -726,5 +726,33 @@
    "semiconductor memory market trend"
   ],
   "rationale": "낮은 통과율 및 높은 중복률을 보인 쿼리들을 더 구체적이고 삼성닷컴 트래픽/수익과 관련성이 높은 용어로 수정하고, 유사한 내용의 뉴스 기사를 더 효과적으로 걸러내기 위해 키워드 목록을 보강했습니다."
+ },
+ {
+  "date": "2026-07-31",
+  "old_queries": [
+   "samsung product launch",
+   "samsung electronics earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ecommerce ai shopping",
+   "apple intelligence strategy",
+   "semiconductor memory market trend",
+   "online retail trends",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung electronics earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ecommerce ai shopping",
+   "apple intelligence strategy",
+   "semiconductor memory trend",
+   "online retail trends",
+   "ai search traffic"
+  ],
+  "rationale": "쿼리 단축 및 키워드 유지로 중복을 최소화하고 관련성을 높였습니다."
  }
 ]
