@@ -754,5 +754,33 @@
    "ai search traffic"
   ],
   "rationale": "쿼리 단축 및 키워드 유지로 중복을 최소화하고 관련성을 높였습니다."
+ },
+ {
+  "date": "2026-08-01",
+  "old_queries": [
+   "samsung product launch",
+   "samsung electronics earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ecommerce ai shopping",
+   "apple intelligence strategy",
+   "semiconductor memory trend",
+   "online retail trends",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung electronics earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ecommerce ai shopping",
+   "apple intelligence strategy",
+   "semiconductor memory trend",
+   "online retail trends",
+   "ai search traffic"
+  ],
+  "rationale": "쿼리 성능을 분석하여 불필요하게 넓거나 좁은 키워드를 삭제하고, 연관성 낮은 피드 소스에 대한 키워드 필터링을 강화하여 관련성을 높이고 중복 수집을 최소화하며, 특정 삼성/갤럭시 관련 키워드 사용 개수를 유지했습니다."
  }
 ]

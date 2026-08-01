@@ -123,6 +123,33 @@ innovation news
 q2
 q3
 q4
+unpacked
+smart home
+iot
+wearables
+gpu
+cpu
+vr
+ar
+metaverse
+robotics
+automotive
+health tech
+fintech
+quantum computing
+edge computing
+cybersecurity
+data center
+cloud computing
+5g
+6g
+wifi 7
+display tech
+oled
+microled
+quantum dot
+ev
+mobility
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

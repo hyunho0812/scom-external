@@ -1182,5 +1182,63 @@
     "kept": 4
    }
   }
+ },
+ {
+  "date": "2026-08-01",
+  "total_raw": 105,
+  "total_dup": 9,
+  "total_kept": 9,
+  "per_query": {
+   "samsung product launch": {
+    "raw": 18,
+    "dup": 0,
+    "kept": 4
+   },
+   "samsung electronics earnings": {
+    "raw": 14,
+    "dup": 1,
+    "kept": 2
+   },
+   "galaxy phone launch": {
+    "raw": 10,
+    "dup": 2,
+    "kept": 1
+   },
+   "smartphone market share": {
+    "raw": 19,
+    "dup": 3,
+    "kept": 2
+   },
+   "ecommerce ai shopping": {
+    "raw": 2,
+    "dup": 0,
+    "kept": 0
+   },
+   "apple intelligence strategy": {
+    "raw": 13,
+    "dup": 2,
+    "kept": 0
+   },
+   "semiconductor memory trend": {
+    "raw": 6,
+    "dup": 0,
+    "kept": 0
+   },
+   "online retail trends": {
+    "raw": 10,
+    "dup": 0,
+    "kept": 0
+   },
+   "ai search traffic": {
+    "raw": 10,
+    "dup": 1,
+    "kept": 0
+   },
+   "ecommerce trends": {
+    "raw": 3,
+    "dup": 0,
+    "kept": 0
+   }
+  }
  }
 ]

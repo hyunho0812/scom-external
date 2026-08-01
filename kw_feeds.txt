@@ -244,6 +244,33 @@ innovation news
 q2
 q3
 q4
+unpacked
+스마트홈
+사물인터넷
+웨어러블
+그래픽카드
+중앙처리장치
+가상현실
+증강현실
+메타버스
+로봇
+자동차
+헬스케어
+핀테크
+양자 컴퓨팅
+엣지 컴퓨팅
+사이버 보안
+데이터 센터
+클라우드 컴퓨팅
+5g
+6g
+와이파이 7
+디스플레이 기술
+oled
+마이크로led
+퀀텀닷
+전기차
+모빌리티
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
