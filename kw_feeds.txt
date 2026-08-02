@@ -271,6 +271,7 @@ oled
 퀀텀닷
 전기차
 모빌리티
+hbm
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -296,3 +297,4 @@ charity run
 내부 소프트웨어
 tv show
 게임 리뷰
+법원 판결

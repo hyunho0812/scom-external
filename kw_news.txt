@@ -150,6 +150,7 @@ microled
 quantum dot
 ev
 mobility
+hbm
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -167,3 +168,4 @@ service agreement
 internal software
 tv show
 game review
+court ruling

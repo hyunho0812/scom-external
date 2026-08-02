@@ -805,5 +805,17 @@
     "kept": 1
    }
   }
+ },
+ {
+  "date": "2026-08-02",
+  "total_raw": 10,
+  "total_kept": 0,
+  "per_feed": {
+   "OpenAI news": {
+    "raw": 10,
+    "kw_pass": 10,
+    "kept": 0
+   }
+  }
  }
 ]

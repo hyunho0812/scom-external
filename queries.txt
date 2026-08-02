@@ -11,8 +11,8 @@ samsung | samsung electronics earnings
 galaxy | galaxy phone launch
 smartphone | smartphone market share
 ecommerce | ecommerce trends
-ecommerce | ecommerce ai shopping
-other | apple intelligence strategy
+ecommerce | ai shopping trends
+other | apple intelligence
 other | semiconductor memory trend
 other | online retail trends
 other | ai search traffic
