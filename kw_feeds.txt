@@ -272,6 +272,7 @@ oled
 전기차
 모빌리티
 hbm
+시장 동향
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

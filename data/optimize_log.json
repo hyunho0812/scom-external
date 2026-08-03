@@ -810,5 +810,33 @@
    "ai search traffic"
   ],
   "rationale": "낮은 raw 수치를 보인 쿼리들을 더 짧고 일반적인 키워드로 수정하여 검색 결과 수를 늘리고, 관련성이 높은 뉴스 기사에서 자주 등장하는 'hbm' 키워드를 추가했습니다. 불필요하거나 중복되는 키워드는 제거했습니다."
+ },
+ {
+  "date": "2026-08-03",
+  "old_queries": [
+   "samsung product launch",
+   "samsung electronics earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor memory trend",
+   "online retail trends",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor trends",
+   "online retail trends",
+   "ai search traffic"
+  ],
+  "rationale": "쿼리 단축 및 일반화로 raw 수집량 늘리고, 키워드 필터 개선으로 관련성 및 보존율 향상. 'samsung electronics earnings'는 'samsung earnings report'로, 'semiconductor memory trend'는 'semiconductor trends'로, 'ai shopping trends'는 'ai shopping'으로 단축하여 더 넓은 결과를 수집하도록 개선. 키워드 필터에 'market trend'와 '시장 동향'을 추가하여 트렌드 관련 기사 수집을 강화."
  }
 ]

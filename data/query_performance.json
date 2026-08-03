@@ -1,49 +1,6 @@
 [
  {
   "date": "2026-07-07",
-  "total_raw": 37,
-  "total_dup": 4,
-  "total_kept": 9,
-  "per_query": {
-   "consumer electronics retail": {
-    "raw": 13,
-    "dup": 2,
-    "kept": 2
-   },
-   "social commerce": {
-    "raw": 8,
-    "dup": 0,
-    "kept": 1
-   },
-   "product discovery survey": {
-    "raw": 1,
-    "dup": 0,
-    "kept": 0
-   },
-   "retail channel report": {
-    "raw": 5,
-    "dup": 0,
-    "kept": 0
-   },
-   "ai shopping adoption": {
-    "raw": 1,
-    "dup": 1,
-    "kept": 0
-   },
-   "samsung ecommerce strategy": {
-    "raw": 3,
-    "dup": 1,
-    "kept": 0
-   },
-   "galaxy device innovation": {
-    "raw": 6,
-    "dup": 0,
-    "kept": 6
-   }
-  }
- },
- {
-  "date": "2026-07-07",
   "total_raw": 91,
   "total_dup": 7,
   "total_kept": 11,
@@ -1296,6 +1253,64 @@
     "raw": 10,
     "dup": 1,
     "kept": 2
+   }
+  }
+ },
+ {
+  "date": "2026-08-03",
+  "total_raw": 77,
+  "total_dup": 5,
+  "total_kept": 8,
+  "per_query": {
+   "samsung product launch": {
+    "raw": 11,
+    "dup": 0,
+    "kept": 2
+   },
+   "samsung earnings report": {
+    "raw": 1,
+    "dup": 0,
+    "kept": 0
+   },
+   "galaxy phone launch": {
+    "raw": 14,
+    "dup": 0,
+    "kept": 4
+   },
+   "smartphone market share": {
+    "raw": 3,
+    "dup": 0,
+    "kept": 0
+   },
+   "ecommerce trends": {
+    "raw": 5,
+    "dup": 0,
+    "kept": 0
+   },
+   "ai shopping": {
+    "raw": 10,
+    "dup": 0,
+    "kept": 1
+   },
+   "apple intelligence": {
+    "raw": 10,
+    "dup": 1,
+    "kept": 0
+   },
+   "semiconductor trends": {
+    "raw": 13,
+    "dup": 2,
+    "kept": 0
+   },
+   "online retail trends": {
+    "raw": 5,
+    "dup": 2,
+    "kept": 1
+   },
+   "ai search traffic": {
+    "raw": 5,
+    "dup": 0,
+    "kept": 0
    }
   }
  }

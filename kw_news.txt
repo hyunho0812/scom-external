@@ -151,6 +151,7 @@ quantum dot
 ev
 mobility
 hbm
+market trend
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
