@@ -106,6 +106,8 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
 .srcline{display:flex;flex-direction:column;align-items:flex-end;gap:2px;margin-top:10px;font-size:11px;color:#9aa0a6}
 .srcline>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
 .llmtag{color:#b0b0aa;font-style:italic}
+.srclink{font-size:12px;color:var(--blue);text-decoration:none;word-break:break-all}
+.srclink:hover{text-decoration:underline}
 .evt{position:relative;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--neu);border-radius:12px;padding:15px 17px;margin-bottom:12px;box-shadow:0 1px 2px rgba(20,40,160,0.04)}
 .evt.pos{border-left-color:var(--pos)}.evt.neg{border-left-color:var(--neg)}
 .evt .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:5px}
@@ -258,6 +260,10 @@ function divLabel(divs){
 const DIRC={"-":"#E24B4A","+":"#1D9E75","neutral":"#9a9a96","unknown":"#9a9a96"};
 const CONFC={"high":"#1D9E75","med":"#EF9F27","low":"#9a9a96"};
 const DIRCLS={"-":"neg","+":"pos","neutral":"","unknown":""};
+const STRENGTH=e=>Math.max(1,Math.min(5,+e.impact_strength||2));
+// Show the article's host rather than the raw URL — collected URLs are often
+// long tracking links that would blow out the card layout.
+function hostOf(u){ try{ return new URL(u).hostname.replace(/^www\./,''); }catch(_){ return u; } }
 const region=document.getElementById('region'),country=document.getElementById('country'),dv=document.getElementById('div'),sd=document.getElementById('sd'),ed=document.getElementById('ed'),csd=document.getElementById('csd'),ced=document.getElementById('ced');
 const ptype=document.getElementById('ptype'),cmpBasis=document.getElementById('cmpBasis'),pickerWrap=document.getElementById('pickerWrap');
 
@@ -424,14 +430,19 @@ function onCountryChange(){
  showAll=false; render();
 }
 function activeCountrySet(){if(country.value!=='ALL')return [country.value];const reg=REGIONS[region.value];return reg?reg:null;}
-function rows(){let r=EV.slice();
+// withDate=false keeps the scope/division filters but skips the period filter —
+// needed by the 누적 요인 buckets, which look at events OUTSIDE the current
+// window. Sharing one function keeps those filters from drifting apart.
+function rows(withDate=true){let r=EV.slice();
  // Country/region: a specific value keeps events containing any of them; 'all' = no filter (union)
  const cs=activeCountrySet();
  if(cs){ r=r.filter(e=>{const sc=(e.scope||'').split(';');return cs.some(c=>sc.includes(c));}); }
  // Division: specific value = contains it; 'all' = no filter
  if(dv.value!=='ALL'){ r=r.filter(e=>(e.divisions||'').split(';').includes(dv.value)); }
- if(sd.value)r=r.filter(e=>(e.date||'')>=sd.value);
- if(ed.value)r=r.filter(e=>(e.date||'')<=ed.value);
+ if(withDate){
+  if(sd.value)r=r.filter(e=>(e.date||'')>=sd.value);
+  if(ed.value)r=r.filter(e=>(e.date||'')<=ed.value);
+ }
  return r.sort((a,b)=>(b.date||'').localeCompare(a.date||''));}
 
 // ---- trend graph ----
@@ -556,6 +567,60 @@ function scrollToCard(n){
   el.classList.add('flash');
   setTimeout(()=>el.classList.remove('flash'),1600);
  }
+}
+// The full detail card. Shared by the main (numbered) list and the 누적 요인
+// list at the bottom — the axis panel deliberately shows title+date only, so
+// this is the single place event details are actually rendered.
+function evCardHtml(e, domId, badge){
+ const cls=DIRCLS[e.impact_direction]||'', bc=DIRC[e.impact_direction]||'#9a9a96';
+ const cc=CONFC[e.confidence]||'#9a9a96';
+ const ax=axisOf(e);
+ const meta=[`<span class="tag" style="background:${AXIS_COLOR[ax]}18;color:${AXIS_COLOR[ax]}">${AXIS_KO[ax]} 축</span>`,
+   `<span class="tag" style="background:${bc}18;color:${bc}">영향강도 ${STRENGTH(e)}/5</span>`]
+   .concat(e.confidence?[`<span class="tag" style="background:${cc}22;color:${cc}">신뢰도: ${e.confidence}</span>`]:[]);
+ const imp=e.impact?`<div class="imp" style="color:${bc};background:${bc}14">${e.impact}</div>`:'';
+ // Strip source/filter tags and legacy markers from the body text
+ const desc=(e.description||'')
+   .replace(/\s*\[출처:[^\]]*\]/g,'')
+   .replace(/\s*\[filter:[^\]]*\]/g,'')
+   .replace(/\s*\[source:[^\]]*\]/g,'')
+   .replace(/1차 출처 업데이트[^—]*—\s*/g,'')
+   .replace(/원문:\s*/g,'')
+   .trim();
+ // Seed events (hand-curated) carry no raw_url, so the line is omitted rather
+ // than rendered as a dead link.
+ const url=String(e.raw_url||'');
+ const linkLine=/^https?:\/\//.test(url)
+   ? `<div class="kline indent"><span class="klbl">원문 기사:</span><a class="srclink" href="${url}" target="_blank" rel="noopener noreferrer" title="${url}">${hostOf(url)} ↗</a></div>`
+   : '';
+ const src=e.source||'', llm=e.llm||'';
+ const bottomLine=(src||llm)?
+   `<div class="srcline">${llm?`<span class="llmtag">LLM: ${llm}</span>`:''}${src?`<span>source: ${src}</span>`:''}</div>`:'';
+ return `<div class="evt ${cls}" id="${domId}"><div class="top"><span class="ttl">${badge}${e.title}</span><span class="meta">${e.date||''}</span></div>
+   <div class="indent">${meta.join('')}</div>${imp?'<div class="indent">'+imp+'</div>':''}
+   <div class="desc indent">${desc}</div>
+   <div class="kline indent"><span class="klbl">영향 국가:</span><span class="metaval">${scopeLabelKo(e.scope)}</span></div>
+   <div class="kline indent"><span class="klbl">영향 사업부:</span><span class="metaval">${divLabel(e.divisions)}</span></div>
+   ${linkLine}${bottomLine}</div>`;
+}
+// Cumulative-factor rows point here instead: those events fall outside the
+// current period, so they have no numbered card in the main list.
+function scrollToCumCard(i){
+ const body=document.getElementById('cumBody');
+ if(body && body.style.display==='none') toggleCumSection();
+ const el=document.getElementById('evtc-'+i);
+ if(el){
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  el.classList.add('flash');
+  setTimeout(()=>el.classList.remove('flash'),1600);
+ }
+}
+function toggleCumSection(){
+ const body=document.getElementById('cumBody'), chev=document.getElementById('cumChev');
+ if(!body) return;
+ const open = body.style.display==='none';
+ body.style.display = open?'block':'none';
+ if(chev) chev.style.transform = open?'rotate(90deg)':'';
 }
 function drawTrend(evSortedAsc, numByDate){
  const sam=wikiSeries("Samsung");
@@ -733,6 +798,9 @@ function avgInRange(ser,from,to){
  return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
 }
 let axisCharts=[];
+// Filled by renderAxisPanel(), consumed by render() a few lines later to draw
+// the bottom 누적 요인 section. Keeps the two lists in exact sync.
+let CUM_EVENTS=[];
 // Expand/collapse an axis card's full event list and bring the card into view
 function toggleAxisList(axis){
  const el=document.getElementById('axis-full-'+axis);
@@ -742,6 +810,7 @@ function toggleAxisList(axis){
 }
 function renderAxisPanel(r,vd,numByDate){
  const panel=document.getElementById('axisPanel');
+ CUM_EVENTS=[];  // reset before any early return, so a stale list can't survive a re-render
  if(!(csd.value&&ced.value&&sd.value&&ed.value)){panel.style.display='none';return;}
  axisCharts.forEach(c=>c.destroy()); axisCharts=[];
  const mkt=marketTotalSeries(), shr=shareSeries();
@@ -750,8 +819,6 @@ function renderAxisPanel(r,vd,numByDate){
  const dPct=(dCur!=null&&dCmp)?(dCur-dCmp)/dCmp*100:null;
  const sPpt=(sCur!=null&&sCmp!=null)?(sCur-sCmp):null;
  const inCur=e=>(!sd.value||(e.date||'')>=sd.value)&&(!ed.value||(e.date||'')<=ed.value);
- const byAxis={demand:[],share:[],supply:[]};
- r.filter(inCur).forEach(e=>byAxis[axisOf(e)].push(e));
  const lcpSer=((CRUX.metrics||{}).lcp_ms)||[];
  const inpSer=((CRUX.metrics||{}).inp_ms)||[];
  const clsSer=((CRUX.metrics||{}).cls)||[];
@@ -814,6 +881,70 @@ function renderAxisPanel(r,vd,numByDate){
   }
  }
 
+ // Bucket this period's events by axis, keeping only those whose OWN
+ // impact_direction matches the direction of the overall move. The panel
+ // answers "traffic went down — what drove it down?", so an event that pushed
+ // traffic UP is not an explanation for a decline; listing it under the
+ // demand card just muddies the read. neutral/unknown are dropped for the
+ // same reason (they explain no direction). Counted so the exclusion can be
+ // stated rather than silently hiding data.
+ const trendDir=attr?(attr.totalPct<0?'-':'+'):null;
+ const byAxis={demand:[],share:[],supply:[]};
+ let oppCount=0;
+ r.filter(inCur).forEach(e=>{
+  if(trendDir && e.impact_direction!==trendDir){ oppCount++; return; }
+  byAxis[axisOf(e)].push(e);
+ });
+
+ // ---- 누적 요인 (cumulative factors) ----
+ // A period-over-period gap is driven by more than what happened INSIDE the
+ // current window. Two other groups move the number and were invisible before:
+ //
+ //  carry (이월): dated AFTER the comparison window closed but BEFORE the
+ //    current one opened. Their effect is fully present now and was entirely
+ //    absent from the baseline, so they drive the delta without ever falling
+ //    in either window. Restricted to impact_horizon='months' — the LLM
+ //    already judged those as lasting months, whereas an 'immediate' event
+ //    from half a year ago has nothing left to contribute.
+ //
+ //  base (기저): dated INSIDE the comparison window. These shaped the
+ //    baseline, so the direction test INVERTS — on a YoY decline it's the
+ //    events that pushed traffic UP a year ago that make today look lower.
+ //
+ // Only meaningful when the two windows don't touch (YoY/YTD). For adjacent
+ // comparisons (DoD/WoW/MoM/QoQ) the gap is empty and 'base' is suppressed,
+ // since there the baseline is the immediately preceding stretch and its
+ // events are better read as ordinary context than as a separate group.
+ const hasGap = csd.value && ced.value && sd.value && ced.value < sd.value;
+ const byAxisCum={demand:[],share:[],supply:[]};
+ if(trendDir && hasGap){
+  const oppDir = trendDir==='-'?'+':'-';
+  // r is already period-filtered, so the pool here must skip the date filter.
+  rows(false).forEach(e=>{
+   const d=e.date||'';
+   if(d>ced.value && d<sd.value){
+    if(e.impact_horizon==='months' && e.impact_direction===trendDir)
+     byAxisCum[axisOf(e)].push({e,kind:'carry'});
+   } else if(d>=csd.value && d<=ced.value){
+    if(e.impact_direction===oppDir)
+     byAxisCum[axisOf(e)].push({e,kind:'base'});
+   }
+  });
+ }
+ const cumTotal=byAxisCum.demand.length+byAxisCum.share.length+byAxisCum.supply.length;
+ // Cumulative events sit OUTSIDE the current period, so they never appear in
+ // the bottom list (which renders `r`). Collect them into a flat, de-duplicated
+ // list here — render() reads it right after this call and renders a matching
+ // 누적 요인 section at the bottom, giving each row a real scroll target.
+ CUM_EVENTS=[];
+ const cumIdx={};
+ const cumKey=e=>`${e.event_id||''}|${e.date||''}|${e.title||''}`;
+ ['demand','share','supply'].forEach(ax=>byAxisCum[ax].forEach(o=>{
+  const k=cumKey(o.e);
+  if(!(k in cumIdx)){ cumIdx[k]=CUM_EVENTS.length; CUM_EVENTS.push({e:o.e,kind:o.kind,axis:ax}); }
+ }));
+ const cumNo=e=>cumIdx[cumKey(e)];
+
  const fmtSigned=(v,unit,dec)=>v==null?'—':`${v>=0?'+':''}${v.toFixed(dec)}${unit}`;
  const basisLabel=isReal?'실측 트래픽':'위키 관심도(대리지표)';
  // The share axis means something different on each basis, so name it once
@@ -842,6 +973,8 @@ function renderAxisPanel(r,vd,numByDate){
   summary = `<strong>${word} 요인: ${causes.join(' · ')}</strong>`
     + (cushions.length?` <span style="font-weight:400;color:var(--muted)">(${cushions.join('·')} 축이 반대로 작용해 ${word}을 완화 — ${word} 원인은 아님)</span>`:'');
   if(byAxis.supply.length) summary+=` <span style="color:#8a6d1a">공급측 신호 ${byAxis.supply.length}건 감지.</span>`;
+  if(oppCount) summary+=` <span style="font-weight:400;color:var(--muted)">· 방향이 반대이거나 중립인 이벤트 ${oppCount}건은 ${word} 설명에서 제외.</span>`;
+  if(cumTotal) summary+=` <span style="font-weight:400;color:var(--blue)">· 현재 기간 밖 <strong>누적 요인 ${cumTotal}건</strong>도 이번 비교에 영향 (각 카드에서 펼쳐보기).</span>`;
  }
  // Allocation bar: 100% split across the axes that DROVE the move. Axes that
  // pushed the other way are excluded (0%) — they aren't causes of the move
@@ -875,16 +1008,15 @@ function renderAxisPanel(r,vd,numByDate){
 
  // Per-axis event lists: top 3 visible, rest expandable (deep-dive)
  const wOf=e=>Math.max(1,Math.min(5,+e.impact_strength||2))*(CONFW[e.confidence]||1);
- const evItem=(e)=>{
-  const n=numByDate[e.date]||0;
-  return `<div style="padding:7px 0;border-top:1px dashed var(--line);font-size:12px">
-    <div style="display:flex;justify-content:space-between;gap:6px">
-     <span style="cursor:pointer;font-weight:500" onclick="scrollToCard(${n})">${e.title}</span>
-     <span style="color:var(--muted);white-space:nowrap">${e.date||''}</span></div>
-    ${e.impact?`<div style="color:var(--muted);margin-top:2px">${e.impact}</div>`:''}
-    <div style="margin-top:3px"><span class="cp-tag">영향강도 ${Math.max(1,Math.min(5,+e.impact_strength||2))}/5</span><span class="cp-tag">신뢰도 ${e.confidence||'-'}</span></div>
+ // Deliberately title + date ONLY. These lists are scan-aids for "which axis
+ // is this coming from"; once a handful of events accumulate, inlining impact
+ // text and strength/confidence tags here buries the axis %s under a wall of
+ // text. The full detail lives in the bottom card the title links to.
+ const evItem=(e,tag,click)=>
+  `<div style="padding:6px 0;border-top:1px dashed var(--line);font-size:12px;display:flex;justify-content:space-between;gap:6px;align-items:baseline">
+    <span style="cursor:pointer;font-weight:500" title="클릭하면 하단 상세 카드로 이동합니다" onclick="${click||`scrollToCard(${numByDate[e.date]||0})`}">${tag||''}${e.title}</span>
+    <span style="color:var(--muted);white-space:nowrap">${e.date||''}</span>
   </div>`;
- };
  // frac (optional): this axis's allocation share (attr.alloc[ax]), so an
  // empty event list can distinguish "genuinely nothing going on" from "the
  // wiki-based quantitative split says this axis matters, but no collected
@@ -893,21 +1025,39 @@ function renderAxisPanel(r,vd,numByDate){
  // wiki data, while the event list only reflects whatever news/feed items
  // happened to be collected and LLM-tagged that axis in this window. A large
  // % with zero events is not a bug, just an unexplained (yet) data-backed shift.
+ const KIND_TAG={carry:'이월', base:'기저'};
+ const KIND_WHY={carry:'비교 기간 이후 발생 — 지금은 영향이 있지만 비교 기간엔 없었음',
+                 base:'비교 기간에 발생 — 기준선을 끌어올려 상대적 낙폭을 키움'};
+ const cumItem=({e,kind})=>evItem(e,
+   `<span class="cp-tag" style="background:#eef1fb;color:var(--blue);margin-right:5px" title="${KIND_WHY[kind]}">${KIND_TAG[kind]}</span>`,
+   `scrollToCumCard(${cumNo(e)})`);
  const evList=(axis,frac)=>{
   const items=byAxis[axis].slice().sort((a,b)=>wOf(b)-wOf(a));
+  const cum=byAxisCum[axis].slice().sort((a,b)=>wOf(b.e)-wOf(a.e));
+  // 누적 요인: events outside the current window that still move the
+  // comparison. Collapsed by default so the current period stays the headline.
+  const cumHtml = cum.length
+    ? `<div style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px">`
+      +`<span style="font-size:11px;color:var(--blue);cursor:pointer;font-weight:600" onclick="toggleAxisList('${axis}-cum')">누적 요인 ${cum.length}건 펼치기/접기</span>`
+      +`<div style="font-size:10.5px;color:#9aa0a6;margin-top:2px">현재 기간 밖에서 발생했지만 이번 비교에 영향을 주는 요인</div>`
+      +`<div id="axis-full-${axis}-cum" style="display:none">${cum.map(o=>cumItem(o)).join('')}</div></div>`
+    : '';
   if(!items.length){
-   if(attr && Math.abs(frac||0)>=0.02){
-    return `<div style="font-size:12px;color:#8a6d1a;background:#fff8e8;border:1px solid #f0e2b8;border-radius:8px;padding:8px 10px;margin-top:4px">`
+   const head = (attr && Math.abs(frac||0)>=0.02)
+    ? `<div style="font-size:12px;color:#8a6d1a;background:#fff8e8;border:1px solid #f0e2b8;border-radius:8px;padding:8px 10px;margin-top:4px">`
       +`⚠ 수치상 이 축이 변화의 ${(frac*100).toFixed(0)}%를 차지하지만, `
-      +`이 기간 수집된 뉴스·피드 중 ${AXIS_KO[axis]} 축으로 분류된 이벤트가 없습니다 — `
-      +`구체적 원인 기사를 아직 못 찾았다는 뜻이지, 수치가 잘못됐다는 뜻은 아닙니다.</div>`;
-   }
-   return `<div style="font-size:12px;color:var(--muted);padding:6px 0">이 기간 ${AXIS_KO[axis]} 축 이벤트 없음</div>`;
+      +`현재 기간에 수집된 ${AXIS_KO[axis]} 축 이벤트가 없습니다 — `
+      +`구체적 원인 기사를 아직 못 찾았다는 뜻이지, 수치가 잘못됐다는 뜻은 아닙니다.${cum.length?' 아래 누적 요인을 확인해 보세요.':''}</div>`
+    : `<div style="font-size:12px;color:var(--muted);padding:6px 0">이 기간 ${AXIS_KO[axis]} 축 이벤트 없음</div>`;
+   return head+cumHtml;
   }
   const top=items.slice(0,3), rest=items.slice(3);
-  return top.map(evItem).join('')+
-   `<div id="axis-full-${axis}" style="display:none">${rest.map(evItem).join('')}</div>`+
-   (rest.length?`<div style="padding:6px 0;border-top:1px dashed var(--line)"><span style="font-size:11px;color:var(--blue);cursor:pointer;font-weight:500" onclick="toggleAxisList('${axis}')">외 ${rest.length}건 펼치기/접기</span></div>`:'');
+  // NOT .map(evItem) — Array.map passes (el, index, array), which would land in
+  // evItem's optional tag/click params.
+  return top.map(e=>evItem(e)).join('')+
+   `<div id="axis-full-${axis}" style="display:none">${rest.map(e=>evItem(e)).join('')}</div>`+
+   (rest.length?`<div style="padding:6px 0;border-top:1px dashed var(--line)"><span style="font-size:11px;color:var(--blue);cursor:pointer;font-weight:500" onclick="toggleAxisList('${axis}')">외 ${rest.length}건 펼치기/접기</span></div>`:'')
+   +cumHtml;
  };
  const spark=(id)=>`<div style="height:56px;margin:8px 0"><canvas id="${id}"></canvas></div>`;
  // Big number per card: that axis's share of the move it helped cause. An axis
@@ -1056,7 +1206,6 @@ function render(){
  }
  const inCur=e=>(!sd.value||(e.date||'')>=sd.value)&&(!ed.value||(e.date||'')<=ed.value);
  const CONFNORM={high:1.0, med:0.66, low:0.33};
- const STRENGTH=e=>Math.max(1,Math.min(5,+e.impact_strength||2));
 
  // ---- Change-points (computed; folded into period attribution below) ----
  const cps=(window._changePoints)||[];
@@ -1152,34 +1301,24 @@ function render(){
  // Top 10 + "show more"
  const LIMIT=10;
  const shown=showAll?r:r.slice(0,LIMIT);
- const cardsHtml = r.length? shown.map((e,i)=>{
-   const cls=DIRCLS[e.impact_direction]||'';const bc=DIRC[e.impact_direction]||'#9a9a96';
-   const cc=CONFC[e.confidence]||'#9a9a96';
-   const ax=axisOf(e);
-   const meta=[`<span class="tag" style="background:${AXIS_COLOR[ax]}18;color:${AXIS_COLOR[ax]}">${AXIS_KO[ax]} 축</span>`]
-     .concat(e.confidence?[`<span class="tag" style="background:${cc}22;color:${cc}">신뢰도: ${e.confidence}</span>`]:[]);
-   const imp=e.impact?`<div class="imp" style="color:${bc};background:${bc}14">${e.impact}</div>`:'';
-   const badge=`<span class="numbadge" style="background:${bc}">${i+1}</span>`;
-   // Strip source/filter tags and legacy markers from the body text
-   let desc=(e.description||'')
-     .replace(/\s*\[출처:[^\]]*\]/g,'')
-     .replace(/\s*\[filter:[^\]]*\]/g,'')
-     .replace(/\s*\[source:[^\]]*\]/g,'')
-     .replace(/1차 출처 업데이트[^—]*—\s*/g,'')
-     .replace(/원문:\s*/g,'')
-     .trim();
-   const src=e.source||'';
-   const llm=e.llm||'';
-   const bottomLine=(src||llm)?
-     `<div class="srcline">${llm?`<span class="llmtag">LLM: ${llm}</span>`:''}${src?`<span>source: ${src}</span>`:''}</div>`:'';
-   return `<div class="evt ${cls}" id="evt-${i+1}"><div class="top"><span class="ttl">${badge}${e.title}</span><span class="meta">${e.date||''}</span></div>
-     <div class="indent">${meta.join('')}</div>${imp?'<div class="indent">'+imp+'</div>':''}
-     <div class="desc indent">${desc}</div>
-     <div class="kline indent"><span class="klbl">영향 국가:</span><span class="metaval">${scopeLabelKo(e.scope)}</span></div>
-     <div class="kline indent"><span class="klbl">영향 사업부:</span><span class="metaval">${divLabel(e.divisions)}</span></div>
-     ${bottomLine}</div>`;}).join('') : '<div class="empty">해당 조건에 맞는 이벤트가 없습니다.</div>';
+ const cardsHtml = r.length? shown.map((e,i)=>evCardHtml(e,`evt-${i+1}`,
+     `<span class="numbadge" style="background:${DIRC[e.impact_direction]||'#9a9a96'}">${i+1}</span>`))
+   .join('') : '<div class="empty">해당 조건에 맞는 이벤트가 없습니다.</div>';
  const moreBtn = (r.length>LIMIT)? `<button id="morebtn" style="display:block;margin:4px auto 0;padding:9px 20px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--blue);font-size:13px;font-weight:500;cursor:pointer">${showAll?'접기':'더보기 ('+(r.length-LIMIT)+'개 더)'}</button>` : '';
- document.getElementById('list').innerHTML = cardsHtml + moreBtn;
+ // 누적 요인 section: same card format, but for events outside the current
+ // period, so the axis panel's 누적 요인 rows have somewhere to link to.
+ let cumHtml='';
+ if(CUM_EVENTS.length){
+  const KIND_LBL={carry:'이월', base:'기저'};
+  const cumCards=CUM_EVENTS.map((o,i)=>evCardHtml(o.e,`evtc-${i}`,
+    `<span class="numbadge" style="background:var(--blue);width:auto;padding:0 7px;border-radius:9px;font-size:10px">${KIND_LBL[o.kind]||''}</span>`)).join('');
+  cumHtml=`<div style="margin-top:22px">
+    <div onclick="toggleCumSection()" style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 14px;border:1px solid var(--line);border-left:3px solid var(--blue);background:var(--card);cursor:pointer">
+      <span style="font-size:13px;font-weight:600"><span id="cumChev" style="display:inline-block;transition:transform .15s">▸</span> 누적 요인 ${CUM_EVENTS.length}건</span>
+      <span style="font-size:11px;color:var(--muted);text-align:right">현재 기간 밖에서 발생했지만 이번 비교에 영향을 주는 요인</span></div>
+    <div id="cumBody" style="display:none;margin-top:10px">${cumCards}</div></div>`;
+ }
+ document.getElementById('list').innerHTML = cardsHtml + moreBtn + cumHtml;
  const mb=document.getElementById('morebtn');
  if(mb) mb.onclick=()=>{ showAll=!showAll; render(); };
 }
