@@ -838,5 +838,33 @@
    "ai search traffic"
   ],
   "rationale": "쿼리 단축 및 일반화로 raw 수집량 늘리고, 키워드 필터 개선으로 관련성 및 보존율 향상. 'samsung electronics earnings'는 'samsung earnings report'로, 'semiconductor memory trend'는 'semiconductor trends'로, 'ai shopping trends'는 'ai shopping'으로 단축하여 더 넓은 결과를 수집하도록 개선. 키워드 필터에 'market trend'와 '시장 동향'을 추가하여 트렌드 관련 기사 수집을 강화."
+ },
+ {
+  "date": "2026-08-04",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor trends",
+   "online retail trends",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor trends",
+   "online retail trends",
+   "ai search traffic"
+  ],
+  "rationale": "실적 관련 검색어의 raw 수치가 낮아 'samsung earnings report'에서 'report'를 제거하여 더 넓은 결과를 얻도록 수정했습니다. 기존 키워드 목록에 'earnings'를 추가하여 관련도가 유지되도록 했습니다. 다른 쿼리는 성능이 비교적 양호하거나 이미 짧고 일반적이므로 유지했습니다."
  }
 ]

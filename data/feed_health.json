@@ -1,9 +1,9 @@
 {
- "checked": "2026-08-03 22:58 UTC",
+ "checked": "2026-08-04 23:33 UTC",
  "feeds": {
   "OpenAI news": {
    "status": "ok",
-   "detail": "1106 items"
+   "detail": "1110 items"
   },
   "Gemini (Google)": {
    "status": "ok",
@@ -60,6 +60,26 @@
   "Digiday": {
    "status": "ok",
    "detail": "15 items"
+  },
+  "Semrush": {
+   "status": "ok",
+   "detail": "20 items"
+  },
+  "Ahrefs": {
+   "status": "ok",
+   "detail": "10 items"
+  },
+  "Moz": {
+   "status": "ok",
+   "detail": "10 items"
+  },
+  "HubSpot Marketing": {
+   "status": "ok",
+   "detail": "50 items"
+  },
+  "Neil Patel": {
+   "status": "ok",
+   "detail": "10 items"
   }
  }
 }

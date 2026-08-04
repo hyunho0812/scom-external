@@ -152,6 +152,7 @@ ev
 mobility
 hbm
 market trend
+earnings
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

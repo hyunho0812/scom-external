@@ -273,6 +273,7 @@ oled
 모빌리티
 hbm
 시장 동향
+earnings
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
