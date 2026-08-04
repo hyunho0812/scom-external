@@ -165,8 +165,8 @@ python3 scripts/build.py
   `gemini-2.5-flash`/`mistral-small-latest` 등 실제 판단에 쓰인 모델명)이 이미 누적됨.
   Mistral이 `impact` 필드에서만 "IN KOREAN" 지시를 어긴 과거 15건은 재번역 완료, 재발
   방지 가드(`llm_common.py`의 `_korean_fields_ok`)도 추가됨.
-- `feeds.txt`: 15개 (AI플랫폼 4 고정 + 검색플랫폼(Google) 2 고정 + 회사 2 고정 + 트렌드소스
-  7, 트렌드소스만 주기적 재검토 대상 — 재검토 시 `data/feed_performance.json`의
+- `feeds.txt`: 20개 (AI플랫폼 4 고정 + 검색플랫폼(Google) 2 고정 + 회사 2 고정 + 트렌드소스
+  12, 트렌드소스만 주기적 재검토 대상 — 재검토 시 `data/feed_performance.json`의
   kw_pass_rate/keep_rate를 참고). 검색플랫폼 2개(Search Status Dashboard Atom, Search
   Central Blog FeedBurner)와 Samsung newsroom KR은 2026-07-08 소유자가 브라우저로 직접
   XML 로드를 확인해 검증함. Samsung KR 피드는 한국어 콘텐츠라 `kw_feeds.txt` KEEP에
@@ -174,6 +174,15 @@ python3 scripts/build.py
   사전필터에서 전멸하니 주의. 트렌드소스 중 Gartner Newsroom(HTTP 403 지속),
   TrendForce Consumer Electronics(0건 지속), Search Engine Land(HTTP 403 지속) 3개는
   `data/feed_health.json`에서 여러 날 연속 문제로 확인돼 2026-07-14 제거함 (10→7).
+  **2026-08-04: "벤더/개인 블로그 제외" 룰 폐지** (7→12). 발행 주체의 형식은 개별 기사가
+  사전필터·LLM 판단체인을 통과하는지와 무관하고, 소스별 실효성은 `feed_performance.json`이
+  훨씬 정확히 측정하기 때문. 그때 빠졌던 Semrush/Ahrefs/Moz/HubSpot Marketing/Neil Patel
+  5개 복구 — 활동 당시 `data/feed_state.json` 9일치(06-29~07-06) 전 회차에서 각각
+  20/10/10/50/10건을 안정적으로 반환한 게 검증 근거(세션 egress 차단으로 실시간 재fetch는
+  불가, 다음 `check_feeds.py` 일간 실행이 재확인). **이제 소스를 배제하는 사유는 딱 둘,
+  둘 다 관찰 가능한 사실이며 편집 판단이 아님**: (1) 에러/0건, (2) 미러(퍼블리셔 자체 피드가
+  아님). 같이 빠졌던 Shopify Blog는 복구 대상이 아님 — 같은 9회차 전부 0건이라 (1)에 해당
+  (TrendForce Consumer Electronics와 동일 패턴). Anthropic/Perplexity도 (2)라 계속 제외.
 - 사전필터/검색어 구조가 2026-07-08 대대적으로 개편됨: `data/kw_filters.json`(뉴스 전용,
   JSON) 삭제, `kw_news.txt`+`kw_feeds.txt`(콜렉터별 분리, txt) 신설. `queries.txt`는
   `category | query` 형식으로 바뀌어 samsung/galaxy/ecommerce/smartphone/other 5개
