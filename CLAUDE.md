@@ -25,12 +25,20 @@ scripts/
   collect_crux.py     공급축 — CrUX 실사용자 CWV 주간 시계열 (CRUX_API_KEY 없으면 조용히 스킵)
   optimize.py         매일 Gemini가 queries.txt/kw_news.txt/kw_feeds.txt 자동 튜닝
   check_model.py      Gemini/Groq/Mistral 3개 모델 상태 체크 (매일) → data/model_status.json
-  check_feeds.py       feeds.txt의 15개 피드 파싱 상태 체크 (매일) → data/feed_health.json
+                      ※ 메타데이터 GET일 뿐 생성을 안 해봄 — 아래 llm_usage.json 참고
+  check_feeds.py       feeds.txt의 20개 피드 파싱 상태 체크 (매일) → data/feed_health.json
   merge_past_events.py 수동 도구 — 이벤트 배치를 events.json에 병합(스키마 검증·정렬·중복제거)
   check_feed_translation.py 수동 진단 — events.json 내 피드 항목 번역 품질 점검
   build.py             모든 data/*.json → index.html 재빌드 (대시보드 JS 전부 여기 있음)
 
 data/                 자동 생성/갱신되는 JSON들 (스키마는 각 스크립트 상단 docstring 참고)
+  llm_usage.json      (2026-08-05 신설) 콜렉터 실행별 provider 텔레메트리 —
+                      attempt/ok/ko_reject/empty/http_429/http_auth/http_other/
+                      exception/skipped_off. `llm_common.save_usage()`가
+                      `diag_summary(label)` 끝에서 기록, 30일 보존.
+                      **폴백은 항목당 비용이 아니라 런당 비용** — 429 한 번이면
+                      off 플래그가 켜져 그 런의 나머지는 요청 없이 스킵되므로,
+                      실제 요청 수는 `attempt` 합계(=`total_attempts`)로 볼 것.
 feeds.txt             1차 소스 RSS 목록 (15개: AI플랫폼4 + 검색플랫폼(Google)2 + 회사2 + 트렌드7)
 queries.txt           뉴스 검색어 10개, `category | query` 형식 (samsung/galaxy/ecommerce/
                       smartphone/other 5개 카테고리, optimize.py가 매일 조정)
@@ -66,11 +74,23 @@ merge_past_events/check_feed_translation)는 거기서 import — 예전엔 3~4�
 정확히 이런 식으로 생겼었음)가 났었음. **새 설정 상수나 파일 파서를 또 추가해야 하면
 `llm_common.py`에 먼저 넣고 각 스크립트는 import만 하는 걸 기본으로 할 것.**
 
-- Gemini: `GEMINI_API_KEY`, `GEMINI_MODEL` (기본 `gemini-2.5-flash`)
+- Gemini: `GEMINI_API_KEY`, `GEMINI_MODEL` (기본 `gemini-2.5-flash`).
+  `thinkingConfig.thinkingBudget=0`으로 사고 토큰을 끄고 호출함 — 안 그러면 사고 토큰이
+  `maxOutputTokens`를 다 먹고 본문이 비어 나옴.
 - Groq: `GROQ_API_KEY`, `GROQ_MODEL` (기본 `openai/gpt-oss-120b` — llama-3.3-70b-versatile은
-  2026-06-17 폐기공지 받아서 교체함)
+  2026-06-17 폐기공지 받아서 교체함), `GROQ_MAX_TOKENS`(기본 1500),
+  `GROQ_REASONING_EFFORT`(기본 `low`, 빈 문자열이면 기능 끔).
+  **gpt-oss는 추론(reasoning) 모델이라 Gemini와 똑같은 함정이 있음** — 추론 토큰이
+  `max_tokens`에 포함돼서 공용 600 상한으로는 `content`가 빈 채로 돌아오고, 체인이 조용히
+  Mistral로 떨어짐. 2026-07-06 Groq 도입 이후 **kept 이벤트 0건**이 정확히 이 증상이었고
+  2026-08-05에 `reasoning_effort`+상향된 max_tokens로 대응함. Groq 전용 필드라 400이 나면
+  `_groq_no_extra`가 래치되어 그 런에서는 필드를 빼고 재시도함(도입 전보다 나빠질 수 없음).
 - Mistral: `MISTRAL_API_KEY`, `MISTRAL_MODEL` (기본 `mistral-small-latest`, 무료
   Experiment 티어라 분당 2회 제한 — 3순위라 괜찮음)
+
+**`check_model.py`의 "ok"를 작동 증거로 믿지 말 것.** 이건 모델 메타데이터 GET이라
+생성을 안 해봄 — 위 Groq 증상은 한 달 내내 `model_status.json`에 `ok`로 찍혀 있었음.
+실제 작동 여부는 `data/llm_usage.json`의 `ok`/`empty`/`ko_reject`로 판단할 것.
 
 ### 2. "검증된 공식 소스만" 원칙
 feeds.txt에 넣는 모든 RSS는 **반드시 실제로 fetch해서 검증** 후에만 추가. 3rd파티
