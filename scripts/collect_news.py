@@ -175,11 +175,18 @@ def main():
     except Exception: events = []
     seen = {(e.get("title","").lower(), e.get("date","")) for e in events}
     added = 0
-    # Per-query performance: raw (fetched), dup (duplicates), kept (passed Gemini)
+    # Per-query performance: raw (fetched) -> dup (already seen) -> kw_pass
+    # (survived the keyword pre-filter, i.e. the item actually reached an LLM)
+    # -> kept (an LLM judged it relevant). kw_pass is the ONLY field that
+    # reveals LLM call volume for this collector — without it, the pipeline's
+    # single biggest token consumer can only be guessed at from collect_feeds'
+    # rate. It also splits "query is off-topic" (low kw_pass) from "query is
+    # on-topic but its articles get judged out" (kw_pass high, kept low), the
+    # same diagnosis split collect_feeds.py already gives per source.
     perf = {}
     def bump(q, field):
         if not q: q = "(none)"
-        perf.setdefault(q, {"raw":0,"dup":0,"kept":0})
+        perf.setdefault(q, {"raw":0,"dup":0,"kw_pass":0,"kept":0})
         perf[q][field] += 1
     # Merge NewsAPI + GDELT into the same keyword->Gemini pipeline
     all_articles = fetch_news() + load_gdelt()
@@ -196,6 +203,7 @@ def main():
         kw = keyword_verdict(text)
         if not kw:
             continue  # obvious noise, never reaches any LLM
+        bump(q, "kw_pass")  # counted BEFORE the chain: 1 kw_pass = 1 item sent to an LLM
         # Step 3: precise judgement via Gemini -> Groq -> Mistral (in that order).
         verdict, llm_used = llm_filter(art)
         if verdict is not None:
@@ -219,8 +227,10 @@ def main():
     # Save per-query performance (optimize.py uses it next day)
     total_raw = sum(p["raw"] for p in perf.values())
     total_dup = sum(p["dup"] for p in perf.values())
+    total_kw = sum(p["kw_pass"] for p in perf.values())
     statrec = {"date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-               "total_raw": total_raw, "total_dup": total_dup, "total_kept": added,
+               "total_raw": total_raw, "total_dup": total_dup,
+               "total_kw_pass": total_kw, "total_kept": added,
                "per_query": perf}
     try:
         hist = json.load(open(os.path.join(HERE,"..","data","query_performance.json"),encoding="utf-8"))
@@ -230,7 +240,8 @@ def main():
     hist.append(statrec); hist = hist[-30:]  # keep last 30 days only
     json.dump(hist, open(os.path.join(HERE,"..","data","query_performance.json"),"w",encoding="utf-8"),
               ensure_ascii=False, indent=1)
-    print(f"layer1 done. added {added}, total {len(events)} | raw {total_raw}, dup {total_dup}")
+    print(f"layer1 done. added {added}, total {len(events)} | "
+          f"raw {total_raw}, dup {total_dup}, kw_pass {total_kw} (= LLM calls)")
     diag_summary("collect_news")
 
 if __name__ == "__main__":

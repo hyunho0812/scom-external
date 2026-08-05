@@ -129,7 +129,15 @@ KW_FEEDS_HEADER = [
 
 
 def recent_perf():
-    """Aggregate per-query performance over recent days -> {query: {raw,dup,kept,pass_rate,dup_rate}}."""
+    """Aggregate per-query performance over recent days ->
+    {query: {raw,dup,kw_pass,kept,pass_rate,dup_rate,keep_rate}}.
+
+    keep_rate (kept/kw_pass) mirrors recent_feed_perf's: it separates "this
+    query pulls off-topic articles" (few survive the keyword pre-filter) from
+    "this query is on-topic but its articles keep getting judged out by the
+    LLM". kw_pass is absent from records written before 2026-08-04, so it
+    defaults to 0 and keep_rate reads 0.0 for those days.
+    """
     try:
         hist = json.load(open(STATFILE, encoding="utf-8"))
         if isinstance(hist, dict): hist = [hist]
@@ -138,11 +146,13 @@ def recent_perf():
     agg = {}
     for rec in hist[-7:]:  # last 7 days
         for q, p in (rec.get("per_query") or {}).items():
-            a = agg.setdefault(q, {"raw":0,"dup":0,"kept":0})
-            a["raw"] += p.get("raw",0); a["dup"] += p.get("dup",0); a["kept"] += p.get("kept",0)
+            a = agg.setdefault(q, {"raw":0,"dup":0,"kw_pass":0,"kept":0})
+            a["raw"] += p.get("raw",0); a["dup"] += p.get("dup",0)
+            a["kw_pass"] += p.get("kw_pass",0); a["kept"] += p.get("kept",0)
     for q, a in agg.items():
         a["pass_rate"] = round(a["kept"]/a["raw"], 3) if a["raw"] else 0.0
         a["dup_rate"]  = round(a["dup"]/a["raw"], 3) if a["raw"] else 0.0
+        a["keep_rate"] = round(a["kept"]/a["kw_pass"], 3) if a["kw_pass"] else 0.0
     return agg
 
 def recent_feed_perf():
@@ -310,11 +320,12 @@ def main():
 
     perf_lines = []
     for q in cur_q:
-        p = perf.get(q, {"raw":0,"kept":0,"pass_rate":0,"dup_rate":0})
+        p = perf.get(q, {})
         # word count is shown so the model can see the length->yield relationship
         perf_lines.append(f'- "{q}" ({len(q.split())} words): raw={p.get("raw",0)}, '
-                          f'kept={p.get("kept",0)}, pass={p.get("pass_rate",0)}, '
-                          f'dup={p.get("dup_rate",0)}')
+                          f'kw_pass={p.get("kw_pass",0)}, kept={p.get("kept",0)}, '
+                          f'pass={p.get("pass_rate",0)}, dup={p.get("dup_rate",0)}, '
+                          f'keep_rate={p.get("keep_rate",0)}')
     perf_txt = "\n".join(perf_lines) if perf_lines else "(no performance data yet)"
     feed_perf_lines = [f'- "{label}": raw={p["raw"]}, kw_pass_rate={p["kw_pass_rate"]}, '
                         f'keep_rate={p["keep_rate"]} (kept/kw_pass — low means content is '
