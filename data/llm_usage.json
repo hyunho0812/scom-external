@@ -1,0 +1,84 @@
+[
+ {
+  "date": "2026-08-05",
+  "at": "2026-08-05 23:18 UTC",
+  "stage": "collect_news",
+  "providers": {
+   "gemini": {
+    "attempt": 9,
+    "ok": 8,
+    "ko_reject": 0,
+    "empty": 0,
+    "http_429": 1,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 106
+   },
+   "groq": {
+    "attempt": 4,
+    "ok": 3,
+    "ko_reject": 0,
+    "empty": 0,
+    "http_429": 1,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 103
+   },
+   "mistral": {
+    "attempt": 104,
+    "ok": 96,
+    "ko_reject": 8,
+    "empty": 0,
+    "http_429": 0,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 0
+   }
+  },
+  "total_attempts": 117
+ },
+ {
+  "date": "2026-08-05",
+  "at": "2026-08-05 23:29 UTC",
+  "stage": "collect_feeds",
+  "providers": {
+   "gemini": {
+    "attempt": 8,
+    "ok": 7,
+    "ko_reject": 0,
+    "empty": 0,
+    "http_429": 1,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 20
+   },
+   "groq": {
+    "attempt": 4,
+    "ok": 3,
+    "ko_reject": 0,
+    "empty": 0,
+    "http_429": 1,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 17
+   },
+   "mistral": {
+    "attempt": 18,
+    "ok": 18,
+    "ko_reject": 0,
+    "empty": 0,
+    "http_429": 0,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 0
+   }
+  },
+  "total_attempts": 30
+ }
+]

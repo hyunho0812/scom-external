@@ -1,63 +1,5 @@
 [
  {
-  "date": "2026-07-08",
-  "total_raw": 115,
-  "total_dup": 21,
-  "total_kept": 22,
-  "per_query": {
-   "consumer electronics retail": {
-    "raw": 18,
-    "dup": 0,
-    "kept": 4
-   },
-   "social commerce": {
-    "raw": 20,
-    "dup": 1,
-    "kept": 2
-   },
-   "retail channel report": {
-    "raw": 10,
-    "dup": 3,
-    "kept": 1
-   },
-   "galaxy device innovation": {
-    "raw": 7,
-    "dup": 0,
-    "kept": 6
-   },
-   "apple intelligence strategy": {
-    "raw": 15,
-    "dup": 0,
-    "kept": 3
-   },
-   "semiconductor memory market trend": {
-    "raw": 7,
-    "dup": 1,
-    "kept": 0
-   },
-   "online retail ai adoption": {
-    "raw": 10,
-    "dup": 2,
-    "kept": 0
-   },
-   "samsung galaxy innovation": {
-    "raw": 7,
-    "dup": 4,
-    "kept": 3
-   },
-   "smartphone memory market trend": {
-    "raw": 4,
-    "dup": 2,
-    "kept": 2
-   },
-   "social commerce growth report": {
-    "raw": 17,
-    "dup": 8,
-    "kept": 1
-   }
-  }
- },
- {
   "date": "2026-07-09",
   "total_raw": 93,
   "total_dup": 25,
@@ -1316,6 +1258,75 @@
     "raw": 10,
     "dup": 1,
     "kept": 3
+   }
+  }
+ },
+ {
+  "date": "2026-08-05",
+  "total_raw": 131,
+  "total_dup": 9,
+  "total_kw_pass": 115,
+  "total_kept": 20,
+  "per_query": {
+   "samsung product launch": {
+    "raw": 18,
+    "dup": 2,
+    "kw_pass": 13,
+    "kept": 3
+   },
+   "samsung earnings": {
+    "raw": 10,
+    "dup": 0,
+    "kw_pass": 9,
+    "kept": 3
+   },
+   "galaxy phone launch": {
+    "raw": 17,
+    "dup": 3,
+    "kw_pass": 14,
+    "kept": 6
+   },
+   "smartphone market share": {
+    "raw": 20,
+    "dup": 0,
+    "kw_pass": 19,
+    "kept": 2
+   },
+   "ecommerce trends": {
+    "raw": 6,
+    "dup": 0,
+    "kw_pass": 5,
+    "kept": 0
+   },
+   "ai shopping": {
+    "raw": 10,
+    "dup": 0,
+    "kw_pass": 10,
+    "kept": 2
+   },
+   "apple intelligence": {
+    "raw": 10,
+    "dup": 0,
+    "kw_pass": 10,
+    "kept": 3
+   },
+   "semiconductor trends": {
+    "raw": 20,
+    "dup": 0,
+    "kw_pass": 19,
+    "kept": 0
+   },
+   "online retail trends": {
+    "raw": 10,
+    "dup": 0,
+    "kw_pass": 10,
+    "kept": 0
+   },
+   "ai search traffic": {
+    "raw": 10,
+    "dup": 4,
+    "kw_pass": 6,
+    "kept": 1
    }
   }
  }
