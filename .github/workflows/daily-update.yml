@@ -50,6 +50,8 @@ jobs:
           GEMINI_MODEL: gemini-2.5-flash
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          # 기사 N건을 한 요청으로 판단 (프롬프트 재전송·요청수 절감). 1이면 기존 개별 처리.
+          LLM_BATCH: "5"
         run: python scripts/collect_news.py
 
       # ---- Layer 2: first-party feeds (AI platforms / Companies / Blogs) ----
@@ -59,6 +61,7 @@ jobs:
           GEMINI_MODEL: gemini-2.5-flash
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          LLM_BATCH: "5"
         run: python scripts/collect_feeds.py
 
       - name: Company trend — Wikipedia pageviews (free, no key)
