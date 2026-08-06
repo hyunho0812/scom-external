@@ -28,7 +28,8 @@ from xml.etree import ElementTree as ET
 
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
-from llm_common import llm_filter, diag_summary, INTERESTS, MARKETS, load_kw_file, clean_axis
+from llm_common import (llm_filter_batch, diag_summary, INTERESTS, MARKETS,
+                        load_kw_file, clean_axis, BATCH)
 
 DATA = os.path.join(HERE, "..", "data", "events.json")
 STATE = os.path.join(HERE, "..", "data", "feed_state.json")
@@ -133,6 +134,12 @@ def main():
     def bump(label, field):
         perf.setdefault(label, {"raw": 0, "kw_pass": 0, "kept": 0})
         perf[label][field] += 1
+    # Pass 1: fetch every feed and keyword-filter it, collecting the survivors
+    # across ALL feeds. Judging happens afterwards in batches, so the ~1.1k-token
+    # instruction block is sent once per BATCH items instead of once per item
+    # (and the request count — what the free tiers actually ration — drops by
+    # the same factor). Feed state is still recorded per feed, exactly as before.
+    candidates = []
     for label, url in feeds.items():
         seen_links = set(state.get(label, []))
         try:
@@ -149,9 +156,17 @@ def main():
             eid = "FP" + hashlib.md5((label + it["title"]).encode()).hexdigest()[:8]
             if eid in existing_ids:
                 continue
-            # Same rich judgement as collect_news.py: Gemini -> Groq -> Mistral.
-            article = {"title": it["title"], "desc": it["summary"], "source": label}
-            verdict, llm_used = llm_filter(article)
+            existing_ids.add(eid)  # guard against duplicates within this run too
+            candidates.append((label, it, eid))
+        state[label] = list({it["link"] for it in items if it["link"]})[:300]
+
+    # Pass 2: same rich judgement as collect_news.py (Gemini -> Groq -> Mistral),
+    # BATCH items per request.
+    for i in range(0, len(candidates), BATCH):
+        chunk = candidates[i:i+BATCH]
+        articles = [{"title": it["title"], "desc": it["summary"], "source": label}
+                    for label, it, _ in chunk]
+        for (label, it, eid), (verdict, llm_used) in zip(chunk, llm_filter_batch(articles)):
             if verdict is None:
                 # All three LLMs unavailable/failed — skip rather than store
                 # English text or keyword-guessed classification.
@@ -186,9 +201,8 @@ def main():
                 "raw_desc": it.get("summary", ""),
                 "raw_url": it.get("link", ""),
             })
-            existing_ids.add(eid); added += 1; bump(label, "kept")
+            added += 1; bump(label, "kept")
             print("  + kept:", events[-1]["title"])
-        state[label] = list({it["link"] for it in items if it["link"]})[:300]
     # New events are appended above with whatever date the LLM extracted
     # (often in the past relative to today) — re-sort by date every write so
     # the file-level invariant (CLAUDE.md's integrity checklist) never breaks.

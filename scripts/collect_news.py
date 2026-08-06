@@ -38,7 +38,8 @@ from datetime import datetime, timedelta, timezone
 
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
-from llm_common import llm_filter, diag_summary, INTERESTS, MARKETS, load_queries, load_kw_file, clean_axis
+from llm_common import (llm_filter_batch, diag_summary, INTERESTS, MARKETS,
+                        load_queries, load_kw_file, clean_axis, BATCH)
 
 DATA = os.path.join(HERE, "..", "data", "events.json")
 NEWS_KEY = os.environ.get("NEWS_API_KEY", "")
@@ -188,8 +189,13 @@ def main():
         if not q: q = "(none)"
         perf.setdefault(q, {"raw":0,"dup":0,"kw_pass":0,"kept":0})
         perf[q][field] += 1
-    # Merge NewsAPI + GDELT into the same keyword->Gemini pipeline
+    # Merge NewsAPI + GDELT into the same keyword->LLM pipeline
     all_articles = fetch_news() + load_gdelt()
+    # Step 2: keyword pre-filter first, for EVERY article, so the survivors can
+    # then be judged in batches. (Judging one-at-a-time re-sent the ~1.1k-token
+    # instruction block per article; batching amortises it across BATCH items
+    # and cuts the request count by the same factor.)
+    candidates = []
     for art in all_articles:
         q = art.get("query","")
         bump(q, "raw")
@@ -198,26 +204,27 @@ def main():
             bump(q, "dup")
             continue
         seen.add(key)  # dedup within this run
-        text = art["title"] + " " + art["desc"]
-        # Step 2: keyword pre-filter
-        kw = keyword_verdict(text)
-        if not kw:
+        if not keyword_verdict(art["title"] + " " + art["desc"]):
             continue  # obvious noise, never reaches any LLM
-        bump(q, "kw_pass")  # counted BEFORE the chain: 1 kw_pass = 1 item sent to an LLM
-        # Step 3: precise judgement via Gemini -> Groq -> Mistral (in that order).
-        verdict, llm_used = llm_filter(art)
-        if verdict is not None:
+        bump(q, "kw_pass")  # counted BEFORE the chain: 1 kw_pass = 1 item judged
+        candidates.append(art)
+    # Step 3: precise judgement via Gemini -> Groq -> Mistral, BATCH at a time.
+    for i in range(0, len(candidates), BATCH):
+        chunk = candidates[i:i+BATCH]
+        for art, (verdict, llm_used) in zip(chunk, llm_filter_batch(chunk)):
+            q = art.get("query","")
+            if verdict is None:
+                # Step 4: all three LLMs unavailable/failed. Keyword said keep,
+                # but with no LLM left we can't get real classification or
+                # Korean text — skip rather than store an English,
+                # hardcoded-low-confidence stub.
+                print("  - skip (no LLM available for judgement):", art["title"][:50])
+                continue
             if not verdict.get("relevant"):
                 continue  # the judging LLM says this isn't relevant
-        else:
-            # Step 4: all three LLMs unavailable/failed. Keyword said keep, but
-            # with no LLM left we can't get real classification or Korean text —
-            # skip rather than store an English, hardcoded-low-confidence stub.
-            print("  - skip (no LLM available for judgement):", art["title"][:50])
-            continue
-        ev = to_event(art, verdict, llm_used)
-        events.append(ev); seen.add(key); added += 1; bump(q, "kept")
-        print("  + kept:", ev["title"])
+            ev = to_event(art, verdict, llm_used)
+            events.append(ev); added += 1; bump(q, "kept")
+            print("  + kept:", ev["title"])
     # Events accumulate permanently (no pruning). New events are appended
     # above with whatever date the LLM extracted (often in the past relative
     # to today, e.g. a phenomenon-start date) — re-sort by date every write so

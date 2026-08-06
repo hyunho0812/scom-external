@@ -63,8 +63,12 @@ _mistral_off = {"flag": False}
 #                Costs nothing; this is why fallback is a per-RUN cost, not a
 #                per-item one — after the first 429 the chain stops retrying
 #                that provider entirely.
-_STAT_FIELDS = ("attempt", "ok", "ko_reject", "empty", "http_429", "http_auth",
-                "http_other", "exception", "skipped_off")
+#   batch_shape_fail - answered a batch request with the wrong number of
+#                verdicts (or not an array), so the batch was re-judged
+#                per-item. Costs a full batch prompt and yields nothing;
+#                if this climbs, lower LLM_BATCH.
+_STAT_FIELDS = ("attempt", "ok", "ko_reject", "empty", "batch_shape_fail",
+                "http_429", "http_auth", "http_other", "exception", "skipped_off")
 _STATS = {p: dict.fromkeys(_STAT_FIELDS, 0) for p in ("gemini", "groq", "mistral")}
 
 
@@ -234,14 +238,45 @@ FILTER_SYSTEM = (
 )
 
 
-def _build_filter_prompt(article):
-    interest_note = ("\n\nPRIORITY TOPICS (treat as especially relevant if related): "
-                     + ", ".join(INTERESTS)) if INTERESTS else ""
+def _interest_note():
+    return ("\n\nPRIORITY TOPICS (treat as especially relevant if related): "
+            + ", ".join(INTERESTS)) if INTERESTS else ""
+
+
+def _item_block(article):
     # Most article summaries are already short (NewsAPI/RSS truncate their
     # own way), but clip defensively — an occasional long one would otherwise
     # bloat every judgement call's token cost for no benefit to the verdict.
-    return (FILTER_SYSTEM + interest_note + "\n\nITEM:\nTITLE: " + article["title"] +
-            "\nSUMMARY: " + clip_sentence(article["desc"], 400) + "\nSOURCE: " + article["source"])
+    return ("TITLE: " + article["title"] +
+            "\nSUMMARY: " + clip_sentence(article["desc"], 400) +
+            "\nSOURCE: " + article["source"])
+
+
+def _build_filter_prompt(article):
+    return FILTER_SYSTEM + _interest_note() + "\n\nITEM:\n" + _item_block(article)
+
+
+# How many articles to judge per request. The instruction block above is ~1.1k
+# tokens and used to be re-sent for every single article, so ~93% of all input
+# tokens were the same text over and over; batching amortises it across BATCH
+# items. It also divides the REQUEST count by the same factor, which matters
+# more than the tokens: requests are what the free tiers actually ration, and
+# Mistral's 2/min limit is paid per request (31s sleep each).
+# Kept modest (5) on purpose — a bigger batch saves less and less (the prefix
+# is already amortised) while making a single malformed response cost more.
+BATCH = max(1, int(os.environ.get("LLM_BATCH", "5")))
+
+
+def _build_batch_prompt(articles):
+    """Same instructions, N items, one JSON array back — index-aligned."""
+    items = "\n\n".join(f"[{i+1}]\n{_item_block(a)}" for i, a in enumerate(articles))
+    return (FILTER_SYSTEM + _interest_note() +
+            f"\n\nYou will judge {len(articles)} items, numbered [1]..[{len(articles)}]. "
+            f"Apply the rules above to EACH item INDEPENDENTLY.\n"
+            f'Respond with ONLY a JSON array of exactly {len(articles)} objects, in the '
+            f'SAME ORDER as the items, each object being the verdict for that item '
+            f'(use {{"relevant":false}} for ones that fail). No other keys, no wrapper '
+            f'object, no markdown.\n\nITEMS:\n' + items)
 
 
 def call_openai_chat_json(url, api_key, model, prompt, max_tokens=600, temperature=0,
@@ -274,9 +309,10 @@ def call_openai_chat_json(url, api_key, model, prompt, max_tokens=600, temperatu
     return json.loads(out)
 
 
-def gemini_filter(article):
+def gemini_filter(prompt, max_tokens=600):
     """1st choice. Full relevance/category/date/impact judgement via Gemini's
-    free tier. Returns verdict dict, or None if unavailable."""
+    free tier. Takes a built prompt (single-item or batch) and returns the
+    parsed JSON, or None if unavailable."""
     if not GEMINI_KEY or _gemini_off["flag"]:
         _bump("gemini", "skipped_off")
         return None
@@ -284,8 +320,8 @@ def gemini_filter(article):
     url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
            f"{GEMINI_MODEL}:generateContent?key={GEMINI_KEY}")
     body = json.dumps({
-        "contents": [{"parts": [{"text": _build_filter_prompt(article)}]}],
-        "generationConfig": {"temperature": 0, "maxOutputTokens": 600,
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {"temperature": 0, "maxOutputTokens": max_tokens,
                               "responseMimeType": "application/json",
                               "thinkingConfig": {"thinkingBudget": 0}},
     }).encode()
@@ -365,7 +401,7 @@ def _groq_extra():
     return {"reasoning_effort": GROQ_REASONING_EFFORT}
 
 
-def groq_filter(article):
+def groq_filter(prompt, max_tokens=None):
     """2nd choice. Same judgement as gemini_filter, served by Groq. Used only
     when Gemini is unavailable, so a Gemini outage no longer degrades
     classification to hardcoded defaults."""
@@ -373,11 +409,13 @@ def groq_filter(article):
         _bump("groq", "skipped_off")
         return None
     _bump("groq", "attempt")
+    # gpt-oss spends part of the budget on reasoning tokens, so a batch needs
+    # headroom beyond what the verdicts themselves take (see GROQ_MAX_TOKENS).
+    cap = max(GROQ_MAX_TOKENS, max_tokens or 0)
     try:
         verdict = call_openai_chat_json(
             "https://api.groq.com/openai/v1/chat/completions", GROQ_KEY, GROQ_MODEL,
-            _build_filter_prompt(article),
-            max_tokens=GROQ_MAX_TOKENS, extra=_groq_extra())
+            prompt, max_tokens=cap, extra=_groq_extra())
         time.sleep(2.0)  # 30 RPM free limit
         # A falsy verdict here means the call succeeded but produced nothing
         # usable. That used to increment no counter at all, so the run looked
@@ -400,7 +438,7 @@ def groq_filter(article):
             try:
                 verdict = call_openai_chat_json(
                     "https://api.groq.com/openai/v1/chat/completions", GROQ_KEY,
-                    GROQ_MODEL, _build_filter_prompt(article), max_tokens=GROQ_MAX_TOKENS)
+                    GROQ_MODEL, prompt, max_tokens=cap)
                 time.sleep(2.0)
                 _bump("groq", "ok" if verdict else "empty")
                 return verdict
@@ -427,7 +465,7 @@ def groq_filter(article):
         return None
 
 
-def mistral_filter(article):
+def mistral_filter(prompt, max_tokens=600):
     """3rd choice (last resort). Same judgement as gemini_filter/groq_filter,
     served by Mistral. Note: Mistral's free Experiment-tier requests may be
     used to train their models — fine here since this only ever handles
@@ -439,8 +477,11 @@ def mistral_filter(article):
     try:
         verdict = call_openai_chat_json(
             "https://api.mistral.ai/v1/chat/completions", MISTRAL_KEY, MISTRAL_MODEL,
-            _build_filter_prompt(article))
-        time.sleep(31.0)  # Mistral free tier: 2 req/min — 31s gives a safety margin
+            prompt, max_tokens=max_tokens)
+        # Mistral free tier: 2 req/min — 31s gives a safety margin. This sleep
+        # is why batching matters so much for runtime: it is paid per REQUEST,
+        # so a batch of 5 costs one 31s wait instead of five.
+        time.sleep(31.0)
         _bump("mistral", "ok" if verdict else "empty")
         return verdict
     except urllib.error.HTTPError as e:
@@ -483,28 +524,91 @@ def _korean_fields_ok(verdict):
     return True
 
 
+def _chain():
+    """The judgement chain, resolved at call time rather than captured at
+    import. Binding these once at module level would freeze whatever the
+    functions were then — surprising for anything that patches or wraps a
+    provider (tests do exactly this), and a silent no-op when it happens."""
+    return ((gemini_filter, GEMINI_MODEL, "gemini"),
+            (groq_filter, GROQ_MODEL, "groq"),
+            (mistral_filter, MISTRAL_MODEL, "mistral"))
+
+
+def _reject_ko(prov, model):
+    print(f"  {model} returned non-Korean title/impact/description — "
+          f"treating as a failed judgement, trying next LLM.")
+    # Re-attribute: the provider already scored an "ok" for answering, but the
+    # chain is throwing that answer away. Without this the counters would
+    # report a healthy provider that in fact produces nothing usable while
+    # burning a full prompt's worth of tokens.
+    _bump(prov, "ok", -1)
+    _bump(prov, "ko_reject")
+
+
 def llm_filter(article):
     """Run the full judgement chain: Gemini -> Groq -> Mistral. Returns
     (verdict_dict, model_name) or (None, "") if all three are unavailable —
     only then should the caller skip the item rather than store it with
     English text or guessed classification."""
-    for fn, model, prov in ((gemini_filter, GEMINI_MODEL, "gemini"),
-                            (groq_filter, GROQ_MODEL, "groq"),
-                            (mistral_filter, MISTRAL_MODEL, "mistral")):
-        verdict = fn(article)
+    prompt = _build_filter_prompt(article)
+    for fn, model, prov in _chain():
+        verdict = fn(prompt)
+        if isinstance(verdict, list):  # a provider ignored the single-item shape
+            verdict = verdict[0] if len(verdict) == 1 else None
         if verdict is not None and not _korean_fields_ok(verdict):
-            print(f"  {model} returned non-Korean title/impact/description — "
-                  f"treating as a failed judgement, trying next LLM.")
-            # Re-attribute: the provider already scored an "ok" for answering,
-            # but the chain is throwing that answer away. Without this the
-            # counters would report a healthy provider that in fact produces
-            # nothing usable while burning a full prompt's worth of tokens.
-            _bump(prov, "ok", -1)
-            _bump(prov, "ko_reject")
+            _reject_ko(prov, model)
             verdict = None
         if verdict is not None:
             return verdict, model
     return None, ""
+
+
+def llm_filter_batch(articles):
+    """Judge up to BATCH articles in ONE request. Returns a list of
+    (verdict_or_None, model_name) index-aligned with `articles`.
+
+    Falls back to per-item llm_filter() for anything the batch can't settle:
+    a provider that returns the wrong number of verdicts, a non-dict entry, or
+    an entry whose Korean fields fail the guard. That keeps the batch a pure
+    cost optimisation — the worst case is the old per-item behaviour, never a
+    dropped or a wrongly-kept article.
+    """
+    if not articles:
+        return []
+    if len(articles) == 1:
+        return [llm_filter(articles[0])]
+    prompt = _build_batch_prompt(articles)
+    # Rejects cost ~4 tokens, keeps ~200; budget generously so a batch that
+    # happens to be all-keeps can't get truncated mid-array.
+    cap = 300 + 320 * len(articles)
+    for fn, model, prov in _chain():
+        out = fn(prompt, cap)
+        if out is None:
+            continue
+        # Some providers wrap an array in a single-key object despite the
+        # instruction; unwrap the obvious cases rather than wasting the call.
+        if isinstance(out, dict):
+            vals = [v for v in out.values() if isinstance(v, list)]
+            out = vals[0] if len(vals) == 1 else None
+        if not isinstance(out, list) or len(out) != len(articles):
+            got = "not a list" if not isinstance(out, list) else f"{len(out)} verdicts"
+            print(f"  {model} batch shape mismatch (expected {len(articles)}, got {got})"
+                  f" — falling back to per-item for this batch.")
+            _bump(prov, "batch_shape_fail")
+            continue
+        results, redo = [], []
+        for i, v in enumerate(out):
+            if not isinstance(v, dict):
+                results.append(None); redo.append(i); continue
+            if not _korean_fields_ok(v):
+                _reject_ko(prov, model)
+                results.append(None); redo.append(i); continue
+            results.append((v, model))
+        for i in redo:  # re-judge just the unusable ones, individually
+            results[i] = llm_filter(articles[i])
+        return results
+    # No provider produced a usable batch — fall back entirely.
+    return [llm_filter(a) for a in articles]
 
 
 USAGE_FILE = os.path.join(HERE, "..", "data", "llm_usage.json")
@@ -520,6 +624,7 @@ def diag_summary(label=""):
         s = _STATS[prov]
         print(f"{prefix}[diag] {prov} ({rank}) attempt: {s['attempt']}, ok: {s['ok']}, "
               f"ko_reject: {s['ko_reject']}, empty: {s['empty']}, "
+              f"batch_shape_fail: {s['batch_shape_fail']}, "
               f"429: {s['http_429']}, auth: {s['http_auth']}, "
               f"other: {s['http_other']}, exc: {s['exception']}, "
               f"skipped_off: {s['skipped_off']}")
