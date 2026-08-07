@@ -894,5 +894,33 @@
    "ai search traffic"
   ],
   "rationale": "쿼리 성능이 낮은 항목이 없으므로 기존 쿼리를 유지하고, 키워드 목록도 현재 성능에 따라 변경할 필요가 없어 유지합니다."
+ },
+ {
+  "date": "2026-08-07",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor trends",
+   "online retail trends",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor trends",
+   "online retail trends",
+   "ai search traffic"
+  ],
+  "rationale": "기존 쿼리의 성능이 전반적으로 양호하여 변경하지 않았습니다. 키워드 목록은 삼성 제품 및 시장 트렌드에 대한 관련성을 높이기 위해 유지되었습니다."
  }
 ]
