@@ -168,5 +168,93 @@
    }
   },
   "total_attempts": 9
+ },
+ {
+  "date": "2026-08-07",
+  "at": "2026-08-07 21:51 UTC",
+  "stage": "collect_news",
+  "providers": {
+   "gemini": {
+    "attempt": 19,
+    "ok": 18,
+    "ko_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "http_429": 1,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 2
+   },
+   "groq": {
+    "attempt": 3,
+    "ok": 2,
+    "ko_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "http_429": 1,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 0
+   },
+   "mistral": {
+    "attempt": 1,
+    "ok": 0,
+    "ko_reject": 1,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "http_429": 0,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 0
+   }
+  },
+  "total_attempts": 23
+ },
+ {
+  "date": "2026-08-07",
+  "at": "2026-08-07 21:54 UTC",
+  "stage": "collect_feeds",
+  "providers": {
+   "gemini": {
+    "attempt": 1,
+    "ok": 0,
+    "ko_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "http_429": 1,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 5
+   },
+   "groq": {
+    "attempt": 3,
+    "ok": 2,
+    "ko_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "http_429": 1,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 3
+   },
+   "mistral": {
+    "attempt": 4,
+    "ok": 4,
+    "ko_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "http_429": 0,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 0
+   }
+  },
+  "total_attempts": 8
  }
 ]
