@@ -950,5 +950,33 @@
    "ai search traffic"
   ],
   "rationale": "기존 쿼리와 키워드 목록은 삼성닷컴 관련성과 중복 최소화 목표에 부합하며, 원본 쿼리 중 'semiconductor trends', 'ecommerce trends' 등 낮은 kept/raw 비율을 보인 쿼리들은 해당 주제의 광범위한 트렌드 파악에 여전히 유용하므로 유지했습니다. 특히 'semiconductor trends', 'online retail trends'는 kept 수가 0이지만, 원본 쿼리에서 'raw' 값이 높으므로 키워드 필터와 LLM 심사를 통해 관련성을 높이는 데 집중해야 합니다."
+ },
+ {
+  "date": "2026-08-08",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor trends",
+   "online retail trends",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor trends",
+   "online retail trends",
+   "ai search traffic"
+  ],
+  "rationale": "기존 쿼리의 성능이 비교적 양호하고 단어 수 제한을 준수하기 위해 쿼리 변경은 최소화했습니다. 중복 수집 및 불필요한 콘텐츠를 줄이기 위해 일부 키워드를 조정했습니다."
  }
 ]
