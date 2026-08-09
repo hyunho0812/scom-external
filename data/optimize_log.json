@@ -978,5 +978,33 @@
    "ai search traffic"
   ],
   "rationale": "기존 쿼리의 성능이 비교적 양호하고 단어 수 제한을 준수하기 위해 쿼리 변경은 최소화했습니다. 중복 수집 및 불필요한 콘텐츠를 줄이기 위해 일부 키워드를 조정했습니다."
+ },
+ {
+  "date": "2026-08-09",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor trends",
+   "online retail trends",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "online retail trends",
+   "ai search traffic"
+  ],
+  "rationale": "중복 제거 및 관련성 향상을 위해 쿼리를 간결하게 유지하고, 검색량이 적은 쿼리를 더 일반적인 용어로 변경했습니다. 키워드 필터는 'report' 및 'sports'와 같은 관련 용어를 추가/제외하여 정확도를 높였습니다."
  }
 ]

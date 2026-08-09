@@ -1,63 +1,5 @@
 [
  {
-  "date": "2026-07-12",
-  "total_raw": 54,
-  "total_dup": 16,
-  "total_kept": 6,
-  "per_query": {
-   "consumer electronics retail": {
-    "raw": 12,
-    "dup": 5,
-    "kept": 0
-   },
-   "social commerce": {
-    "raw": 9,
-    "dup": 0,
-    "kept": 1
-   },
-   "galaxy device innovation": {
-    "raw": 4,
-    "dup": 0,
-    "kept": 4
-   },
-   "apple intelligence strategy": {
-    "raw": 7,
-    "dup": 1,
-    "kept": 0
-   },
-   "samsung galaxy innovation": {
-    "raw": 4,
-    "dup": 3,
-    "kept": 1
-   },
-   "smartphone memory market trend": {
-    "raw": 2,
-    "dup": 0,
-    "kept": 0
-   },
-   "smartphone memory market pricing": {
-    "raw": 2,
-    "dup": 2,
-    "kept": 0
-   },
-   "galaxy s series production": {
-    "raw": 2,
-    "dup": 0,
-    "kept": 0
-   },
-   "apple iphone product strategy": {
-    "raw": 10,
-    "dup": 3,
-    "kept": 0
-   },
-   "smartphone memory market pricing trend": {
-    "raw": 2,
-    "dup": 2,
-    "kept": 0
-   }
-  }
- },
- {
   "date": "2026-07-13",
   "total_raw": 60,
   "total_dup": 10,
@@ -1341,6 +1283,75 @@
     "dup": 2,
     "kw_pass": 8,
     "kept": 0
+   }
+  }
+ },
+ {
+  "date": "2026-08-09",
+  "total_raw": 57,
+  "total_dup": 2,
+  "total_kw_pass": 49,
+  "total_kept": 12,
+  "per_query": {
+   "samsung product launch": {
+    "raw": 2,
+    "dup": 0,
+    "kw_pass": 2,
+    "kept": 0
+   },
+   "galaxy phone launch": {
+    "raw": 6,
+    "dup": 1,
+    "kw_pass": 5,
+    "kept": 2
+   },
+   "smartphone market share": {
+    "raw": 2,
+    "dup": 0,
+    "kw_pass": 2,
+    "kept": 0
+   },
+   "ecommerce trends": {
+    "raw": 1,
+    "dup": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "ai shopping trends": {
+    "raw": 1,
+    "dup": 0,
+    "kw_pass": 1,
+    "kept": 1
+   },
+   "apple intelligence": {
+    "raw": 10,
+    "dup": 0,
+    "kw_pass": 10,
+    "kept": 3
+   },
+   "semiconductor market": {
+    "raw": 19,
+    "dup": 0,
+    "kw_pass": 17,
+    "kept": 1
+   },
+   "online retail trends": {
+    "raw": 1,
+    "dup": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "ai search traffic": {
+    "raw": 10,
+    "dup": 1,
+    "kw_pass": 9,
+    "kept": 4
+   },
+   "samsung earnings report": {
+    "raw": 5,
+    "dup": 0,
+    "kw_pass": 1,
+    "kept": 1
    }
   }
  }

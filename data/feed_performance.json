@@ -1134,5 +1134,32 @@
     "kept": 0
    }
   }
+ },
+ {
+  "date": "2026-08-09",
+  "total_raw": 13,
+  "total_kept": 1,
+  "per_feed": {
+   "OpenAI news": {
+    "raw": 10,
+    "kw_pass": 8,
+    "kept": 0
+   },
+   "Samsung newsroom (KR)": {
+    "raw": 1,
+    "kw_pass": 1,
+    "kept": 1
+   },
+   "Pew Research Internet & Tech": {
+    "raw": 1,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Practical Ecommerce": {
+    "raw": 1,
+    "kw_pass": 1,
+    "kept": 0
+   }
+  }
  }
 ]

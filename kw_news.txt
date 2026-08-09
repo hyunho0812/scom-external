@@ -153,6 +153,7 @@ mobility
 hbm
 market trend
 earnings
+report
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -171,3 +172,4 @@ internal software
 tv show
 game review
 court ruling
+sports
