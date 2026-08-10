@@ -1006,5 +1006,33 @@
    "ai search traffic"
   ],
   "rationale": "중복 제거 및 관련성 향상을 위해 쿼리를 간결하게 유지하고, 검색량이 적은 쿼리를 더 일반적인 용어로 변경했습니다. 키워드 필터는 'report' 및 'sports'와 같은 관련 용어를 추가/제외하여 정확도를 높였습니다."
+ },
+ {
+  "date": "2026-08-10",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "online retail trends",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "online retail",
+   "ai search traffic"
+  ],
+  "rationale": "낮은 raw/pass율 쿼리를 단축 및 일반화하고, 높은 keep_rate를 보이는 키워드를 추가하여 관련성 및 수집량을 개선했습니다. (e.g. 'online retail trends' -> 'online retail')"
  }
 ]

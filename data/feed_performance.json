@@ -1161,5 +1161,72 @@
     "kept": 0
    }
   }
+ },
+ {
+  "date": "2026-08-10",
+  "total_raw": 39,
+  "total_kept": 8,
+  "per_feed": {
+   "OpenAI news": {
+    "raw": 10,
+    "kw_pass": 8,
+    "kept": 0
+   },
+   "Gemini (Google)": {
+    "raw": 1,
+    "kw_pass": 0,
+    "kept": 0
+   },
+   "Google AI blog": {
+    "raw": 1,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Apple newsroom": {
+    "raw": 1,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Samsung newsroom (KR)": {
+    "raw": 2,
+    "kw_pass": 2,
+    "kept": 2
+   },
+   "Search Engine Journal": {
+    "raw": 5,
+    "kw_pass": 5,
+    "kept": 3
+   },
+   "Retail Dive": {
+    "raw": 8,
+    "kw_pass": 7,
+    "kept": 1
+   },
+   "Practical Ecommerce": {
+    "raw": 1,
+    "kw_pass": 1,
+    "kept": 1
+   },
+   "Digiday": {
+    "raw": 5,
+    "kw_pass": 3,
+    "kept": 1
+   },
+   "Semrush": {
+    "raw": 3,
+    "kw_pass": 2,
+    "kept": 0
+   },
+   "HubSpot Marketing": {
+    "raw": 1,
+    "kw_pass": 0,
+    "kept": 0
+   },
+   "Neil Patel": {
+    "raw": 1,
+    "kw_pass": 1,
+    "kept": 0
+   }
+  }
  }
 ]
