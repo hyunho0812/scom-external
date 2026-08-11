@@ -93,6 +93,57 @@ def clean_axis(v):
     return v if v in VALID_AXES else ""
 
 
+# --- event date validation -------------------------------------------------
+# Both collectors used to accept the model's date on a bare regex:
+#     re.match(r"^\d{4}-\d{2}-\d{2}$", v)
+# which passes "2024-05-00" (not a real day, 5 such rows got stored) and, far
+# worse, passes any well-formed but wildly wrong year. With no clock in the
+# prompt the model dated 90% of items to its training era, so the field the
+# entire dashboard filters on was ~2 years off. clean_date() closes both holes:
+# it parses strictly and rejects anything a last-24h news pipeline could not
+# plausibly have produced, falling back to the source's own publish date.
+DATE_MAX_BACKDATE = int(os.environ.get("DATE_MAX_BACKDATE", "180"))
+
+
+def today_iso():
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+
+def parse_date(v):
+    """Strict ISO date parse -> datetime.date, or None. Rejects '2024-05-00'."""
+    from datetime import datetime
+    try:
+        return datetime.strptime((v or "").strip(), "%Y-%m-%d").date()
+    except Exception:
+        return None
+
+
+def clean_date(value, published=None, today=None, max_backdate=None):
+    """Return a trustworthy YYYY-MM-DD for an event.
+
+    value      - the date the LLM extracted (may be junk)
+    published  - the source's own publish date, when the collector has one.
+                 This is ground truth and becomes the fallback.
+    Falls back to `published`, else `today`, when `value` is unparseable, in
+    the future, or implausibly far in the past. A phenomenon can legitimately
+    predate its article (a report on last quarter's shipments), so the
+    backdate allowance is generous — it only has to catch the training-era
+    anchoring, which sat >365 days out.
+    """
+    today = today or today_iso()
+    ref = parse_date(published) or parse_date(today)
+    limit = DATE_MAX_BACKDATE if max_backdate is None else max_backdate
+    d = parse_date(value)
+    if d is None or ref is None:
+        return (published if parse_date(published) else today)
+    if d > ref:                      # nothing is published before it happens
+        return ref.isoformat()
+    if (ref - d).days > limit:       # training-era anchoring, not a real date
+        return ref.isoformat()
+    return d.isoformat()
+
+
 def clip_sentence(text, limit=400):
     """Trim to <= limit chars without cutting mid-word.
     Prefer ending at the last sentence boundary; otherwise the last word."""
@@ -193,7 +244,11 @@ FILTER_SYSTEM = (
  "specific date) — that's a real, dated corporate action and should be kept.\n"
  "3) 'date' = when the event/phenomenon ACTUALLY began/took effect (not the "
  "article's publish date) if there is one. For general trend analysis with "
- "no single event date, use the report's publish date instead.\n"
+ "no single event date, use the report's publish date instead. These items "
+ "were all published within the last few days — TODAY'S DATE IS GIVEN BELOW. "
+ "Never date an item to a year other than the current one unless the text "
+ "itself states an explicit earlier date; when the text gives no date at all, "
+ "use today's date. Never return a date in the future.\n"
  "4) KEEP dated stats/surveys on how people discover/research/buy electronics "
  "(retail-channel share, brand-site vs marketplace behavior, social product "
  "discovery, AI-shopping adoption, market research reports) — as long as "
@@ -243,17 +298,36 @@ def _interest_note():
             + ", ".join(INTERESTS)) if INTERESTS else ""
 
 
+def _today_note():
+    """The single most important line for date accuracy.
+
+    Without it the model has no clock and anchors extracted dates to its
+    training era: 291 of 325 auto-collected events (90%) were stored with a
+    'date' more than a YEAR before the day they were captured — an article
+    about the Galaxy Z Fold 8, fetched 2026-08-04, was dated 2024-08-22.
+    Every period filter and the whole 3-axis attribution key off that field,
+    so the dashboard was analysing the wrong dates entirely.
+    """
+    return "\n\nTODAY'S DATE IS " + today_iso() + " (UTC)."
+
+
 def _item_block(article):
     # Most article summaries are already short (NewsAPI/RSS truncate their
     # own way), but clip defensively — an occasional long one would otherwise
     # bloat every judgement call's token cost for no benefit to the verdict.
+    # PUBLISHED is included when the source gave us one: it is ground truth
+    # the model should anchor 'date' to, and it is what clean_date() falls
+    # back to when the model's answer is implausible.
+    pub = article.get("date") or ""
     return ("TITLE: " + article["title"] +
             "\nSUMMARY: " + clip_sentence(article["desc"], 400) +
+            (f"\nPUBLISHED: {pub}" if pub else "") +
             "\nSOURCE: " + article["source"])
 
 
 def _build_filter_prompt(article):
-    return FILTER_SYSTEM + _interest_note() + "\n\nITEM:\n" + _item_block(article)
+    return (FILTER_SYSTEM + _interest_note() + _today_note()
+            + "\n\nITEM:\n" + _item_block(article))
 
 
 # How many articles to judge per request. The instruction block above is ~1.1k
@@ -270,7 +344,7 @@ BATCH = max(1, int(os.environ.get("LLM_BATCH", "5")))
 def _build_batch_prompt(articles):
     """Same instructions, N items, one JSON array back — index-aligned."""
     items = "\n\n".join(f"[{i+1}]\n{_item_block(a)}" for i, a in enumerate(articles))
-    return (FILTER_SYSTEM + _interest_note() +
+    return (FILTER_SYSTEM + _interest_note() + _today_note() +
             f"\n\nYou will judge {len(articles)} items, numbered [1]..[{len(articles)}]. "
             f"Apply the rules above to EACH item INDEPENDENTLY.\n"
             f'Respond with ONLY a JSON array of exactly {len(articles)} objects, in the '

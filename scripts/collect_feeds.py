@@ -29,7 +29,7 @@ from xml.etree import ElementTree as ET
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
 from llm_common import (llm_filter_batch, diag_summary, INTERESTS, MARKETS,
-                        load_kw_file, clean_axis, BATCH)
+                        load_kw_file, clean_axis, clean_date, BATCH)
 
 DATA = os.path.join(HERE, "..", "data", "events.json")
 STATE = os.path.join(HERE, "..", "data", "feed_state.json")
@@ -72,6 +72,30 @@ def http(url):
     with urllib.request.urlopen(req, timeout=40) as r:
         return r.read()
 
+_MONTHS = {m: i for i, m in enumerate(
+    ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"], 1)}
+
+
+def feed_date(raw):
+    """Normalise an RSS pubDate / Atom updated stamp to YYYY-MM-DD, or "".
+
+    Feeds carry the real publish date and this parser previously threw it
+    away, so every feed event fell back to "today" and the LLM's (unanchored)
+    guess was the only date on offer. RFC-822 ('Tue, 05 Aug 2026 09:12:00
+    GMT') and ISO-8601 ('2026-08-05T09:12:00Z') cover every feed in feeds.txt.
+    """
+    s = (raw or "").strip()
+    if not s:
+        return ""
+    m = re.search(r"(\d{4})-(\d{2})-(\d{2})", s)          # ISO-8601 / Atom
+    if m:
+        return f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
+    m = re.search(r"(\d{1,2})\s+([A-Za-z]{3})[a-z]*\s+(\d{4})", s)  # RFC-822
+    if m and m.group(2).lower() in _MONTHS:
+        return f"{m.group(3)}-{_MONTHS[m.group(2).lower()]:02d}-{int(m.group(1)):02d}"
+    return ""
+
+
 def parse_feed(xml_bytes):
     items = []
     try:
@@ -83,6 +107,8 @@ def parse_feed(xml_bytes):
             "title": (it.findtext("title") or "").strip(),
             "link":  (it.findtext("link") or "").strip(),
             "summary": re.sub("<[^>]+>"," ",(it.findtext("description") or "")).strip()[:600],
+            "published": feed_date(it.findtext("pubDate")
+                                   or it.findtext("{http://purl.org/dc/elements/1.1/}date")),
         })
     ns = "{http://www.w3.org/2005/Atom}"
     for it in root.iter(ns+"entry"):  # Atom
@@ -91,6 +117,7 @@ def parse_feed(xml_bytes):
             "title": (it.findtext(ns+"title") or "").strip(),
             "link":  (link_el.get("href") if link_el is not None else "") or "",
             "summary": re.sub("<[^>]+>"," ",(it.findtext(ns+"summary") or it.findtext(ns+"content") or "")).strip()[:600],
+            "published": feed_date(it.findtext(ns+"published") or it.findtext(ns+"updated")),
         })
     return items
 
@@ -175,8 +202,8 @@ def main():
             if not verdict.get("relevant"):
                 continue  # the judging LLM says this isn't relevant after all
             _today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-            _vdate = verdict.get("date", "") or ""
-            event_date = _vdate if re.match(r"^\d{4}-\d{2}-\d{2}$", _vdate) else _today
+            event_date = clean_date(verdict.get("date", ""),
+                                    published=it.get("published"), today=_today)
             title_ko = (verdict.get("title") or it["title"])[:60]
             events.append({
                 "event_id": eid,
@@ -200,6 +227,7 @@ def main():
                 "raw_title": it["title"],
                 "raw_desc": it.get("summary", ""),
                 "raw_url": it.get("link", ""),
+                "raw_date": it.get("published", ""),  # feed pubDate, kept so a bad event_date stays repairable
             })
             added += 1; bump(label, "kept")
             print("  + kept:", events[-1]["title"])

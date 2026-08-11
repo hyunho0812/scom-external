@@ -37,6 +37,15 @@ try: imf_series=json.load(open(os.path.join(HERE,"..","data","imf_series.json"),
 except Exception: imf_series={"countries":{},"indicators":{},"data":{}}
 try: crux=json.load(open(os.path.join(HERE,"..","data","crux_series.json"),encoding="utf-8"))
 except Exception: crux={"metrics":{}}
+# Credibility layer (scripts/score_predictions.py + check_llm_agreement.py).
+# Absent on a fresh clone until those have run once — the dashboard degrades to
+# "측정 없음" rather than breaking.
+try: scores=json.load(open(os.path.join(HERE,"..","data","prediction_scores.json"),encoding="utf-8"))
+except Exception: scores={}
+try:
+    _ag=json.load(open(os.path.join(HERE,"..","data","llm_agreement.json"),encoding="utf-8"))
+    agreement=(_ag[-1] if isinstance(_ag,list) and _ag else (_ag if isinstance(_ag,dict) else {}))
+except Exception: agreement={}
 # The country-statistics tab uses IMF monthly data only (World Bank removed)
 stats_series=imf_series
 
@@ -200,6 +209,7 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
 <div class="panel" id="axisPanel" style="display:none">
   <div class="phead"><div class="ptitle">3축 진단 — 수요 · 점유 · 공급 <span id="axisBasis" style="font-size:11px;color:#999;font-weight:400"></span></div></div>
   <div id="axisSummary" style="font-size:13px;padding:11px 14px;border-radius:10px;background:var(--bg);margin-bottom:12px"></div>
+  <div id="credPanel" style="margin-bottom:12px"></div>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px" id="axisCards"></div>
   <div class="note">분석 기준은 <strong>업로드한 실측 트래픽</strong>이며, 업로드가 없을 때만 위키 관심도를 대리지표로 씁니다 · 수요 = 시장 전체 관심량(삼성+경쟁사 위키 조회수 합) — 경쟁사 실측 트래픽을 구할 무료 소스가 없어 이 축은 항상 위키 <em>지수</em>입니다 · 점유·전환 = 그 관심량 1단위가 실제로 만들어낸 유입(실측÷관심도), 업로드가 없으면 위키 점유율과 동일 · 공급 = 실사용자 사이트 성능(CrUX CWV) + 인덱싱·크롤링·장애 이벤트 · 각 축의 수치는 "전체 = 수요 × 점유·전환" 항등식의 로그 분해로 구한 <strong>단독 효과</strong>라, 곱하면 전체 변화와 정확히 일치합니다 · 카드의 요인 목록에서 "펼치기"로 축별 전체 이벤트를 딥다이브할 수 있습니다 · 인과 입증이 아니라 정황 분해입니다</div>
 </div>
@@ -237,6 +247,8 @@ const EV=__DATA__;
 const WIKI=__WIKI__;
 const STATS=__STATS__;
 const CRUX=__CRUX__;
+const SCORES=__SCORES__;
+const AGREE=__AGREE__;
 const REGIONS={"ALL":null,"북미":["US"],"유럽":["GB","DE","FR","ES","PT"],"중남미":["BR","MX_C"],"동남아":["AU"],"서남아":["IN"],"중동":["TR"],"한국":["KR"]};
 const COUNTRIES=[["ALL","전체"],["US","미국"],["GB","영국"],["DE","독일"],["FR","프랑스"],["ES","스페인"],["PT","포르투갈"],["BR","브라질"],["MX_C","멕시코"],["AU","호주"],["IN","인도"],["TR","튀르키예"],["KR","한국"]];
 const DIV2COMP={MX:["Apple","Xiaomi","vivo","OPPO"],VD:["LG","TCL","Hisense"],DA:["LG","Whirlpool","Bosch"]};
@@ -575,9 +587,17 @@ function evCardHtml(e, domId, badge){
  const cls=DIRCLS[e.impact_direction]||'', bc=DIRC[e.impact_direction]||'#9a9a96';
  const cc=CONFC[e.confidence]||'#9a9a96';
  const ax=axisOf(e);
+ // date_source: where this event's DATE came from. 'capture' means we set it
+ // to the day we noticed the article, because the model's own date was
+ // unusable — so the date is an upper bound, not evidence we saw it coming.
+ // Surfacing it stops a reconstructed date reading as foresight.
+ const DS={url:['발행일 확인','#e6f4ec','#1D9E75'],llm:['기사 명시일','#eef1fb','#534AB7'],
+           capture:['수집일 추정','#fdf3e3','#8a6d1a'],seed:['수기 입력','#f0f0ee','#77776f']};
+ const ds=DS[e.date_source||'seed']||DS.seed;
  const meta=[`<span class="tag" style="background:${AXIS_COLOR[ax]}18;color:${AXIS_COLOR[ax]}">${AXIS_KO[ax]} 축</span>`,
    `<span class="tag" style="background:${bc}18;color:${bc}">영향강도 ${STRENGTH(e)}/5</span>`]
-   .concat(e.confidence?[`<span class="tag" style="background:${cc}22;color:${cc}">신뢰도: ${e.confidence}</span>`]:[]);
+   .concat(e.confidence?[`<span class="tag" style="background:${cc}22;color:${cc}">신뢰도: ${e.confidence}</span>`]:[])
+   .concat([`<span class="tag" style="background:${ds[1]};color:${ds[2]}" title="이 이벤트 날짜의 근거. '수집일 추정'은 기사에서 날짜를 얻지 못해 수집한 날로 채운 값이라, 그 날 트래픽을 예측했다는 근거가 될 수 없습니다.">날짜: ${ds[0]}</span>`]);
  const imp=e.impact?`<div class="imp" style="color:${bc};background:${bc}14">${e.impact}</div>`:'';
  // Strip source/filter tags and legacy markers from the body text
  const desc=(e.description||'')
@@ -797,6 +817,42 @@ function avgInRange(ser,from,to){
  const vals=ser.filter(p=>(!from||p.date>=from)&&(!to||p.date<=to)).map(p=>p.views);
  return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
 }
+const dayMs=86400000;
+const isoAdd=(iso,n)=>new Date(new Date(iso+'T00:00:00Z').getTime()+n*dayMs).toISOString().slice(0,10);
+const isoDiff=(a,b)=>Math.round((new Date(a+'T00:00:00Z')-new Date(b+'T00:00:00Z'))/dayMs);
+const median=a=>{if(!a.length)return null;const s=a.slice().sort((x,y)=>x-y),m=s.length>>1;
+ return s.length%2?s[m]:(s[m-1]+s[m])/2;};
+
+// How much of a period-over-period change was simply DUE — seasonality, the
+// weekly cycle, the standing trend. The attribution used to hand the whole
+// observed change to the axes, so a change that would have happened anyway was
+// still "explained" by whatever news happened to be lying around.
+//
+// Method (seasonal-naive, no libraries): replay the SAME comparison at the same
+// lag repeatedly back through history and collect the ratios. Their median is
+// what this period-over-period step normally does; the spread says how unusual
+// this one is. Everything is measured on the same series being attributed, so
+// no extra assumption is smuggled in.
+function seasonalBaseline(ser, curFrom, curTo, cmpFrom, cmpTo, maxBack=10){
+ if(!(ser&&ser.length&&curFrom&&curTo&&cmpFrom&&cmpTo)) return null;
+ const lag=isoDiff(curFrom,cmpFrom), len=isoDiff(curTo,curFrom);
+ if(lag<=0||len<0) return null;
+ const earliest=ser[0].date, ratios=[];
+ for(let k=1;k<=maxBack;k++){
+  const cf=isoAdd(curFrom,-lag*k), ct=isoAdd(cf,len);
+  const pf=isoAdd(cf,-lag),        pt=isoAdd(pf,len);
+  if(pf<earliest) break;                       // ran out of history
+  const a=avgInRange(ser,cf,ct), b=avgInRange(ser,pf,pt);
+  if(a&&b) ratios.push(Math.log(a/b));         // logs: symmetric, and additive
+ }
+ if(ratios.length<3) return null;              // too few replays to trust
+ const m=median(ratios);
+ // Median absolute deviation -> a robust sigma (1.4826 makes MAD comparable to
+ // a standard deviation for normal-ish data). Robust because a single freak
+ // period should not widen the band enough to hide a real anomaly.
+ const mad=median(ratios.map(r=>Math.abs(r-m)));
+ return {expectedLog:m, sigma:(mad*1.4826)||null, n:ratios.length};
+}
 let axisCharts=[];
 // Filled by renderAxisPanel(), consumed by render() a few lines later to draw
 // the bottom 누적 요인 section. Keeps the two lists in exact sync.
@@ -807,6 +863,60 @@ function toggleAxisList(axis){
  if(el) el.style.display = el.style.display==='none' ? 'block' : 'none';
  const card=document.getElementById('axis-card-'+axis);
  if(card) card.scrollIntoView({behavior:'smooth',block:'center'});
+}
+// Does the ledger actually predict anything? Everything above is an
+// explanation; this is the check on whether explanations of this kind have
+// ever held up. Reads what score_predictions.py measured — never recomputes,
+// so the page cannot quietly disagree with the stored evidence.
+function renderCredibility(){
+ const el=document.getElementById('credPanel'); if(!el) return;
+ const S=SCORES||{}, sum=(S.summary||{}), c=(S.correlation||{}),
+       perm=((S.permutation||{}).all)||null, ax=(S.axis_validation||{});
+ if(!S.updated){
+  el.innerHTML=`<div style="font-size:11px;color:#9aa0a6;padding:9px 12px;border:1px dashed var(--line);border-radius:9px">
+    예측 검증 데이터 없음 — <code>scripts/score_predictions.py</code>가 아직 실행되지 않았습니다.</div>`;
+  return;
+ }
+ const pct=v=>v==null?'—':(v*100).toFixed(0)+'%';
+ const fk=sum.foreknown||{}, all=sum.all||{};
+ // A hit rate is only meaningful against the 50% a coin would score.
+ const edge = all.hit_rate==null?null:(all.hit_rate-0.5)*100;
+ const sig = perm && perm.significant;
+ const badge = sig
+   ? `<span style="background:#e6f4ec;color:var(--pos);padding:2px 8px;border-radius:99px;font-weight:600">무작위 대비 유의</span>`
+   : `<span style="background:#fdecea;color:var(--neg);padding:2px 8px;border-radius:99px;font-weight:600">아직 유의하지 않음</span>`;
+ const axRow=Object.keys(ax).map(k=>{
+   const a=ax[k]||{}, p=((S.permutation||{})[k])||{};
+   const nm={demand:'수요',share:'점유',supply:'공급'}[k]||k;
+   return `${nm} r=${a.r==null?'—':a.r}${p.p_value!=null?` (p=${p.p_value})`:''}`;
+ }).join(' · ');
+ el.innerHTML=`<details style="border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:12px">
+   <summary style="cursor:pointer;font-weight:600;list-style:none">
+     예측 검증 ${badge}
+     <span style="font-weight:400;color:var(--muted)">— 방향 적중률 ${pct(all.hit_rate)} (n=${all.n||0}),
+     상관 r=${c.pressure_vs_forward_traffic_r==null?'—':c.pressure_vs_forward_traffic_r}</span>
+   </summary>
+   <div style="margin-top:9px;line-height:1.85;color:var(--muted)">
+     <div><strong>방향 적중률</strong> 전체 ${pct(all.hit_rate)} (n=${all.n||0}) ·
+       사전근거만 ${pct(fk.hit_rate)} (n=${fk.n||0})
+       ${edge==null?'':`— 동전던지기(50%) 대비 ${edge>=0?'+':''}${edge.toFixed(1)}%p`}</div>
+     <div><strong>이벤트 압력지수 → 향후 ${c.forward_days||7}일 트래픽</strong>
+       r=${c.pressure_vs_forward_traffic_r==null?'—':c.pressure_vs_forward_traffic_r}
+       (조밀구간 ${c.dense_window_from||'—'} 이후, n=${c.n_days||0}일)</div>
+     ${perm?`<div><strong>순열검정</strong> p=${perm.p_value} — 이벤트 날짜를 무작위로 섞었을 때
+       |r|이 이만큼 나올 확률. 귀무분포 |r| 95%=${perm.null_p95_abs_r}
+       ${sig?'':' → 현재 표본으로는 우연과 구별되지 않습니다.'}</div>`:''}
+     ${axRow?`<div><strong>축 검증</strong> ${axRow}
+       <span style="opacity:.8">— 각 축의 이벤트가 그 축이 대변해야 할 계열을 실제로 예측하는지</span></div>`:''}
+     ${AGREE&&AGREE.overall?`<div><strong>LLM 간 라벨 일치도</strong>
+       방향 ${pct(AGREE.overall.direction)} · 축 ${pct(AGREE.overall.axis)} ·
+       강도±1 ${pct(AGREE.overall.strength_within_1)}
+       <span style="opacity:.8">(${AGREE.sample}건, ${AGREE.checked}) — 라벨 신뢰도의 상한</span></div>`:''}
+     <div style="margin-top:7px;padding-top:7px;border-top:1px dashed var(--line);font-size:11px">
+       ${(S.caveats||[]).map(x=>'· '+x).join('<br>')}
+       <br>· 대리지표: ${S.proxy||'—'} · 갱신 ${S.updated}
+     </div>
+   </div></details>`;
 }
 function renderAxisPanel(r,vd,numByDate){
  const panel=document.getElementById('axisPanel');
@@ -877,7 +987,20 @@ function renderAxisPanel(r,vd,numByDate){
     alloc[k]=drove(gs[k])?Math.abs(gs[k])/causeSum:0;  // 0% when it cushioned
     eff[k]=Math.exp(gs[k])-1;                          // its own standalone effect
    }
-   attr={alloc,eff,gs,drove,lcpDelta,totalPct:(Math.exp(gT)-1)*100};
+   // Split the observed move into the part this period-over-period step
+   // normally produces (seasonality/trend) and the part that actually needs
+   // explaining. The axes still allocate the OBSERVED move — that is what the
+   // reader asked to see — but the anomaly line says how much of it was news
+   // to begin with, and the z-score says whether it is unusual at all.
+   const base=seasonalBaseline(basisSer, sd.value, ed.value, csd.value, ced.value);
+   let expectedPct=null, residualPct=null, z=null;
+   if(base){
+    expectedPct=(Math.exp(base.expectedLog)-1)*100;
+    residualPct=(Math.exp(gT-base.expectedLog)-1)*100;
+    if(base.sigma) z=(gT-base.expectedLog)/base.sigma;
+   }
+   attr={alloc,eff,gs,drove,lcpDelta,totalPct:(Math.exp(gT)-1)*100,
+         base,expectedPct,residualPct,z};
   }
  }
 
@@ -996,15 +1119,33 @@ function renderAxisPanel(r,vd,numByDate){
    ).join('')+`</div>
    <div style="font-size:11px;color:#9aa0a6;margin-top:5px">${dn?'하락':'상승'}을 <strong>유발한 축들만</strong> 100%로 배분한 값입니다 (각 축 단독 효과: ${segs.map(s=>`${axName(s[0])} ${fmtSigned(attr.eff[s[0]]*100,'%',1)}`).join(' · ')})`
    +(cushions.length?` · 반대로 작용한 <strong>${cushions.join('·')}</strong> 축은 ${dn?'하락':'상승'} 원인이 아니므로 배분에서 제외했습니다`:'')
-   +`${attr.alloc.supply>0.005?' · 공급은 CrUX 성능 회귀 기반 추정':''} · 막대 클릭 시 해당 축 요인 목록으로 이동</div>`;
+   +`${attr.alloc.supply>0.005?' · 공급은 CrUX 성능 회귀 기반 추정':''} · 막대 클릭 시 해당 축 요인 목록으로 이동</div>`
+   +anomalyLine(attr);
  } else if(vd && Math.abs(vd.pct)>=1 && !basisGap){
   barHtml=`<div style="font-size:11px;color:#9aa0a6;margin-top:8px">축별 효과 계산 불가 — 시장(경쟁사) 시계열이 두 기간을 모두 덮지 못합니다.</div>`;
+ }
+ // How much of the move was routine, and is it unusual at all? Without this
+ // the panel attributes a change that may simply be what this period always
+ // does — a seasonal dip dressed up as a news-driven one.
+ function anomalyLine(a){
+  if(!a||!a.base) return `<div style="font-size:11px;color:#9aa0a6;margin-top:6px">계절성 기준선: 과거 반복 구간이 3회 미만이라 계산 불가 — 아래 배분은 관측된 변화 전체를 나눈 값입니다.</div>`;
+  const z=a.z, unusual = z==null?null:Math.abs(z)>=2;
+  const verdict = z==null ? '이례성 판단 보류(과거 변동폭 추정 불가)'
+    : unusual ? `과거 같은 구간 대비 <strong>이례적</strong> (z=${z.toFixed(1)})`
+              : `과거 같은 구간의 통상 범위 안 (z=${z.toFixed(1)})`;
+  const col = unusual===true?'#8a6d1a':'#9aa0a6';
+  return `<div style="font-size:11px;color:${col};margin-top:6px;line-height:1.6">
+    관측 ${fmtSigned(a.totalPct,'%',1)} = 계절성·추세로 <strong>예상되던 ${fmtSigned(a.expectedPct,'%',1)}</strong>
+    + 설명이 필요한 <strong>${fmtSigned(a.residualPct,'%',1)}</strong>
+    <span style="opacity:.85">(과거 동일 비교 ${a.base.n}회 기준)</span> · ${verdict}
+    ${unusual===false?' — 뉴스로 설명하기 전에, 원래 이런 시기일 가능성을 먼저 보세요.':''}</div>`;
  }
  const basisEl=document.getElementById('axisBasis');
  if(basisEl) basisEl.textContent = isReal
    ? '(업로드한 실측 트래픽 기준)'
    : '(위키 관심도 기준 추정 — 실측 트래픽 업로드 시 자동 전환)';
  document.getElementById('axisSummary').innerHTML=summary+barHtml;
+ renderCredibility();
 
  // Per-axis event lists: top 3 visible, rest expandable (deep-dive)
  const wOf=e=>Math.max(1,Math.min(5,+e.impact_strength||2))*(CONFW[e.confidence]||1);
@@ -1446,6 +1587,8 @@ HTML=(HTML.replace("__DATA__",json.dumps(events,ensure_ascii=False))
           .replace("__WIKI__",json.dumps(wiki,ensure_ascii=False))
           .replace("__STATS__",json.dumps(stats_series,ensure_ascii=False))
           .replace("__CRUX__",json.dumps(crux,ensure_ascii=False))
+          .replace("__SCORES__",json.dumps(scores,ensure_ascii=False))
+          .replace("__AGREE__",json.dumps(agreement,ensure_ascii=False))
           .replace("__MBADGES__",mbadges_html)
           .replace("__DEF_CMP_FROM__",DEF_CMP_FROM)
           .replace("__DEF_CMP_TO__",DEF_CMP_TO)
