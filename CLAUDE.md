@@ -29,9 +29,22 @@ scripts/
   check_feeds.py       feeds.txt의 20개 피드 파싱 상태 체크 (매일) → data/feed_health.json
   merge_past_events.py 수동 도구 — 이벤트 배치를 events.json에 병합(스키마 검증·정렬·중복제거)
   check_feed_translation.py 수동 진단 — events.json 내 피드 항목 번역 품질 점검
+  score_predictions.py 신뢰도 계층 (매일) — 이벤트 원장을 반증 가능하게 만듦.
+                      ① 이벤트 압력지수(일별 시계열화) → data/event_pressure.json
+                      ② 사후 채점·교정곡선·순열검정·축 검증 → data/prediction_scores.json
+                      API 키 불필요 (events.json + wiki_series.json만 읽음)
+  check_llm_agreement.py 주간(월) — 같은 기사를 3개 provider에 독립 판정시켜 라벨
+                      일치도 측정 → data/llm_agreement.json. 라벨 신뢰도의 상한
+  repair_event_dates.py 1회용 복구 — 2026-08-10 날짜 버그로 어긋난 date 교정
+                      (아래 "날짜 앵커링 사고" 참고). --dry-run 기본, --apply로 저장
   build.py             모든 data/*.json → index.html 재빌드 (대시보드 JS 전부 여기 있음)
 
 data/                 자동 생성/갱신되는 JSON들 (스키마는 각 스크립트 상단 docstring 참고)
+  prediction_scores.json (2026-08-10 신설) 방향 적중률·강도별 교정곡선·압력지수 상관·
+                      순열검정 p값·축 검증. 대시보드 "예측 검증" 패널이 이걸 읽음.
+                      **재계산하지 않고 읽기만 함** — 화면과 저장된 근거가 어긋날 수 없게.
+  event_pressure.json (2026-08-10 신설) 축별 일별 이벤트 압력 시계열
+  llm_agreement.json  (2026-08-10 신설) provider 간 라벨 일치도, 최근 12회 보존
   llm_usage.json      (2026-08-05 신설) 콜렉터 실행별 provider 텔레메트리 —
                       attempt/ok/ko_reject/empty/http_429/http_auth/http_other/
                       exception/skipped_off. `llm_common.save_usage()`가
@@ -225,11 +238,60 @@ python3 scripts/build.py
   git에 커밋된 최신 스냅샷이 그대로 보이므로, "비어있다"고 가정하지 말고 실제 파일을
   확인할 것.
 
+### 7. 날짜 앵커링 사고 (2026-08-10) — 새 LLM 필드를 믿기 전에 읽을 것
+`FILTER_SYSTEM`에 **오늘 날짜가 없었고**, 콜렉터는 LLM이 준 날짜를 정규식
+`^\d{4}-\d{2}-\d{2}$` 하나로만 검사했다. 시계가 없는 모델은 추출 날짜를 **학습
+데이터 시기(2024년)에 앵커링**했고, 그 결과 자동수집 325건 중 **291건(90%)이 수집일보다
+1년 이상 과거**로 저장됐다 — 2026-08-04에 가져온 Galaxy Z Fold 8 기사가 2024-08-22로,
+Apple Watch Series 11이 2024-09-01로. 정규식은 `2024-05-00`(00일)도 통과시켜 5건이
+파싱 불가 상태로 들어와 있었다.
+
+**대시보드의 기간 필터·추세 차트·3축 배분이 전부 `date`에 걸려 있어서, 두 해쯤 어긋난
+데이터를 분석하고 있었다.** 증상은 "특정 기간을 골라도 이벤트가 몇 건 안 잡힌다"였는데
+한동안 원인으로 연결되지 않았다.
+
+대응 3종:
+- `_today_note()`가 프롬프트에 오늘 날짜를 주입 (단건·배치 양쪽)
+- `_item_block()`이 소스 발행일을 `PUBLISHED:`로 같이 전달
+- `clean_date()`가 **엄격 파싱 + 미래 거부 + 과도한 소급(기본 180일 초과) 거부**,
+  실패 시 소스 발행일로 폴백. `collect_feeds.py`는 `feed_date()`로 RSS `pubDate` /
+  Atom `updated`를 파싱 — 예전엔 발행일을 버리고 무조건 "오늘"로 채우고 있었다.
+- 원본 발행일은 `raw_date`에 보존 → 다음에 또 어긋나도 복구 가능
+
+**교훈: LLM이 채우는 새 필드를 스키마 검사만으로 받아들이지 말 것.** 그 값이 물리적으로
+가능한 범위인지(미래 아님, 파이프라인 특성상 가능한 과거 범위 안) 함께 검사하고, 가능하면
+독립적인 근거(발행일)를 폴백으로 둘 것. `date_source` 필드가 이제 그 근거를 기록한다
+(`url`=URL에서 추출한 발행일, `llm`=모델 값 채택, `capture`=수집일로 추정, `seed`=수기).
+
+### 8. 정성 → 정량의 다리 (2026-08-10 신설)
+예전 대시보드는 **산술 분해로 나온 축 퍼센트**와 **LLM이 분류한 이벤트 목록**을 나란히
+놓기만 했다. 둘은 서로를 제약하지 않아서, 읽는 사람이 머릿속에서 연결할 뿐 **틀릴 수 없는
+= 증명도 아닌** 구조였다. `score_predictions.py`가 그 다리를 놓는다:
+- **압력지수**: 이산 이벤트를 `strength × confidence × 0.5^(경과/반감기)`로 일별
+  시계열화. horizon별 반감기 immediate 3일 / weeks 14일 / months 60일.
+  자료형이 같아져야 트래픽과 비교가 된다 — 나머지 전부의 전제.
+- **사후 채점**: 저장된 `impact_direction/strength/horizon`은 그 자체로 예측이다.
+  horizon 경과 후 실측과 대조해 적중률·강도별 교정곡선을 만든다.
+- **순열검정**: 이벤트 날짜만 무작위로 섞어 귀무분포를 만든다. 일별 관측은 자기상관이
+  강해 일반 t검정은 과신하므로 **순열 p값이 유일하게 믿을 기준**.
+- **축 검증**: demand 압력이 실제로 market_total을, share가 samsung_share를
+  예측하는지. 안 되면 축 라벨은 장식이다.
+- **계절성 기준선**(build.py `seasonalBaseline()`): 같은 비교를 과거로 반복 재생해
+  중앙값=예상분, MAD=변동폭. 관측 변화를 "예상되던 몫 + 설명이 필요한 몫"으로 쪼개고
+  z로 이례성을 표시. 예전엔 어차피 일어났을 변화까지 뉴스 탓으로 돌리고 있었다.
+
+**2026-08-10 첫 측정 결과: 전부 유의하지 않음** (적중률 53%, 압력-트래픽 r=0.14,
+순열 p=0.998, 축 검증 p=0.08~0.35). 조밀 구간이 39일뿐이라 검정력이 거의 없다 —
+귀무 |r| 95%가 0.69다. **고장이 아니라 "아직 결론 낼 수 없다"를 정확히 말하고 있는
+것이고, 이 계측을 지금 시작해야 몇 달 뒤에 쓸 수 있다.**
+
 ## 하지 말아야 할 것
 - `index.html`을 직접 편집 — 항상 `build.py`가 생성
 - LLM 프롬프트에 unverified RSS URL 추측해서 넣기 — 항상 실제 fetch로 검증
 - `events.json`에 영어 원문이나 하드코딩된 기본값(confidence=low 등)으로 채운 이벤트 저장
   — 3-LLM 다 실패하면 skip이 원칙
+- 대시보드에서 `prediction_scores.json`의 수치를 **다시 계산**하기 — 읽기만 할 것
+  (화면과 저장된 근거가 어긋나면 신뢰도 패널의 존재 이유가 사라짐)
 - 워크플로 스텝에 새 API 키 쓰는 스크립트 추가할 때 `env:` 블록에 그 키 추가하는 걸
   깜빡하기 (실제로 한 번 이런 버그가 있었음 — check_model.py가 Groq/Mistral 키를 못 받아서
   "키 없음"으로 잘못 표시된 적 있음)
