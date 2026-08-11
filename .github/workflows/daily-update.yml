@@ -78,7 +78,7 @@ jobs:
 
       # ---- Layer 3: IMF monthly macro stats (국가별 통계 탭, separate dashboard) ----
       # Runs only on the 28th (collects the PREVIOUS month's data), or manual dispatch.
-      - name: Detect collection day (28th)
+      - name: Detect collection day (28th) + weekday
         id: statday
         run: |
           if [ "$(date -u +%d)" = "28" ]; then
@@ -86,6 +86,8 @@ jobs:
           else
             echo "run_stats=false" >> "$GITHUB_OUTPUT"
           fi
+          # 1=Monday .. 7=Sunday — gates the weekly LLM-agreement check below
+          echo "dow=$(date -u +%u)" >> "$GITHUB_OUTPUT"
 
       - name: Layer 3 — IMF monthly indicators (28th → previous month)
         if: ${{ steps.statday.outputs.run_stats == 'true' || github.event_name == 'workflow_dispatch' }}
@@ -96,6 +98,29 @@ jobs:
       - name: Feed health check (daily → catches silently-broken feeds)
         run: python scripts/check_feeds.py
 
+      # ---- Credibility layer: score the ledger's own predictions ----
+      # Every stored event is a prediction (direction/strength/horizon) that
+      # nothing ever checked. This scores the elapsed ones against the traffic
+      # proxy, builds the daily event-pressure series, and runs a permutation
+      # test so a small-sample coincidence can't read as a finding.
+      # No API keys — reads events.json + wiki_series.json only.
+      - name: Score predictions (calibration + permutation test)
+        run: python scripts/score_predictions.py
+
+      # ---- Weekly: how much do the three judges actually agree? ----
+      # Label noise is a ceiling on everything downstream. Weekly (Mondays)
+      # because it costs one batch request per provider.
+      - name: LLM label agreement (Mondays)
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.statday.outputs.dow == '1' }}
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: gemini-2.5-flash
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          LLM_BATCH: "10"
+        continue-on-error: true   # 측정용 — 실패해도 파이프라인은 계속
+        run: python scripts/check_llm_agreement.py
+
       - name: Rebuild dashboard
         run: python scripts/build.py
 
@@ -103,7 +128,7 @@ jobs:
         run: |
           git config user.name  "github-actions"
           git config user.email "actions@github.com"
-          git add data/events.json data/feed_state.json data/model_status.json data/wiki_series.json data/gdelt_pool.json data/imf_series.json data/crux_series.json data/query_performance.json data/feed_performance.json data/llm_usage.json data/optimize_log.json data/feed_health.json queries.txt kw_news.txt kw_feeds.txt index.html
+          git add data/events.json data/feed_state.json data/model_status.json data/wiki_series.json data/gdelt_pool.json data/imf_series.json data/crux_series.json data/query_performance.json data/feed_performance.json data/llm_usage.json data/prediction_scores.json data/event_pressure.json data/llm_agreement.json data/optimize_log.json data/feed_health.json queries.txt kw_news.txt kw_feeds.txt index.html
           git commit -m "daily update $(date -u +%F)" || echo "no changes"
           git push
 
