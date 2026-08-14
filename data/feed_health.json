@@ -1,9 +1,9 @@
 {
- "checked": "2026-08-10 21:56 UTC",
+ "checked": "2026-08-14 21:49 UTC",
  "feeds": {
   "OpenAI news": {
    "status": "ok",
-   "detail": "1121 items"
+   "detail": "1129 items"
   },
   "Gemini (Google)": {
    "status": "ok",
@@ -42,8 +42,8 @@
    "detail": "10 items"
   },
   "Pew Research Internet & Tech": {
-   "status": "ok",
-   "detail": "100 items"
+   "status": "error",
+   "detail": "HTTP 403"
   },
   "Search Engine Journal": {
    "status": "ok",
