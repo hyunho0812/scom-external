@@ -1062,5 +1062,33 @@
    "ai search traffic"
   ],
   "rationale": "쿼리 성능 및 키워드 유지/제외 목록을 검토하여 현재 설정을 최적화했습니다. 'online retail' 쿼리는 원시 검색량이 적지만 유지율이 낮으므로, 필터를 개선하여 더 많은 관련 내용을 유지할 수 있도록 유지했습니다. 전반적으로 쿼리는 단축/일반화 규칙을 잘 따르고 있으므로 큰 변경 없이 현재 상태를 유지하여 안정성을 높였습니다. 키워드 목록은 중복을 줄이면서 관련성을 높이기 위해 유지 및 제외 목록을 미세 조정했습니다. 한국어 키워드는 삼성 뉴스룸(KR) 피드의 필수 요소이므로 유지했습니다."
+ },
+ {
+  "date": "2026-08-15",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "online retail",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "online retail",
+   "ai search traffic"
+  ],
+  "rationale": "기존 쿼리들의 성능이 비교적 양호하고, 불필요한 단어 추가 시 원시 데이터 획득률이 크게 저하될 위험이 커 기존 쿼리 문구는 유지하고, 키워드 필터링은 현재의 광범위한 트래픽 및 매출 관련 키워드를 최대한 유지하여 관련성 높은 외부 요인을 놓치지 않도록 했습니다."
  }
 ]

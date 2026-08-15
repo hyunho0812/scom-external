@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-14",
+ "updated": "2026-08-15",
  "window": {
   "from": "2024-10-28",
   "to": "2026-08-13",
@@ -7,7 +7,7 @@
  },
  "proxy": "wikipedia_samsung_pageviews",
  "scored": 328,
- "skipped": 77,
+ "skipped": 98,
  "summary": {
   "all": {
    "n": 328,
@@ -234,13 +234,13 @@
  },
  "axis_validation": {
   "demand": {
-   "r": 0.5619,
-   "n": 39,
+   "r": 0.5844,
+   "n": 43,
    "target": "market_total"
   },
   "share": {
-   "r": -0.5524,
-   "n": 39,
+   "r": -0.402,
+   "n": 43,
    "target": "samsung_share"
   },
   "supply": {
@@ -253,29 +253,29 @@
   "all": {
    "permutations": 1000,
    "observed_r": 0.179,
-   "null_p95_abs_r": 0.4836,
-   "p_value": 0.632,
+   "null_p95_abs_r": 0.4671,
+   "p_value": 0.687,
    "significant": false
   },
   "demand": {
    "permutations": 1000,
-   "observed_r": 0.5619,
-   "null_p95_abs_r": 0.649,
-   "p_value": 0.131,
-   "significant": false
+   "observed_r": 0.5844,
+   "null_p95_abs_r": 0.5543,
+   "p_value": 0.036,
+   "significant": true
   },
   "share": {
    "permutations": 1000,
-   "observed_r": -0.5524,
-   "null_p95_abs_r": 0.6116,
-   "p_value": 0.079,
+   "observed_r": -0.402,
+   "null_p95_abs_r": 0.49,
+   "p_value": 0.108,
    "significant": false
   },
   "supply": {
    "permutations": 1000,
    "observed_r": 0.0341,
-   "null_p95_abs_r": 0.5554,
-   "p_value": 0.917,
+   "null_p95_abs_r": 0.5696,
+   "p_value": 0.912,
    "significant": false
   }
  },

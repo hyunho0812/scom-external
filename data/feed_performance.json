@@ -1,28 +1,6 @@
 [
  {
   "date": "2026-07-14",
-  "total_raw": 16,
-  "total_kept": 0,
-  "per_feed": {
-   "OpenAI news": {
-    "raw": 10,
-    "kw_pass": 9,
-    "kept": 0
-   },
-   "Gemini (Google)": {
-    "raw": 1,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Digiday": {
-    "raw": 5,
-    "kw_pass": 4,
-    "kept": 0
-   }
-  }
- },
- {
-  "date": "2026-07-14",
   "total_raw": 26,
   "total_kept": 6,
   "per_feed": {
@@ -1291,6 +1269,28 @@
     "raw": 3,
     "kw_pass": 3,
     "kept": 1
+   }
+  }
+ },
+ {
+  "date": "2026-08-15",
+  "total_raw": 14,
+  "total_kept": 2,
+  "per_feed": {
+   "OpenAI news": {
+    "raw": 10,
+    "kw_pass": 9,
+    "kept": 0
+   },
+   "Search Engine Journal": {
+    "raw": 3,
+    "kw_pass": 3,
+    "kept": 2
+   },
+   "Moz": {
+    "raw": 1,
+    "kw_pass": 1,
+    "kept": 0
    }
   }
  }
