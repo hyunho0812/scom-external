@@ -1090,5 +1090,33 @@
    "ai search traffic"
   ],
   "rationale": "기존 쿼리들의 성능이 비교적 양호하고, 불필요한 단어 추가 시 원시 데이터 획득률이 크게 저하될 위험이 커 기존 쿼리 문구는 유지하고, 키워드 필터링은 현재의 광범위한 트래픽 및 매출 관련 키워드를 최대한 유지하여 관련성 높은 외부 요인을 놓치지 않도록 했습니다."
+ },
+ {
+  "date": "2026-08-16",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "online retail",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "online retail",
+   "ai search traffic"
+  ],
+  "rationale": "쿼리 성능 및 관련성 향상을 위해 기존의 유효한 쿼리는 유지하고, 키워드 필터는 최신 기술 트렌드 및 시장 변화를 반영하여 세분화했습니다. 특히 '온라인 리테일' 및 'ai 검색 트래픽'과 같이 낮은 Keep Rate를 보인 쿼리들은 그대로 두어 더 넓은 범위의 데이터를 수집하도록 했습니다. KW_NEWS_KEEP 및 KW_FEEDS_KEEP은 삼성 관련 제품 및 산업 트렌드와 관련된 광범위한 용어를 포함하여 관련 뉴스 및 자체 피드를 놓치지 않도록 조정했습니다. KW_DROP 리스트는 삼성전자 비즈니스와 무관한 개인적인 내용이나 특정 주식 시장, 스포츠 등 노이즈가 되는 키워드를 제거하여 필터링 효율을 높였습니다."
  }
 ]

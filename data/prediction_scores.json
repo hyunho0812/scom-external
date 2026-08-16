@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-15",
+ "updated": "2026-08-16",
  "window": {
   "from": "2024-10-28",
   "to": "2026-08-13",
@@ -7,7 +7,7 @@
  },
  "proxy": "wikipedia_samsung_pageviews",
  "scored": 328,
- "skipped": 98,
+ "skipped": 107,
  "summary": {
   "all": {
    "n": 328,
@@ -253,29 +253,29 @@
   "all": {
    "permutations": 1000,
    "observed_r": 0.179,
-   "null_p95_abs_r": 0.4671,
-   "p_value": 0.687,
+   "null_p95_abs_r": 0.4903,
+   "p_value": 0.701,
    "significant": false
   },
   "demand": {
    "permutations": 1000,
    "observed_r": 0.5844,
-   "null_p95_abs_r": 0.5543,
-   "p_value": 0.036,
+   "null_p95_abs_r": 0.5614,
+   "p_value": 0.041,
    "significant": true
   },
   "share": {
    "permutations": 1000,
    "observed_r": -0.402,
-   "null_p95_abs_r": 0.49,
-   "p_value": 0.108,
+   "null_p95_abs_r": 0.4692,
+   "p_value": 0.11,
    "significant": false
   },
   "supply": {
    "permutations": 1000,
    "observed_r": 0.0341,
-   "null_p95_abs_r": 0.5696,
-   "p_value": 0.912,
+   "null_p95_abs_r": 0.5728,
+   "p_value": 0.896,
    "significant": false
   }
  },
