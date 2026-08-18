@@ -131,7 +131,8 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
 .evt .indent{margin-left:31px}
 .evt .meta{font-size:12px;color:var(--muted)}
 .evt .imp{font-size:13px;font-weight:500;border-radius:8px;padding:8px 10px;margin:6px 0 8px;line-height:1.5}
-.evt .desc{font-size:13px;color:#444;line-height:1.65}
+.evt .desc{font-size:13px;color:#444;line-height:1.65;margin:6px 0}
+.blbl{font-weight:600;opacity:.7;margin-right:5px}
 .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#eef0f5;color:#444;margin-right:5px}
 .kline{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}.klbl{font-size:11px;color:var(--muted)}
 .metaval{font-size:12px;color:var(--ink)}
@@ -247,6 +248,9 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
 <script>
 const EV=__DATA__;
+// "전체" is a scope VALUE, not a computed label: an event says either that it
+// applies everywhere or which countries it is about. Nothing to derive.
+const SCOPE_ALL="전체";
 const WIKI=__WIKI__;
 const STATS=__STATS__;
 const CRUX=__CRUX__;
@@ -256,16 +260,48 @@ const AGREE=__AGREE__;
 // country_tables()), not a fixed list: an event scoped to CN or JP used to be
 // unreachable because the filter had no such option. The twelve tracked
 // markets are always offered even on a day none of them appears.
-const REGIONS=__REGIONS__;
-const COUNTRIES=__COUNTRIES__;
 // Which countries each region name covers. An event whose scope is "유럽" —
 // the article named the bloc and not its members — has to show up under
 // 독일 as well, and this is what lets the filter know that.
 const REGION_MEMBERS=__REGION_MEMBERS__;
+// Dropdown groups, in order. 한국 is its own group (home market, not one of
+// 동아시아) and 아시아 is absent because it overlaps three groups that are
+// present — it still works as a stored scope value and still matches through
+// REGION_MEMBERS.
+const REGION_GROUPS=__REGION_GROUPS__;
+// Always offered, even on a day no event names them, so the dropdown does not
+// shrink and grow underfoot.
+const PINNED=__PINNED__;
+// The filter lists are derived from EV at load time, not baked in at build
+// time: the countries on offer are exactly the countries the events in front
+// of you name. A country that appears for the first time today shows up
+// today, and one that only ever appeared in a since-removed event stops being
+// offered — without anyone maintaining a list.
+function countryTables(events){
+ const named=new Set(PINNED), regionUsed=new Set();
+ for(const e of events){
+  for(const t of String(e.scope||'').split(';')){
+   if(!t||t===SCOPE_ALL) continue;
+   (REGION_MEMBERS[t]?regionUsed:named).add(t);
+  }
+ }
+ const regions={"ALL":null}, ordered=[];
+ for(const [name,members] of REGION_GROUPS){
+  const got=members.filter(c=>named.has(c));
+  // A region whose countries are never named individually still belongs in
+  // the list when an event is scoped to the region itself.
+  if(got.length||regionUsed.has(name)){ regions[name]=got.length?got:members.slice(); ordered.push(...got); }
+ }
+ const claimed=new Set(REGION_GROUPS.flatMap(([,m])=>m));
+ const unclaimed=[...named].filter(c=>!claimed.has(c)).sort();
+ if(unclaimed.length){ regions["기타"]=unclaimed; ordered.push(...unclaimed); }
+ const seen=new Set(), countries=[["ALL","전체"]];
+ for(const c of ordered){ if(!seen.has(c)){ seen.add(c); countries.push([c,c]); } }
+ return {regions,countries};
+}
+const __ct=countryTables(EV);
+const REGIONS=__ct.regions, COUNTRIES=__ct.countries;
 const DIV2COMP={MX:["Apple","Xiaomi","vivo","OPPO"],VD:["LG","TCL","Hisense"],DA:["LG","Whirlpool","Bosch"]};
-// "전체" is a scope VALUE, not a computed label: an event says either that it
-// applies everywhere or which countries it is about. Nothing to derive.
-const SCOPE_ALL="전체";
 const ALL_DIVS=["MX","VD","DA"];
 // Scope is stored as it reads — "전체" or Korean country names — so the label
 // is the value with the separator spaced out.
@@ -616,7 +652,11 @@ function evCardHtml(e, domId, badge){
    `<span class="tag" style="background:${bc}18;color:${bc}">영향강도 ${STRENGTH(e)}/5</span>`]
    .concat(e.confidence?[`<span class="tag" style="background:${cc}22;color:${cc}">신뢰도: ${e.confidence}</span>`]:[])
    .concat([`<span class="tag" style="background:${ds[1]};color:${ds[2]}" title="이 이벤트 날짜의 근거. '수집일 추정'은 기사에서 날짜를 얻지 못해 수집한 날로 채운 값이라, 그 날 트래픽을 예측했다는 근거가 될 수 없습니다.">날짜: ${ds[0]}</span>`]);
- const imp=e.impact?`<div class="imp" style="color:${bc};background:${bc}14">${e.impact}</div>`:'';
+ // Two different kinds of claim, so they are labelled as two: 요약 is what the
+ // article reports, LLM 추론 is the model's reading of what it does to
+ // samsung.com traffic. They used to run together in one paragraph, which let
+ // an inference read as reported fact.
+ const imp=e.impact?`<div class="imp" style="color:${bc};background:${bc}14"><span class="blbl">LLM 추론:</span>${e.impact}</div>`:'';
  // Strip source/filter tags and legacy markers from the body text
  const desc=(e.description||'')
    .replace(/\s*\[출처:[^\]]*\]/g,'')
@@ -635,8 +675,9 @@ function evCardHtml(e, domId, badge){
  const bottomLine=(src||llm)?
    `<div class="srcline">${llm?`<span class="llmtag">LLM: ${llm}</span>`:''}${src?`<span>source: ${src}</span>`:''}</div>`:'';
  return `<div class="evt ${cls}" id="${domId}"><div class="top"><span class="ttl">${badge}${e.title}</span><span class="meta">${e.date||''}</span></div>
-   <div class="indent">${meta.join('')}</div>${imp?'<div class="indent">'+imp+'</div>':''}
-   <div class="desc indent">${desc}</div>
+   <div class="indent">${meta.join('')}</div>
+   ${desc?`<div class="desc indent"><span class="blbl">요약:</span>${desc}</div>`:''}
+   ${imp?'<div class="indent">'+imp+'</div>':''}
    <div class="kline indent"><span class="klbl">영향 국가:</span><span class="metaval">${scopeLabelKo(e.scope)}</span></div>
    <div class="kline indent"><span class="klbl">영향 사업부:</span><span class="metaval">${divLabel(e.divisions)}</span></div>
    ${linkLine}${bottomLine}</div>`;
@@ -1601,57 +1642,15 @@ def _badge(name, label):
 mbadges_html = "".join(_badge(n,l) for n,l in _LLM_DISPLAY) + \
     f'<div class="mbadge" style="opacity:.6">점검 {_checked}</div>'
 
-# The filter's region groups come from llm_common.SCOPE_REGIONS, so a region
-# stored in an event's scope and a region offered in the dropdown are the same
-# thing by construction. Two adjustments, both dashboard-specific:
-#   한국 is its own group — the home market reads as its own line, not as one
-#   of 동아시아 — and 아시아 is not offered, since it overlaps three groups
-#   that are. Both still work as stored scope values; see SCOPE_REGIONS.
-REGION_OF = ([(name, members) for name, members in SCOPE_REGIONS.items()
-              if name != "아시아"] + [("한국", ["한국"])])
-# Always offered even on a day no event names them: the markets samsung.com
-# actually reports on, so the dropdown does not shrink and grow underfoot.
+# The dashboard derives its own country/region dropdowns from the events at
+# load time (see countryTables() in the page), so all Python sends is the
+# vocabulary: which countries each region contains, which groups to offer, and
+# which markets are always listed. Nothing here needs to know what today's
+# events happen to say.
+REGION_GROUPS = ([[name, members] for name, members in SCOPE_REGIONS.items()
+                  if name != "아시아"] + [["한국", ["한국"]]])
 PINNED = ["미국", "영국", "독일", "프랑스", "스페인", "포르투갈", "브라질",
           "멕시코", "호주", "인도", "튀르키예", "한국"]
-
-
-def country_tables(events):
-    """(REGIONS, COUNTRIES) for the filter, from what `events` actually name.
-
-    A country is offered if some event names it, or it is PINNED. A region is
-    offered if it has such a country or an event is scoped to the region
-    itself — an article that only identified "아프리카" must stay reachable
-    even when no African country is named anywhere.
-
-    "전체" is not a place and never enters either list; the filter treats it as
-    matching everything.
-    """
-    named, region_used = set(PINNED), set()
-    for e in events:
-        for t in (e.get("scope") or "").split(";"):
-            if not t or t == SCOPE_ALL:
-                continue
-            (region_used if t in SCOPE_REGIONS else named).add(t)
-    regions, ordered = {"ALL": None}, []
-    for name, members in REGION_OF:
-        got = [c for c in members if c in named]
-        if got or name in region_used:
-            regions[name] = got or list(members)
-            ordered.extend(got)
-    claimed = {c for _, members in REGION_OF for c in members}
-    unclaimed = sorted(named - claimed)      # a country no region lists yet
-    if unclaimed:
-        regions["기타"] = unclaimed
-        ordered.extend(unclaimed)
-    seen, uniq = set(), []
-    for c in ordered:
-        if c not in seen:
-            seen.add(c)
-            uniq.append(c)
-    return regions, [["ALL", "전체"]] + [[c, c] for c in uniq]
-
-
-REGIONS_JS, COUNTRIES_JS = country_tables(events)
 
 
 
@@ -1666,9 +1665,9 @@ HTML=(HTML.replace("__DATA__",json.dumps(events,ensure_ascii=False))
           .replace("__DEF_CMP_TO__",DEF_CMP_TO)
           .replace("__DEF_CUR_FROM__",DEF_CUR_FROM)
           .replace("__DEF_CUR_TO__",DEF_CUR_TO)
-          .replace("__REGIONS__",json.dumps(REGIONS_JS,ensure_ascii=False))
           .replace("__REGION_MEMBERS__",json.dumps(SCOPE_REGIONS,ensure_ascii=False))
-          .replace("__COUNTRIES__",json.dumps(COUNTRIES_JS,ensure_ascii=False))
+          .replace("__REGION_GROUPS__",json.dumps(REGION_GROUPS,ensure_ascii=False))
+          .replace("__PINNED__",json.dumps(PINNED,ensure_ascii=False))
           .replace("__UPDATED__",updated))
 open(OUT,"w",encoding="utf-8").write(HTML)
 print("built index.html with",len(events),"events, wiki series:",list(wiki.get("series",{}).keys()))
