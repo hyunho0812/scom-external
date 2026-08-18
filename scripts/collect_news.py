@@ -38,8 +38,8 @@ from datetime import datetime, timedelta, timezone
 
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
-from llm_common import (llm_filter_batch, diag_summary, INTERESTS, MARKETS,
-                        load_queries, load_kw_file, clean_axis, clean_date_ex, BATCH,
+from llm_common import (llm_filter_batch, diag_summary, INTERESTS, SCOPE_ALL,
+                        load_queries, load_kw_file, clean_axis, clean_scope, clean_date_ex, BATCH,
                         DupIndex, DEDUP_WINDOW_DAYS)
 
 DATA = os.path.join(HERE, "..", "data", "events.json")
@@ -124,7 +124,6 @@ def keyword_verdict(text):
     return any(k in t for k in KW_KEEP)
 
 def to_event(article, verdict, llm_used):
-    DEF_SCOPE = ";".join(MARKETS)
     # Prefer the phenomenon-start date the LLM extracted; fall back to publish date, then today.
     _today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     # NewsAPI/GDELT give us the real publish date — pass it as ground truth so
@@ -142,7 +141,10 @@ def to_event(article, verdict, llm_used):
         # bucket; without it every new event defaults to "seed".
         "date_source":date_source,
         "captured_date":_today,
-        "scope":";".join(verdict.get("scope") or MARKETS) if verdict else DEF_SCOPE,
+        # clean_scope, not a bare join: the models answer this field with
+        # "WW"/"worldwide" (and once with the instruction text itself), none of
+        # which the dashboard filter can match.
+        "scope":clean_scope(verdict.get("scope")) if verdict else SCOPE_ALL,
         "divisions":";".join(verdict.get("divisions",[])) if verdict else "",
         "kpi":";".join(verdict.get("kpi",[])) if verdict else "Traffic",
         "category":verdict.get("category","economy") if verdict else "economy",

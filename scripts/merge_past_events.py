@@ -16,11 +16,10 @@ values to the allowed sets, and drops malformed records.
 import os, sys, json, glob, re
 
 sys.path.insert(0, os.path.dirname(__file__))
-from llm_common import MARKETS, clean_axis  # single source of truth for shared config
+from llm_common import clean_scope, clean_axis  # single source of truth for shared config
 
 ALLOWED_CAT = {"culture","marketing","platform","holiday","economy",
                "social_issue","geopolitics","AI","company","regulation"}
-ALLOWED_SCOPE = set(MARKETS)
 ALLOWED_DIV = {"MX","VD","DA"}
 ALLOWED_KPI = {"Impression","Click","Traffic","Order","CVR","Revenue","AOV"}
 ALLOWED_DIR = {"+","-","neutral","unknown"}
@@ -30,7 +29,6 @@ ALLOWED_METRIC = {"traffic","revenue","both"}
 # common fixes for category values AIs might emit
 CAT_FIX = {"competitor":"company","ai":"AI","ecommerce":"economy",
            "tech":"company","environment":"geopolitics","politics":"geopolitics"}
-SCOPE_FIX = {"UK":"GB","MX":"MX_C","USA":"US","KOR":"KR","GBR":"GB"}
 
 def clean_list(val, allowed, fixes=None):
     if isinstance(val, list):
@@ -53,7 +51,8 @@ def clean_record(r):
         cat = str(r.get("category","economy")).strip()
         cat = CAT_FIX.get(cat, cat)
         if cat not in ALLOWED_CAT: cat = "economy"
-        scope = clean_list(r.get("scope"), ALLOWED_SCOPE, SCOPE_FIX) or list(ALLOWED_SCOPE)
+        # Korean country names or "전체" — see llm_common.clean_scope()
+        scope = clean_scope(r.get("scope"))
         divs = clean_list(r.get("divisions"), ALLOWED_DIV)
         kpi = clean_list(r.get("kpi"), ALLOWED_KPI) or ["Traffic"]
         d = str(r.get("impact_direction","unknown")).strip()
@@ -73,7 +72,7 @@ def clean_record(r):
             "event_id": "TMP",
             "date": date,
             "captured_date": str(r.get("captured_date", date)).strip() or date,
-            "scope": ";".join(scope),
+            "scope": scope,   # already a ';'-joined string
             "divisions": ";".join(divs),
             "kpi": ";".join(kpi),
             "category": cat,

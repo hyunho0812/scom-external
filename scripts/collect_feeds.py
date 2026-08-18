@@ -28,8 +28,8 @@ from xml.etree import ElementTree as ET
 
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
-from llm_common import (llm_filter_batch, diag_summary, INTERESTS, MARKETS,
-                        load_kw_file, clean_axis, clean_date_ex, BATCH,
+from llm_common import (llm_filter_batch, diag_summary, INTERESTS,
+                        load_kw_file, clean_axis, clean_scope, clean_date_ex, BATCH,
                         DupIndex, DEDUP_WINDOW_DAYS)
 
 DATA = os.path.join(HERE, "..", "data", "events.json")
@@ -234,7 +234,7 @@ def main():
                 # See collect_news.to_event(); the scorer splits on this.
                 "date_source": date_source,
                 "captured_date": _today,
-                "scope": ";".join(verdict.get("scope") or MARKETS),
+                "scope": clean_scope(verdict.get("scope")),  # see collect_news
                 "divisions": ";".join(verdict.get("divisions", [])),
                 "kpi": ";".join(verdict.get("kpi", [])) or "Traffic",
                 "category": verdict.get("category", "platform"),

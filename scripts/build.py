@@ -4,8 +4,11 @@ Filters: region(7) → country(12) → division(MX/VD/DA) → KPI → impact →
 Trend graph: Samsung baseline + selected-division company total (Wikipedia views),
 with numbered callout markers for events mapped to a list below.
 Cards: one-line impact summary + plain-language body + affected KPIs."""
-import os, json
+import os, sys, json
 from datetime import datetime, timezone
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from llm_common import SCOPE_REGIONS, SCOPE_ALL  # one definition of the regions
 
 HERE=os.path.dirname(__file__)
 DATA=os.path.join(HERE,"..","data","events.json")
@@ -249,18 +252,26 @@ const STATS=__STATS__;
 const CRUX=__CRUX__;
 const SCORES=__SCORES__;
 const AGREE=__AGREE__;
-const REGIONS={"ALL":null,"북미":["US"],"유럽":["GB","DE","FR","ES","PT"],"중남미":["BR","MX_C"],"동남아":["AU"],"서남아":["IN"],"중동":["TR"],"한국":["KR"]};
-const COUNTRIES=[["ALL","전체"],["US","미국"],["GB","영국"],["DE","독일"],["FR","프랑스"],["ES","스페인"],["PT","포르투갈"],["BR","브라질"],["MX_C","멕시코"],["AU","호주"],["IN","인도"],["TR","튀르키예"],["KR","한국"]];
+// Built from the countries the stored events actually name (see build.py
+// country_tables()), not a fixed list: an event scoped to CN or JP used to be
+// unreachable because the filter had no such option. The twelve tracked
+// markets are always offered even on a day none of them appears.
+const REGIONS=__REGIONS__;
+const COUNTRIES=__COUNTRIES__;
+// Which countries each region name covers. An event whose scope is "유럽" —
+// the article named the bloc and not its members — has to show up under
+// 독일 as well, and this is what lets the filter know that.
+const REGION_MEMBERS=__REGION_MEMBERS__;
 const DIV2COMP={MX:["Apple","Xiaomi","vivo","OPPO"],VD:["LG","TCL","Hisense"],DA:["LG","Whirlpool","Bosch"]};
-const ALL_COUNTRIES=["US","GB","DE","FR","ES","PT","BR","MX_C","AU","IN","TR","KR"];
+// "전체" is a scope VALUE, not a computed label: an event says either that it
+// applies everywhere or which countries it is about. Nothing to derive.
+const SCOPE_ALL="전체";
 const ALL_DIVS=["MX","VD","DA"];
-const C2KO={US:"미국",GB:"영국",DE:"독일",FR:"프랑스",ES:"스페인",PT:"포르투갈",BR:"브라질",MX_C:"멕시코",AU:"호주",IN:"인도",TR:"튀르키예",KR:"한국"};
-// Scope label: 'all' if it covers all 12 markets, else list Korean names
+// Scope is stored as it reads — "전체" or Korean country names — so the label
+// is the value with the separator spaced out.
 function scopeLabelKo(scope){
  const arr=(scope||'').split(';').filter(x=>x);
- if(!arr.length) return '—';
- if(ALL_COUNTRIES.every(c=>arr.includes(c))) return '전체';
- return arr.map(c=>C2KO[c]||c).join(', ');
+ return arr.length?arr.join(', '):'—';
 }
 // Division label: 'all' if MX/VD/DA all present, '—' if none
 function divLabel(divs){
@@ -448,7 +459,14 @@ function activeCountrySet(){if(country.value!=='ALL')return [country.value];cons
 function rows(withDate=true){let r=EV.slice();
  // Country/region: a specific value keeps events containing any of them; 'all' = no filter (union)
  const cs=activeCountrySet();
- if(cs){ r=r.filter(e=>{const sc=(e.scope||'').split(';');return cs.some(c=>sc.includes(c));}); }
+ // An event scoped 전체 applies everywhere, so it belongs to every country's
+ // and region's view — filtering it out would hide the majority of the ledger
+ // the moment a country is picked.
+ if(cs){ r=r.filter(e=>{const sc=(e.scope||'').split(';');
+   if(sc.includes(SCOPE_ALL)) return true;          // applies everywhere
+   if(cs.some(c=>sc.includes(c))) return true;      // names the country
+   // scope is a region: does it contain any of the selected countries?
+   return sc.some(t=>(REGION_MEMBERS[t]||[]).some(c=>cs.includes(c)));}); }
  // Division: specific value = contains it; 'all' = no filter
  if(dv.value!=='ALL'){ r=r.filter(e=>(e.divisions||'').split(';').includes(dv.value)); }
  if(withDate){
@@ -1583,6 +1601,60 @@ def _badge(name, label):
 mbadges_html = "".join(_badge(n,l) for n,l in _LLM_DISPLAY) + \
     f'<div class="mbadge" style="opacity:.6">점검 {_checked}</div>'
 
+# The filter's region groups come from llm_common.SCOPE_REGIONS, so a region
+# stored in an event's scope and a region offered in the dropdown are the same
+# thing by construction. Two adjustments, both dashboard-specific:
+#   한국 is its own group — the home market reads as its own line, not as one
+#   of 동아시아 — and 아시아 is not offered, since it overlaps three groups
+#   that are. Both still work as stored scope values; see SCOPE_REGIONS.
+REGION_OF = ([(name, members) for name, members in SCOPE_REGIONS.items()
+              if name != "아시아"] + [("한국", ["한국"])])
+# Always offered even on a day no event names them: the markets samsung.com
+# actually reports on, so the dropdown does not shrink and grow underfoot.
+PINNED = ["미국", "영국", "독일", "프랑스", "스페인", "포르투갈", "브라질",
+          "멕시코", "호주", "인도", "튀르키예", "한국"]
+
+
+def country_tables(events):
+    """(REGIONS, COUNTRIES) for the filter, from what `events` actually name.
+
+    A country is offered if some event names it, or it is PINNED. A region is
+    offered if it has such a country or an event is scoped to the region
+    itself — an article that only identified "아프리카" must stay reachable
+    even when no African country is named anywhere.
+
+    "전체" is not a place and never enters either list; the filter treats it as
+    matching everything.
+    """
+    named, region_used = set(PINNED), set()
+    for e in events:
+        for t in (e.get("scope") or "").split(";"):
+            if not t or t == SCOPE_ALL:
+                continue
+            (region_used if t in SCOPE_REGIONS else named).add(t)
+    regions, ordered = {"ALL": None}, []
+    for name, members in REGION_OF:
+        got = [c for c in members if c in named]
+        if got or name in region_used:
+            regions[name] = got or list(members)
+            ordered.extend(got)
+    claimed = {c for _, members in REGION_OF for c in members}
+    unclaimed = sorted(named - claimed)      # a country no region lists yet
+    if unclaimed:
+        regions["기타"] = unclaimed
+        ordered.extend(unclaimed)
+    seen, uniq = set(), []
+    for c in ordered:
+        if c not in seen:
+            seen.add(c)
+            uniq.append(c)
+    return regions, [["ALL", "전체"]] + [[c, c] for c in uniq]
+
+
+REGIONS_JS, COUNTRIES_JS = country_tables(events)
+
+
+
 HTML=(HTML.replace("__DATA__",json.dumps(events,ensure_ascii=False))
           .replace("__WIKI__",json.dumps(wiki,ensure_ascii=False))
           .replace("__STATS__",json.dumps(stats_series,ensure_ascii=False))
@@ -1594,6 +1666,9 @@ HTML=(HTML.replace("__DATA__",json.dumps(events,ensure_ascii=False))
           .replace("__DEF_CMP_TO__",DEF_CMP_TO)
           .replace("__DEF_CUR_FROM__",DEF_CUR_FROM)
           .replace("__DEF_CUR_TO__",DEF_CUR_TO)
+          .replace("__REGIONS__",json.dumps(REGIONS_JS,ensure_ascii=False))
+          .replace("__REGION_MEMBERS__",json.dumps(SCOPE_REGIONS,ensure_ascii=False))
+          .replace("__COUNTRIES__",json.dumps(COUNTRIES_JS,ensure_ascii=False))
           .replace("__UPDATED__",updated))
 open(OUT,"w",encoding="utf-8").write(HTML)
 print("built index.html with",len(events),"events, wiki series:",list(wiki.get("series",{}).keys()))

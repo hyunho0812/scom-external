@@ -26,9 +26,13 @@ import os, re, json, time, urllib.request, urllib.parse, urllib.error
 
 HERE = os.path.dirname(__file__)
 
-# Countries the dashboard tracks (no GLOBAL scope value; MX_C=Mexico, since
-# the division code MX is reserved for the mobile/phones business unit).
-MARKETS = ["US", "GB", "DE", "FR", "ES", "PT", "BR", "MX_C", "AU", "IN", "TR", "KR"]
+# The twelve markets `scope` was restricted to until 2026-08-18, when it
+# became free-form Korean country names (see clean_scope below). Kept because
+# repair_event_scope.py needs it to read the four months stored under the old
+# scheme: a scope listing all twelve was the old prompt's way of saying
+# worldwide, so it migrates to "전체" rather than to twelve country names.
+LEGACY_MARKETS = ["US", "GB", "DE", "FR", "ES", "PT", "BR", "MX_C", "AU", "IN", "TR", "KR"]
+MARKETS = LEGACY_MARKETS  # old name, still imported by scripts not yet updated
 
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
@@ -101,6 +105,196 @@ VALID_AXES = {"demand", "share", "supply"}
 def clean_axis(v):
     v = (v or "").strip().lower()
     return v if v in VALID_AXES else ""
+
+
+# --- scope (impact countries) --------------------------------------------
+# Scope is written the way the article reads, not as a fixed market list.
+# "전체" when a story touches every market; otherwise the countries it is
+# actually about, in Korean ("영국", "독일"). Two things changed on
+# 2026-08-18 when this replaced the old twelve-code enum:
+#
+#   * The universe is no longer the twelve tracked markets. An article about
+#     Vietnam used to be squeezed into "all twelve" or dropped; now it says
+#     베트남. build.py builds the filter from whatever the events contain.
+#   * The values are the labels. There is no code->Korean lookup left to drift
+#     out of step with the data, and the stored file reads the way the
+#     dashboard does.
+#
+# The models still answer this field loosely — codes, English names, "WW",
+# once the instruction text itself — so clean_scope() maps all of it onto the
+# canonical Korean name.
+SCOPE_ALL = "전체"
+
+# (ISO-2, Korean, English aliases). ISO-2 is kept only as an input alias: it is
+# what four months of events were stored as, and what the models reach for.
+_COUNTRY_TABLE = [
+    ("US", "미국", ("UNITED STATES", "USA", "AMERICA", "U.S.", "U.S.A.")),
+    ("CA", "캐나다", ("CANADA",)),
+    ("MX_C", "멕시코", ("MEXICO", "MX")),
+    ("BR", "브라질", ("BRAZIL",)),
+    ("AR", "아르헨티나", ("ARGENTINA",)),
+    ("CL", "칠레", ("CHILE",)),
+    ("CO", "콜롬비아", ("COLOMBIA",)),
+    ("PE", "페루", ("PERU",)),
+    ("GB", "영국", ("UNITED KINGDOM", "UK", "GBR", "BRITAIN", "ENGLAND")),
+    ("DE", "독일", ("GERMANY",)),
+    ("FR", "프랑스", ("FRANCE",)),
+    ("ES", "스페인", ("SPAIN",)),
+    ("PT", "포르투갈", ("PORTUGAL",)),
+    ("IT", "이탈리아", ("ITALY",)),
+    ("NL", "네덜란드", ("NETHERLANDS", "HOLLAND")),
+    ("BE", "벨기에", ("BELGIUM",)),
+    ("CH", "스위스", ("SWITZERLAND",)),
+    ("AT", "오스트리아", ("AUSTRIA",)),
+    ("SE", "스웨덴", ("SWEDEN",)),
+    ("NO", "노르웨이", ("NORWAY",)),
+    ("DK", "덴마크", ("DENMARK",)),
+    ("FI", "핀란드", ("FINLAND",)),
+    ("IE", "아일랜드", ("IRELAND",)),
+    ("PL", "폴란드", ("POLAND",)),
+    ("CZ", "체코", ("CZECHIA", "CZECH REPUBLIC")),
+    ("HU", "헝가리", ("HUNGARY",)),
+    ("RO", "루마니아", ("ROMANIA",)),
+    ("GR", "그리스", ("GREECE",)),
+    ("UA", "우크라이나", ("UKRAINE",)),
+    ("RU", "러시아", ("RUSSIA",)),
+    ("TR", "튀르키예", ("TURKEY", "TURKIYE", "TÜRKIYE")),
+    ("AE", "아랍에미리트", ("UAE", "UNITED ARAB EMIRATES")),
+    ("SA", "사우디아라비아", ("SAUDI ARABIA", "SAUDI")),
+    ("IL", "이스라엘", ("ISRAEL",)),
+    ("EG", "이집트", ("EGYPT",)),
+    ("ZA", "남아프리카공화국", ("SOUTH AFRICA", "남아공")),
+    ("NG", "나이지리아", ("NIGERIA",)),
+    ("KE", "케냐", ("KENYA",)),
+    ("MA", "모로코", ("MOROCCO",)),
+    ("IN", "인도", ("INDIA",)),
+    ("PK", "파키스탄", ("PAKISTAN",)),
+    ("BD", "방글라데시", ("BANGLADESH",)),
+    ("LK", "스리랑카", ("SRI LANKA",)),
+    ("CN", "중국", ("CHINA", "PRC")),
+    ("JP", "일본", ("JAPAN",)),
+    ("KR", "한국", ("SOUTH KOREA", "KOREA", "KOR", "ROK", "대한민국", "국내")),
+    ("TW", "대만", ("TAIWAN",)),
+    ("HK", "홍콩", ("HONG KONG",)),
+    ("SG", "싱가포르", ("SINGAPORE",)),
+    ("MY", "말레이시아", ("MALAYSIA",)),
+    ("TH", "태국", ("THAILAND",)),
+    ("VN", "베트남", ("VIETNAM", "VIET NAM")),
+    ("PH", "필리핀", ("PHILIPPINES",)),
+    ("ID", "인도네시아", ("INDONESIA",)),
+    ("AU", "호주", ("AUSTRALIA", "오스트레일리아")),
+    ("NZ", "뉴질랜드", ("NEW ZEALAND",)),
+]
+COUNTRY_KO = {code: ko for code, ko, _ in _COUNTRY_TABLE}
+
+# Everything that means "every market".
+_SCOPE_ALL_WORDS = {"전체", "전세계", "전 세계", "세계", "글로벌", "모든 국가", "전국가",
+                    "WW", "WORLDWIDE", "WORLD", "GLOBAL", "GLOBALLY", "ALL",
+                    "INTERNATIONAL", "FULL LIST IF WORLDWIDE", "FULL LIST",
+                    "N/A", "NONE", "ANY", "-"}
+# A region is a legitimate answer. When an article only says "EU" or "아시아",
+# that IS what is known, and expanding it into a member list would put country
+# claims in the ledger the article never made. So regions are stored as
+# themselves — "유럽" — and the member lists below exist only so the filter can
+# tell that a Europe-wide event belongs in Germany's view too.
+#
+# "아시아" is deliberately here and NOT in the dashboard's region dropdown: it
+# overlaps 동아시아/동남아/서남아, so it works as a stored value and as a
+# matching rule, but not as a filter group of its own.
+SCOPE_REGIONS = {
+    "북미": ["미국", "캐나다"],
+    "중남미": ["브라질", "멕시코", "아르헨티나", "칠레", "콜롬비아", "페루"],
+    "유럽": ["영국", "독일", "프랑스", "스페인", "포르투갈", "이탈리아", "네덜란드",
+             "벨기에", "스위스", "오스트리아", "스웨덴", "노르웨이", "덴마크",
+             "핀란드", "아일랜드", "폴란드", "체코", "헝가리", "루마니아",
+             "그리스", "우크라이나", "러시아"],
+    "중동": ["튀르키예", "아랍에미리트", "사우디아라비아", "이스라엘"],
+    "아프리카": ["이집트", "남아프리카공화국", "나이지리아", "케냐", "모로코"],
+    "서남아": ["인도", "파키스탄", "방글라데시", "스리랑카"],
+    "동남아": ["인도네시아", "베트남", "태국", "필리핀", "말레이시아", "싱가포르"],
+    "동아시아": ["중국", "일본", "대만", "홍콩"],
+    "오세아니아": ["호주", "뉴질랜드"],
+    "아시아": ["중국", "일본", "대만", "홍콩", "한국", "인도", "파키스탄",
+               "방글라데시", "스리랑카", "인도네시아", "베트남", "태국",
+               "필리핀", "말레이시아", "싱가포르"],
+}
+_REGION_ALIAS = {
+    "EU": "유럽", "유럽연합": "유럽", "EUROPE": "유럽", "EUROPEAN UNION": "유럽",
+    "EEA": "유럽", "서유럽": "유럽", "동유럽": "유럽",
+    "북미": "북미", "NORTH AMERICA": "북미", "북아메리카": "북미",
+    "중남미": "중남미", "남미": "중남미", "라틴아메리카": "중남미",
+    "LATIN AMERICA": "중남미", "SOUTH AMERICA": "중남미",
+    "중동": "중동", "MIDDLE EAST": "중동", "MENA": "중동",
+    "아프리카": "아프리카", "AFRICA": "아프리카",
+    "서남아": "서남아", "남아시아": "서남아", "SOUTH ASIA": "서남아",
+    "동남아": "동남아", "동남아시아": "동남아", "SOUTHEAST ASIA": "동남아",
+    "SOUTH EAST ASIA": "동남아",
+    "동아시아": "동아시아", "EAST ASIA": "동아시아",
+    "오세아니아": "오세아니아", "대양주": "오세아니아", "OCEANIA": "오세아니아",
+    "아시아": "아시아", "ASIA": "아시아", "APAC": "아시아",
+    "ASIA PACIFIC": "아시아", "아시아태평양": "아시아",
+}
+# Every canonical name is its own alias — easy to leave out by hand, and a
+# missing one silently turns that region into "전체".
+_REGION_ALIAS.update({r: r for r in SCOPE_REGIONS})
+_REGION_ORDER = {r: i for i, r in enumerate(SCOPE_REGIONS)}
+
+_SCOPE_LOOKUP = {}
+for _code, _ko, _aliases in _COUNTRY_TABLE:
+    for _k in (_code, _ko) + _aliases:
+        _SCOPE_LOOKUP[_k.upper()] = _ko
+
+# Order for the stored string: table order, so two events naming the same
+# countries always serialise identically and diffs stay readable.
+_SCOPE_ORDER = {ko: i for i, (_c, ko, _a) in enumerate(_COUNTRY_TABLE)}
+
+
+def clean_scope(value):
+    """Normalise an LLM 'scope' answer to "전체", or ';'-joined Korean country
+    and region names.
+
+    Accepts a list or a ';'-joined string, in any of the forms the models
+    actually produce. Unrecognised tokens are dropped; if nothing usable
+    survives the answer becomes "전체", which is the broadest reading and the
+    default the collectors already applied to a missing scope — a garbled
+    answer must never come out narrower than no answer at all.
+    """
+    if isinstance(value, str):
+        parts = value.split(";")
+    elif isinstance(value, (list, tuple)):
+        parts = list(value)
+    else:
+        parts = []
+    out, regions, world = [], [], False
+    for raw in parts:
+        t = str(raw).strip().strip(".,'\"[]")
+        if not t:
+            continue
+        key = t.upper()
+        if key in _SCOPE_ALL_WORDS:
+            world = True
+            continue
+        region = _REGION_ALIAS.get(key)
+        if region:
+            regions.append(region)
+            continue
+        ko = _SCOPE_LOOKUP.get(key)
+        if ko:
+            out.append(ko)
+    if world or not (out or regions):
+        return SCOPE_ALL
+    seen, ordered = set(), []
+    for c in sorted(out, key=lambda c: _SCOPE_ORDER.get(c, 999)):
+        if c not in seen:
+            seen.add(c)
+            ordered.append(c)
+    # Countries first, then any region — a scope naming both reads as "these
+    # countries, plus that region generally".
+    for r in sorted(regions, key=lambda r: _REGION_ORDER.get(r, 99)):
+        if r not in seen:
+            seen.add(r)
+            ordered.append(r)
+    return ";".join(ordered)
 
 
 # --- event date validation -------------------------------------------------
@@ -426,8 +620,14 @@ FILTER_SYSTEM = (
  "Respond with ONLY this JSON, no markdown:\n"
  '{"relevant":true|false,"date":"YYYY-MM-DD","category":"culture|marketing|'
  'platform|holiday|economy|social_issue|geopolitics|AI|company|regulation",'
- '"scope":[country codes from US,GB,DE,FR,ES,PT,BR,MX_C,AU,IN,TR,KR; full '
- 'list if worldwide],"divisions":[MX=mobile/phones (Apple,Xiaomi,vivo,OPPO-relevant),'
+ '"scope":[the countries THIS article is about, as Korean country names '
+ '("영국","독일","인도"). Use exactly ["전체"] when it applies everywhere '
+ 'rather than to particular countries. Never answer "worldwide"/"WW"/"global", '
+ 'and do not pad the list with countries the article does not mention. If the '
+ 'article only identifies a region and not the countries within it, name the '
+ 'region instead ("유럽","아시아","중동") — do not guess which countries it '
+ 'means],'
+ '"divisions":[MX=mobile/phones (Apple,Xiaomi,vivo,OPPO-relevant),'
  'VD=TV/display (LG,TCL,Hisense-relevant),DA=home appliances (LG,Whirlpool,'
  'Bosch-relevant); empty if none],"kpi":[from Impression,Click,Traffic,Order,CVR,Revenue,AOV],'
  '"title":"<=12 words","impact":"one line: what shifts -> which KPIs, how",'
