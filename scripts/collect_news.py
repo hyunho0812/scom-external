@@ -39,7 +39,8 @@ from datetime import datetime, timedelta, timezone
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
 from llm_common import (llm_filter_batch, diag_summary, INTERESTS, MARKETS,
-                        load_queries, load_kw_file, clean_axis, clean_date_ex, BATCH)
+                        load_queries, load_kw_file, clean_axis, clean_date_ex, BATCH,
+                        DupIndex, DEDUP_WINDOW_DAYS)
 
 DATA = os.path.join(HERE, "..", "data", "events.json")
 NEWS_KEY = os.environ.get("NEWS_API_KEY", "")
@@ -183,6 +184,10 @@ def main():
     try: events = json.load(open(DATA, encoding="utf-8"))
     except Exception: events = []
     seen = {(e.get("title","").lower(), e.get("date","")) for e in events}
+    # Near-duplicate suppression: NewsAPI, GDELT and the feeds all carry the
+    # same story under different headlines, so exact-id dedup never caught it.
+    # Within DEDUP_WINDOW_DAYS only the first source of a story is stored.
+    dup_index = DupIndex(events)
     added = 0
     # Per-query performance: raw (fetched) -> dup (already seen) -> kw_pass
     # (survived the keyword pre-filter, i.e. the item actually reached an LLM)
@@ -195,7 +200,7 @@ def main():
     perf = {}
     def bump(q, field):
         if not q: q = "(none)"
-        perf.setdefault(q, {"raw":0,"dup":0,"kw_pass":0,"kept":0})
+        perf.setdefault(q, {"raw":0,"dup":0,"dup_near":0,"kw_pass":0,"kept":0})
         perf[q][field] += 1
     # Merge NewsAPI + GDELT into the same keyword->LLM pipeline
     all_articles = fetch_news() + load_gdelt()
@@ -212,6 +217,16 @@ def main():
             bump(q, "dup")
             continue
         seen.add(key)  # dedup within this run
+        # Checked BEFORE the keyword filter and the LLM: a story we already
+        # have from another source should cost zero requests. The anchor is
+        # the article's own publish date, which is what its event date will
+        # be built from.
+        hit = dup_index.find(raw_title=art["title"], url=art["url"],
+                             anchor=art.get("date") or None)
+        if hit:
+            bump(q, "dup_near")
+            print(f"  - dup ({hit[1]} {hit[2]}) of: {hit[0].get('title','')[:50]}")
+            continue
         if not keyword_verdict(art["title"] + " " + art["desc"]):
             continue  # obvious noise, never reaches any LLM
         bump(q, "kw_pass")  # counted BEFORE the chain: 1 kw_pass = 1 item judged
@@ -231,6 +246,16 @@ def main():
             if not verdict.get("relevant"):
                 continue  # the judging LLM says this isn't relevant
             ev = to_event(art, verdict, llm_used)
+            # Second pass, on the Korean title the LLM just wrote: it is the
+            # only thing that matches a Korean-language source against English
+            # coverage of the same story. Higher bar (DEDUP_KO_SIM) because
+            # the model's stock phrasing makes unrelated events look alike.
+            hit = dup_index.find(ko_title=ev["title"], anchor=ev["date"])
+            if hit:
+                bump(q, "dup_near")
+                print(f"  - dup ({hit[1]} {hit[2]}) of: {hit[0].get('title','')[:50]}")
+                continue
+            dup_index.add(ev)
             events.append(ev); added += 1; bump(q, "kept")
             print("  + kept:", ev["title"])
     # Events accumulate permanently (no pruning). New events are appended
@@ -242,9 +267,11 @@ def main():
     # Save per-query performance (optimize.py uses it next day)
     total_raw = sum(p["raw"] for p in perf.values())
     total_dup = sum(p["dup"] for p in perf.values())
+    total_dup_near = sum(p["dup_near"] for p in perf.values())
     total_kw = sum(p["kw_pass"] for p in perf.values())
     statrec = {"date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
                "total_raw": total_raw, "total_dup": total_dup,
+               "total_dup_near": total_dup_near,
                "total_kw_pass": total_kw, "total_kept": added,
                "per_query": perf}
     try:
@@ -256,7 +283,8 @@ def main():
     json.dump(hist, open(os.path.join(HERE,"..","data","query_performance.json"),"w",encoding="utf-8"),
               ensure_ascii=False, indent=1)
     print(f"layer1 done. added {added}, total {len(events)} | "
-          f"raw {total_raw}, dup {total_dup}, kw_pass {total_kw} (= LLM calls)")
+          f"raw {total_raw}, dup {total_dup}, near-dup {total_dup_near} "
+          f"(<={DEDUP_WINDOW_DAYS}d), kw_pass {total_kw} (= LLM calls)")
     diag_summary("collect_news")
 
 if __name__ == "__main__":

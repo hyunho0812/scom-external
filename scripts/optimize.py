@@ -130,7 +130,12 @@ KW_FEEDS_HEADER = [
 
 def recent_perf():
     """Aggregate per-query performance over recent days ->
-    {query: {raw,dup,kw_pass,kept,pass_rate,dup_rate,keep_rate}}.
+    {query: {raw,dup,dup_near,kw_pass,kept,pass_rate,dup_rate,near_dup_rate,keep_rate}}.
+
+    near_dup_rate (dup_near/raw) is the share this query pulled that another
+    source had already reported within the dedup window — the direct measure
+    of "this query is a near-synonym of another one", which the goal statement
+    below asks for but only exact-repeat dup_rate could show before.
 
     keep_rate (kept/kw_pass) mirrors recent_feed_perf's: it separates "this
     query pulls off-topic articles" (few survive the keyword pre-filter) from
@@ -146,12 +151,14 @@ def recent_perf():
     agg = {}
     for rec in hist[-7:]:  # last 7 days
         for q, p in (rec.get("per_query") or {}).items():
-            a = agg.setdefault(q, {"raw":0,"dup":0,"kw_pass":0,"kept":0})
+            a = agg.setdefault(q, {"raw":0,"dup":0,"dup_near":0,"kw_pass":0,"kept":0})
             a["raw"] += p.get("raw",0); a["dup"] += p.get("dup",0)
+            a["dup_near"] += p.get("dup_near",0)   # absent before 2026-08-18
             a["kw_pass"] += p.get("kw_pass",0); a["kept"] += p.get("kept",0)
     for q, a in agg.items():
         a["pass_rate"] = round(a["kept"]/a["raw"], 3) if a["raw"] else 0.0
         a["dup_rate"]  = round(a["dup"]/a["raw"], 3) if a["raw"] else 0.0
+        a["near_dup_rate"] = round(a["dup_near"]/a["raw"], 3) if a["raw"] else 0.0
         a["keep_rate"] = round(a["kept"]/a["kw_pass"], 3) if a["kw_pass"] else 0.0
     return agg
 
@@ -325,7 +332,8 @@ def main():
         perf_lines.append(f'- "{q}" ({len(q.split())} words): raw={p.get("raw",0)}, '
                           f'kw_pass={p.get("kw_pass",0)}, kept={p.get("kept",0)}, '
                           f'pass={p.get("pass_rate",0)}, dup={p.get("dup_rate",0)}, '
-                          f'keep_rate={p.get("keep_rate",0)}')
+                          f'near_dup={p.get("near_dup_rate",0)} (already covered by '
+                          f'another source), keep_rate={p.get("keep_rate",0)}')
     perf_txt = "\n".join(perf_lines) if perf_lines else "(no performance data yet)"
     feed_perf_lines = [f'- "{label}": raw={p["raw"]}, kw_pass_rate={p["kw_pass_rate"]}, '
                         f'keep_rate={p["keep_rate"]} (kept/kw_pass — low means content is '

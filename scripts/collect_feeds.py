@@ -29,7 +29,8 @@ from xml.etree import ElementTree as ET
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
 from llm_common import (llm_filter_batch, diag_summary, INTERESTS, MARKETS,
-                        load_kw_file, clean_axis, clean_date_ex, BATCH)
+                        load_kw_file, clean_axis, clean_date_ex, BATCH,
+                        DupIndex, DEDUP_WINDOW_DAYS)
 
 DATA = os.path.join(HERE, "..", "data", "events.json")
 STATE = os.path.join(HERE, "..", "data", "feed_state.json")
@@ -148,6 +149,10 @@ def main():
     try: state = json.load(open(STATE, encoding="utf-8"))
     except Exception: state = {}
     existing_ids = {e.get("event_id") for e in events}
+    # Near-duplicate suppression — see llm_common.DupIndex. Seeded from the
+    # file collect_news.py wrote minutes earlier in the same workflow, so a
+    # story already taken from the news APIs is not re-stored from a feed.
+    dup_index = DupIndex(events)
     feeds = load_feeds()
     print(f"loaded {len(feeds)} feeds from feeds.txt")
     added = 0
@@ -159,7 +164,7 @@ def main():
     # this file the same way it uses data/query_performance.json for news.
     perf = {}
     def bump(label, field):
-        perf.setdefault(label, {"raw": 0, "kw_pass": 0, "kept": 0})
+        perf.setdefault(label, {"raw": 0, "dup_near": 0, "kw_pass": 0, "kept": 0})
         perf[label][field] += 1
     # Pass 1: fetch every feed and keyword-filter it, collecting the survivors
     # across ALL feeds. Judging happens afterwards in batches, so the ~1.1k-token
@@ -179,6 +184,13 @@ def main():
             text = it["title"] + " " + it["summary"]
             if not it["title"] or not relevant(text):
                 continue  # obvious noise, never reaches any LLM
+            # Before the LLM: another source already told this story.
+            hit = dup_index.find(raw_title=it["title"], url=it.get("link"),
+                                 anchor=it.get("published") or None)
+            if hit:
+                bump(label, "dup_near")
+                print(f"  - dup ({hit[1]} {hit[2]}) of: {hit[0].get('title','')[:50]}")
+                continue
             bump(label, "kw_pass")
             eid = "FP" + hashlib.md5((label + it["title"]).encode()).hexdigest()[:8]
             if eid in existing_ids:
@@ -206,6 +218,15 @@ def main():
                 verdict.get("date", ""),
                 published=it.get("published"), today=_today)
             title_ko = (verdict.get("title") or it["title"])[:60]
+            # Second pass on the Korean title — the only comparison that can
+            # match Samsung KR newsroom posts against English coverage of the
+            # same launch. `label` is stripped by norm_title(), so the stored
+            # "[source] title" form compares against a bare one correctly.
+            hit = dup_index.find(ko_title=title_ko, anchor=event_date)
+            if hit:
+                bump(label, "dup_near")
+                print(f"  - dup ({hit[1]} {hit[2]}) of: {hit[0].get('title','')[:50]}")
+                continue
             events.append({
                 "event_id": eid,
                 "date": event_date,
@@ -233,6 +254,7 @@ def main():
                 "raw_url": it.get("link", ""),
                 "raw_date": it.get("published", ""),  # feed pubDate, kept so a bad event_date stays repairable
             })
+            dup_index.add(events[-1])
             added += 1; bump(label, "kept")
             print("  + kept:", events[-1]["title"])
     # New events are appended above with whatever date the LLM extracted
@@ -243,6 +265,7 @@ def main():
     json.dump(state,  open(STATE,"w",encoding="utf-8"), ensure_ascii=False, indent=1)
     statrec = {"date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
                "total_raw": sum(p["raw"] for p in perf.values()),
+               "total_dup_near": sum(p["dup_near"] for p in perf.values()),
                "total_kept": added, "per_feed": perf}
     try:
         hist = json.load(open(PERF, encoding="utf-8"))
@@ -251,7 +274,8 @@ def main():
         hist = []
     hist.append(statrec); hist = hist[-30:]  # keep last 30 days only
     json.dump(hist, open(PERF, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    print(f"first-party (free) done. added {added}, total {len(events)}")
+    print(f"first-party (free) done. added {added}, total {len(events)} | "
+          f"near-dup {sum(p['dup_near'] for p in perf.values())} (<={DEDUP_WINDOW_DAYS}d)")
     diag_summary("collect_feeds")
 
 if __name__ == "__main__":

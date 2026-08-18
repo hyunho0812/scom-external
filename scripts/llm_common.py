@@ -22,7 +22,7 @@ don't drift out of sync the way the old per-collector keyword lists did:
 MARKETS, load_queries()/load_queries_tagged() (queries.txt), load_kw_file()
 (kw_news.txt/kw_feeds.txt), has_korean(), clip_sentence().
 """
-import os, json, time, urllib.request, urllib.parse, urllib.error
+import os, re, json, time, urllib.request, urllib.parse, urllib.error
 
 HERE = os.path.dirname(__file__)
 
@@ -161,6 +161,147 @@ def clean_date_ex(value, published=None, today=None, max_backdate=None):
 def clean_date(value, published=None, today=None, max_backdate=None):
     """Date only. Prefer clean_date_ex() so the provenance is stored too."""
     return clean_date_ex(value, published, today, max_backdate)[0]
+
+
+# --- near-duplicate suppression --------------------------------------------
+# Ten feeds, two news APIs and a GDELT pool all cover the same story, so the
+# ledger filled up with rows that differ only in wording. Exact-id dedup never
+# caught them: the id is md5(title) or md5(label+title), and every source
+# writes its own headline.
+#
+# Rule (what the dashboard owner asked for): within DEDUP_WINDOW_DAYS, only the
+# FIRST source of a story is stored; later retellings are dropped.
+#
+# Two comparisons, at two different points in the pipeline, because neither
+# text alone is a safe judge — measured on the 454 events already collected:
+#   * raw_title (the source's own English headline) separates cleanly. True
+#     cross-source duplicates score >= 0.47, the next unrelated pair 0.43. It
+#     is checked BEFORE the LLM, so a duplicate costs no request at all.
+#   * The Korean title the LLM writes is the only thing that can match a
+#     Samsung KR newsroom post against English coverage of the same launch
+#     (raw-headline similarity there is 0.00 — different languages). But the
+#     model reaches for stock phrasing, so unrelated events collide: "갤럭시
+#     A57 최저가 할인" vs "갤럭시 S26 최저가 할인" scores 0.60 on different
+#     products. Hence a much higher bar, applied only after judgement.
+# Both thresholds are deliberately conservative: a missed duplicate costs one
+# redundant row, a false match silently discards a real event forever.
+DEDUP_WINDOW_DAYS = int(os.environ.get("DEDUP_WINDOW_DAYS", "7"))
+DEDUP_RAW_SIM = float(os.environ.get("DEDUP_RAW_SIM", "0.50"))
+DEDUP_KO_SIM = float(os.environ.get("DEDUP_KO_SIM", "0.70"))
+_DEDUP_MIN_CHARS = 8          # below this, Jaccard on so few tokens is noise
+
+_TITLE_STRIP = re.compile(r"[^0-9a-z가-힣]+")
+_TITLE_BRACKET = re.compile(r"\[[^\]]*\]")
+
+
+def norm_title(s):
+    """Lowercase, drop bracketed prefixes ('[Samsung newsroom (KR)] ') and
+    punctuation. Source headlines differ in quotes/dashes far more than in
+    words, and stored feed titles carry a label the incoming item lacks."""
+    return _TITLE_STRIP.sub(" ", _TITLE_BRACKET.sub(" ", (s or "").lower())).strip()
+
+
+def _title_sets(s):
+    """(character 3-grams, word set) of a normalised title.
+    Character n-grams carry Korean, where whitespace tokens are unreliable
+    (particles glue onto nouns); word tokens carry English, where they are
+    robust to word order. Comparing on the better of the two covers both."""
+    n = norm_title(s)
+    if len(n.replace(" ", "")) < _DEDUP_MIN_CHARS:
+        return None
+    flat = n.replace(" ", "")
+    return ({flat[i:i + 3] for i in range(len(flat) - 2)},
+            {w for w in n.split() if len(w) > 1})
+
+
+def _jaccard(a, b):
+    return len(a & b) / len(a | b) if (a and b) else 0.0
+
+
+def title_sim(a, b):
+    """0..1 similarity of two titles. max() of the two tokenisations, so a
+    match in either is enough — see _title_sets()."""
+    sa, sb = _title_sets(a), _title_sets(b)
+    if not sa or not sb:
+        return 0.0
+    return max(_jaccard(sa[0], sb[0]), _jaccard(sa[1], sb[1]))
+
+
+def norm_url(u):
+    """Article URL without scheme, 'www.', query string, fragment or trailing
+    slash — the same piece re-syndicated picks up ?utm_source=... every time."""
+    u = (u or "").strip().lower()
+    u = re.sub(r"^https?://", "", u)
+    u = re.sub(r"^www\.", "", u)
+    u = u.split("#", 1)[0].split("?", 1)[0]
+    return u.rstrip("/")
+
+
+class DupIndex:
+    """Answers 'have we already stored this story?' for one collector run.
+
+    Seeded with everything in events.json, then fed each event the run stores,
+    so the first source wins both against history and within the run itself —
+    including across the two collectors, since they run in sequence and each
+    re-reads the file the other just wrote.
+    """
+
+    def __init__(self, events, window_days=None):
+        self.window = DEDUP_WINDOW_DAYS if window_days is None else window_days
+        self.rows = []
+        self.urls = {}
+        for e in events or []:
+            self.add(e)
+
+    def add(self, event):
+        u = norm_url(event.get("raw_url"))
+        if u:
+            self.urls.setdefault(u, event)
+        self.rows.append({
+            "date": parse_date(event.get("date")),
+            "captured": parse_date(event.get("captured_date")),
+            "raw": _title_sets(event.get("raw_title")),
+            "ko": _title_sets(event.get("title")),
+            "event": event,
+        })
+
+    def _in_window(self, row, anchor):
+        if anchor is None:
+            return True                     # no date to compare on: be strict
+        for d in (row["date"], row["captured"]):
+            if d is not None and abs((anchor - d).days) <= self.window:
+                return True
+        return False
+
+    def find(self, raw_title=None, ko_title=None, url=None, anchor=None,
+             raw_sim=None, ko_sim=None):
+        """Return (matched_event, reason, score) for the first stored event
+        this one duplicates, or None. `anchor` is the candidate's own date —
+        its publish date pre-judgement, its event date after."""
+        u = norm_url(url)
+        if u and u in self.urls:
+            return (self.urls[u], "url", 1.0)
+        a = parse_date(anchor) if isinstance(anchor, str) else anchor
+        want_raw = DEDUP_RAW_SIM if raw_sim is None else raw_sim
+        want_ko = DEDUP_KO_SIM if ko_sim is None else ko_sim
+        cand_raw = _title_sets(raw_title) if raw_title else None
+        cand_ko = _title_sets(ko_title) if ko_title else None
+        if not cand_raw and not cand_ko:
+            return None
+        for row in self.rows:
+            if not self._in_window(row, a):
+                continue
+            if cand_raw and row["raw"]:
+                s = max(_jaccard(cand_raw[0], row["raw"][0]),
+                        _jaccard(cand_raw[1], row["raw"][1]))
+                if s >= want_raw:
+                    return (row["event"], "raw_title", round(s, 2))
+            if cand_ko and row["ko"]:
+                s = max(_jaccard(cand_ko[0], row["ko"][0]),
+                        _jaccard(cand_ko[1], row["ko"][1]))
+                if s >= want_ko:
+                    return (row["event"], "title", round(s, 2))
+        return None
 
 
 def clip_sentence(text, limit=400):
