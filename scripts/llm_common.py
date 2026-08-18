@@ -67,7 +67,17 @@ _mistral_off = {"flag": False}
 #                verdicts (or not an array), so the batch was re-judged
 #                per-item. Costs a full batch prompt and yields nothing;
 #                if this climbs, lower LLM_BATCH.
+#   batch_no_index - the batch had the right shape but the verdicts did not
+#                echo a usable item number, so their pairing with the articles
+#                rests on array position alone and nothing verified it. Not an
+#                error; a standing count means this provider's alignment is
+#                unchecked.
+#   batch_reordered - verdicts arrived in a different order than the items and
+#                were re-seated by their echoed number. Every one of these
+#                would have been a judgement filed against the wrong article
+#                before 2026-08-18.
 _STAT_FIELDS = ("attempt", "ok", "ko_reject", "empty", "batch_shape_fail",
+                "batch_no_index", "batch_reordered",
                 "http_429", "http_auth", "http_other", "exception", "skipped_off")
 _STATS = {p: dict.fromkeys(_STAT_FIELDS, 0) for p in ("gemini", "groq", "mistral")}
 
@@ -509,8 +519,10 @@ def _build_batch_prompt(articles):
             f"Apply the rules above to EACH item INDEPENDENTLY.\n"
             f'Respond with ONLY a JSON array of exactly {len(articles)} objects, in the '
             f'SAME ORDER as the items, each object being the verdict for that item '
-            f'(use {{"relevant":false}} for ones that fail). No other keys, no wrapper '
-            f'object, no markdown.\n\nITEMS:\n' + items)
+            f'(use {{"relevant":false}} for ones that fail). Add "i": the item number '
+            f'([1]..[{len(articles)}]) that verdict is for — it is checked, and a verdict '
+            f'filed under the wrong item is worse than no verdict. No other extra keys, '
+            f'no wrapper object, no markdown.\n\nITEMS:\n' + items)
 
 
 def call_openai_chat_json(url, api_key, model, prompt, max_tokens=600, temperature=0,
@@ -797,6 +809,35 @@ def llm_filter(article):
     return None, ""
 
 
+def _align_batch(out, n, prov, model):
+    """Re-order verdicts by their echoed "i" (1-based) when that is possible.
+
+    Returns the list to use. Leaves `out` untouched — and counts
+    'batch_no_index' — when the indices are absent, out of range, or
+    duplicated, since a partial reorder would be a guess."""
+    idx = []
+    for v in out:
+        if not isinstance(v, dict):
+            idx = []
+            break
+        try:
+            idx.append(int(v.get("i")))
+        except (TypeError, ValueError):
+            idx = []
+            break
+    if len(idx) != n or sorted(idx) != list(range(1, n + 1)):
+        _bump(prov, "batch_no_index")
+        return out
+    if idx != list(range(1, n + 1)):
+        print(f"  {model} batch came back in order {idx} — re-aligned by item number.")
+        _bump(prov, "batch_reordered")
+    seat = [None] * n
+    for v, i in zip(out, idx):
+        v.pop("i", None)          # not part of the event schema
+        seat[i - 1] = v
+    return seat
+
+
 def llm_filter_batch(articles):
     """Judge up to BATCH articles in ONE request. Returns a list of
     (verdict_or_None, model_name) index-aligned with `articles`.
@@ -830,6 +871,18 @@ def llm_filter_batch(articles):
                   f" — falling back to per-item for this batch.")
             _bump(prov, "batch_shape_fail")
             continue
+        # The batch is only a cost optimisation if verdict i really is item i.
+        # Nothing used to check that: the array was trusted on position alone,
+        # so a provider that reordered, or answered about the wrong item,
+        # attached one article's judgement to another's title and URL — and it
+        # happened (2026-08-07 "How Gemini plans vacation itineraries" was
+        # stored describing a Samsung Galaxy launch). Re-order by the echoed
+        # "i" when every verdict carries a distinct valid one; that repairs a
+        # shuffle outright. If the provider ignored the field, fall through to
+        # positional order — the pre-existing behaviour, so this can only help
+        # — but record it, because a provider that never echoes is one whose
+        # ordering nobody is checking.
+        out = _align_batch(out, len(articles), prov, model)
         results, redo = [], []
         for i, v in enumerate(out):
             if not isinstance(v, dict):
@@ -859,6 +912,8 @@ def diag_summary(label=""):
         print(f"{prefix}[diag] {prov} ({rank}) attempt: {s['attempt']}, ok: {s['ok']}, "
               f"ko_reject: {s['ko_reject']}, empty: {s['empty']}, "
               f"batch_shape_fail: {s['batch_shape_fail']}, "
+              f"batch_no_index: {s['batch_no_index']}, "
+              f"batch_reordered: {s['batch_reordered']}, "
               f"429: {s['http_429']}, auth: {s['http_auth']}, "
               f"other: {s['http_other']}, exc: {s['exception']}, "
               f"skipped_off: {s['skipped_off']}")
