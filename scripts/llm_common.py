@@ -17,22 +17,89 @@ Env (set as GitHub Secrets):
   GROQ_API_KEY, GROQ_MODEL       — console.groq.com/keys (free, no card)
   MISTRAL_API_KEY, MISTRAL_MODEL — console.mistral.ai (free, no card)
 
-Also the single home for small pieces of config shared by 3+ scripts, so they
-don't drift out of sync the way the old per-collector keyword lists did:
-MARKETS, load_queries()/load_queries_tagged() (queries.txt), load_kw_file()
-(kw_news.txt/kw_feeds.txt), has_korean(), clip_sentence().
+Also the single home for anything more than one script needs, so it cannot
+drift out of sync the way the old per-collector keyword lists did:
+  * every data/ and config file path (see "file paths" below) and the
+    read_json/write_json pair that reads and writes them
+  * queries.txt / kw_*.txt / interests.txt parsers
+  * event field normalisation: clean_scope(), clean_date(), clean_axis()
+  * near-duplicate suppression: DupIndex
+  * has_korean(), clip_sentence(), parse_date()
 """
 import os, re, json, time, urllib.request, urllib.parse, urllib.error
 
 HERE = os.path.dirname(__file__)
 
+# --- file paths -------------------------------------------------------------
+# One name per file, defined once. events.json alone used to be DATA in five
+# scripts, EVENTS in two and EVFILE in one, each with its own os.path.join —
+# 44 of those joins across the tree, so a moved or renamed file meant finding
+# every copy.
+ROOT = os.path.join(HERE, "..")
+DATA_DIR = os.path.join(ROOT, "data")
+
+
+def data_path(name):
+    return os.path.join(DATA_DIR, name)
+
+
+EVENTS_FILE      = data_path("events.json")
+FEED_STATE_FILE  = data_path("feed_state.json")
+FEED_PERF_FILE   = data_path("feed_performance.json")
+FEED_HEALTH_FILE = data_path("feed_health.json")
+QUERY_PERF_FILE  = data_path("query_performance.json")
+GDELT_POOL_FILE  = data_path("gdelt_pool.json")
+WIKI_FILE        = data_path("wiki_series.json")
+IMF_FILE         = data_path("imf_series.json")
+CRUX_FILE        = data_path("crux_series.json")
+MODEL_STATUS_FILE = data_path("model_status.json")
+LLM_USAGE_FILE   = data_path("llm_usage.json")
+LLM_AGREEMENT_FILE = data_path("llm_agreement.json")
+EVENT_PRESSURE_FILE = data_path("event_pressure.json")
+PREDICTION_SCORES_FILE = data_path("prediction_scores.json")
+OPTIMIZE_LOG_FILE = data_path("optimize_log.json")
+PRUNED_FILE      = data_path("pruned_duplicates.json")
+
+QUERIES_FILE   = os.path.join(ROOT, "queries.txt")
+KW_NEWS_FILE   = os.path.join(ROOT, "kw_news.txt")
+KW_FEEDS_FILE  = os.path.join(ROOT, "kw_feeds.txt")
+INTERESTS_FILE = os.path.join(ROOT, "interests.txt")
+FEEDS_FILE     = os.path.join(ROOT, "feeds.txt")
+INDEX_HTML     = os.path.join(ROOT, "index.html")
+
+
+def read_json(path, default=None):
+    """Parse a JSON file, or return `default` if it is missing or unreadable.
+
+    Every caller wrote this try/except itself (23 copies). A malformed file is
+    treated as absent on purpose: the daily run must keep going and rewrite it,
+    never halt because yesterday's output was truncated.
+    """
+    try:
+        with open(path, encoding="utf-8") as fh:
+            return json.load(fh)
+    except Exception:
+        return default
+
+
+def write_json(path, obj, indent=1):
+    """Write JSON the way every data/ file in this repo is written: UTF-8 with
+    Korean kept readable, and indent 1 so a git diff is one line per field.
+
+    indent=None for the day-by-day series (wiki_series, event_pressure): they
+    run to tens of thousands of points, where one line per field turns a 280 KB
+    file into megabytes and the per-line diff stops being useful anyway.
+    """
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump(obj, fh, ensure_ascii=False, indent=indent)
+
+
 # The twelve markets `scope` was restricted to until 2026-08-18, when it
 # became free-form Korean country names (see clean_scope below). Kept because
-# repair_event_scope.py needs it to read the four months stored under the old
+# maintenance.py scope needs it to read the four months stored under the old
 # scheme: a scope listing all twelve was the old prompt's way of saying
 # worldwide, so it migrates to "전체" rather than to twelve country names.
 LEGACY_MARKETS = ["US", "GB", "DE", "FR", "ES", "PT", "BR", "MX_C", "AU", "IN", "TR", "KR"]
-MARKETS = LEGACY_MARKETS  # old name, still imported by scripts not yet updated
 
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
@@ -185,7 +252,6 @@ _COUNTRY_TABLE = [
     ("AU", "호주", ("AUSTRALIA", "오스트레일리아")),
     ("NZ", "뉴질랜드", ("NEW ZEALAND",)),
 ]
-COUNTRY_KO = {code: ko for code, ko, _ in _COUNTRY_TABLE}
 
 # Everything that means "every market".
 _SCOPE_ALL_WORDS = {"전체", "전세계", "전 세계", "세계", "글로벌", "모든 국가", "전국가",
@@ -336,7 +402,7 @@ def clean_date_ex(value, published=None, today=None, max_backdate=None):
     anchoring, which sat >365 days out.
 
     The second element says WHERE the date came from, using the same vocabulary
-    repair_event_dates.py wrote and the dashboard/scorer read:
+    maintenance.py dates wrote and the dashboard/scorer read:
       'llm'     the model's own date survived validation ("기사 명시일")
       'url'     we fell back to the source's publish date ("발행일 확인")
       'capture' we fell back to the collection day ("수집일 추정")
@@ -422,15 +488,6 @@ def _jaccard(a, b):
     return len(a & b) / len(a | b) if (a and b) else 0.0
 
 
-def title_sim(a, b):
-    """0..1 similarity of two titles. max() of the two tokenisations, so a
-    match in either is enough — see _title_sets()."""
-    sa, sb = _title_sets(a), _title_sets(b)
-    if not sa or not sb:
-        return 0.0
-    return max(_jaccard(sa[0], sb[0]), _jaccard(sa[1], sb[1]))
-
-
 def norm_url(u):
     """Article URL without scheme, 'www.', query string, fragment or trailing
     slash — the same piece re-syndicated picks up ?utm_source=... every time."""
@@ -471,7 +528,12 @@ class DupIndex:
 
     def _in_window(self, row, anchor):
         if anchor is None:
-            return True                     # no date to compare on: be strict
+            # A candidate with no publish date was still fetched today, and
+            # that is what its stored date will be — so compare against today's
+            # window, not against all of history. Returning True here meant a
+            # feed item lacking a pubDate was matched against two years of
+            # events, where a chance similarity is far likelier.
+            anchor = parse_date(today_iso())
         for d in (row["date"], row["captured"]):
             if d is not None and abs((anchor - d).days) <= self.window:
                 return True
@@ -525,7 +587,7 @@ def clip_sentence(text, limit=400):
 # --- Priority topics (interests.txt) — folded into the judgement prompt so
 # both collectors treat these subjects as especially relevant if related. ---
 def load_interests():
-    path = os.path.join(HERE, "..", "interests.txt")
+    path = INTERESTS_FILE
     out = []
     try:
         for line in open(path, encoding="utf-8"):
@@ -544,7 +606,7 @@ INTERESTS = load_interests()
 # exact same way. ---
 def load_queries_tagged(path=None):
     """Returns [(category, query_text), ...] in file order."""
-    path = path or os.path.join(HERE, "..", "queries.txt")
+    path = path or QUERIES_FILE
     out = []
     try:
         for line in open(path, encoding="utf-8"):
@@ -825,7 +887,7 @@ def gemini_filter(prompt, max_tokens=600):
 #
 # That matches the observed record exactly: Groq entered the chain on
 # 2026-07-06 already on gpt-oss-120b and has produced ZERO kept events since,
-# while check_model.py keeps reporting it "ok" (that check is a metadata GET —
+# while check_health.py keeps reporting it "ok" (that check is a metadata GET —
 # it never generates, so it cannot see this). It is the same failure the
 # project already fixed for Gemini with thinkingConfig.thinkingBudget=0; the
 # equivalent was simply never applied to Groq.
@@ -1099,7 +1161,7 @@ def llm_filter_batch(articles):
     return [llm_filter(a) for a in articles]
 
 
-USAGE_FILE = os.path.join(HERE, "..", "data", "llm_usage.json")
+USAGE_FILE = LLM_USAGE_FILE
 USAGE_KEEP_DAYS = 30
 _ORDER = (("gemini", "1st"), ("groq", "2nd"), ("mistral", "3rd"))
 
@@ -1152,8 +1214,7 @@ def save_usage(stage):
         hist.append(rec)
         cutoff = sorted({r.get("date", "") for r in hist})[-USAGE_KEEP_DAYS:]
         hist = [r for r in hist if r.get("date", "") in cutoff]
-        json.dump(hist, open(USAGE_FILE, "w", encoding="utf-8"),
-                  ensure_ascii=False, indent=1)
+        write_json(USAGE_FILE, hist)
         print(f"  llm usage saved: {USAGE_FILE} ({rec['total_attempts']} API requests this run)")
     except Exception as e:
         print("  llm usage not saved:", e)

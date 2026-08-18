@@ -25,10 +25,10 @@ re-fetching the same bulk historical range repeatedly. So this script:
 import os, json, time, urllib.request, urllib.parse, urllib.error
 from datetime import datetime, timezone, timedelta
 
+import sys
 HERE = os.path.dirname(__file__)
-OUT  = os.path.join(HERE, "..", "data", "wiki_series.json")
-
-# brand -> (Wikipedia article, [divisions]). Samsung division "ALL" = always
+sys.path.insert(0, HERE)
+from llm_common import WIKI_FILE, read_json, write_json   # shared paths + JSON I/O
 # shown. A brand can belong to more than one division (e.g. LG makes both
 # TVs/displays and home appliances, so it counts toward both VD and DA).
 # Article titles verified against en.wikipedia.org directly (not guessed) —
@@ -150,10 +150,7 @@ def find_gaps(series, cutoff, newest_wanted):
     return gaps
 
 def main():
-    try:
-        prev = json.load(open(OUT, encoding="utf-8"))
-    except Exception:
-        prev = {"series": {}}
+    prev = read_json(WIKI_FILE, {"series": {}})
     prev_series = prev.get("series", {})
 
     end = datetime.now(timezone.utc)
@@ -204,8 +201,8 @@ def main():
         result["series"][brand] = merged
         time.sleep(BRAND_GAP)  # don't fire all 10 brands back-to-back
 
-    json.dump(result, open(OUT, "w", encoding="utf-8"), ensure_ascii=False)
-    print("wiki views saved:", OUT)
+    write_json(WIKI_FILE, result, indent=None)   # ~30k daily points
+    print("wiki views saved:", WIKI_FILE)
 
 if __name__ == "__main__":
     main()

@@ -29,10 +29,10 @@ Output: data/imf_series.json
 import os, json, csv, io, time, urllib.request, urllib.error
 from datetime import datetime, timezone, timedelta
 
+import sys
 HERE = os.path.dirname(__file__)
-OUT = os.path.join(HERE, "..", "data", "imf_series.json")
-
-# Our market codes -> ISO3
+sys.path.insert(0, HERE)
+from llm_common import IMF_FILE, write_json   # shared paths + JSON writer
 ISO3 = {"US":"USA","GB":"GBR","DE":"DEU","FR":"FRA","ES":"ESP","PT":"PRT",
         "BR":"BRA","MX_C":"MEX","AU":"AUS","IN":"IND","TR":"TUR","KR":"KOR"}
 MARKET_KO = {"US":"미국","GB":"영국","DE":"독일","FR":"프랑스","ES":"스페인","PT":"포르투갈",
@@ -164,7 +164,7 @@ def main():
             elif our == first_country:
                 print(f"  - {our} {code}: no data (see [diag] lines above)")
         time.sleep(1)
-    json.dump(series, open(OUT,"w",encoding="utf-8"), ensure_ascii=False, indent=1)
+    write_json(IMF_FILE, series)
     filled = sum(1 for c in series["data"].values() for _ in c)
     print(f"IMF monthly done. {filled} country-indicator series saved.")
 

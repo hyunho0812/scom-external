@@ -39,10 +39,11 @@ from datetime import datetime, timedelta, timezone
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
 from llm_common import (llm_filter_batch, diag_summary, INTERESTS, SCOPE_ALL,
+                        EVENTS_FILE, GDELT_POOL_FILE, QUERY_PERF_FILE,
+                        KW_NEWS_FILE, read_json, write_json,
                         load_queries, load_kw_file, clean_axis, clean_scope, clean_date_ex, BATCH,
                         DupIndex, DEDUP_WINDOW_DAYS)
 
-DATA = os.path.join(HERE, "..", "data", "events.json")
 NEWS_KEY = os.environ.get("NEWS_API_KEY", "")
 
 QUERIES = load_queries()
@@ -59,7 +60,7 @@ _DEFAULT_KEEP = [
     "search","ranking","platform","tiktok","social","aging","consumer","tv","appliance",
 ]
 _DEFAULT_DROP = ["obituary","horoscope","celebrity gossip"]
-KW_KEEP, KW_DROP = load_kw_file(os.path.join(HERE, "..", "kw_news.txt"))
+KW_KEEP, KW_DROP = load_kw_file(KW_NEWS_FILE)
 if not (KW_KEEP and KW_DROP):
     KW_KEEP, KW_DROP = list(_DEFAULT_KEEP), list(_DEFAULT_DROP)
 # Add interest keywords to the keep list (lowercased)
@@ -168,11 +169,7 @@ def to_event(article, verdict, llm_used):
 
 def load_gdelt():
     """Load the GDELT pool (gdelt_pool.json) into the same shape as NewsAPI items."""
-    path = os.path.join(HERE, "..", "data", "gdelt_pool.json")
-    try:
-        items = json.load(open(path, encoding="utf-8"))
-    except Exception:
-        return []
+    items = read_json(GDELT_POOL_FILE, [])
     out = []
     for it in items:
         out.append({"title": it.get("title","") or "", "desc": "",
@@ -183,8 +180,7 @@ def load_gdelt():
     return out
 
 def main():
-    try: events = json.load(open(DATA, encoding="utf-8"))
-    except Exception: events = []
+    events = read_json(EVENTS_FILE, [])
     seen = {(e.get("title","").lower(), e.get("date","")) for e in events}
     # Near-duplicate suppression: NewsAPI, GDELT and the feeds all carry the
     # same story under different headlines, so exact-id dedup never caught it.
@@ -265,7 +261,7 @@ def main():
     # to today, e.g. a phenomenon-start date) — re-sort by date every write so
     # the file-level invariant (CLAUDE.md's integrity checklist) never breaks.
     events.sort(key=lambda e: e.get("date", ""))
-    json.dump(events, open(DATA,"w",encoding="utf-8"), ensure_ascii=False, indent=1)
+    write_json(EVENTS_FILE, events)
     # Save per-query performance (optimize.py uses it next day)
     total_raw = sum(p["raw"] for p in perf.values())
     total_dup = sum(p["dup"] for p in perf.values())
@@ -276,14 +272,10 @@ def main():
                "total_dup_near": total_dup_near,
                "total_kw_pass": total_kw, "total_kept": added,
                "per_query": perf}
-    try:
-        hist = json.load(open(os.path.join(HERE,"..","data","query_performance.json"),encoding="utf-8"))
-        if not isinstance(hist, list): hist = [hist]
-    except Exception:
-        hist = []
+    hist = read_json(QUERY_PERF_FILE, [])
+    if not isinstance(hist, list): hist = [hist]
     hist.append(statrec); hist = hist[-30:]  # keep last 30 days only
-    json.dump(hist, open(os.path.join(HERE,"..","data","query_performance.json"),"w",encoding="utf-8"),
-              ensure_ascii=False, indent=1)
+    write_json(QUERY_PERF_FILE, hist)
     print(f"layer1 done. added {added}, total {len(events)} | "
           f"raw {total_raw}, dup {total_dup}, near-dup {total_dup_near} "
           f"(<={DEDUP_WINDOW_DAYS}d), kw_pass {total_kw} (= LLM calls)")

@@ -46,15 +46,7 @@ from datetime import datetime, timezone
 
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
-from llm_common import load_queries_tagged as _load_queries_tagged_raw, load_kw_file
-
-QFILE = os.path.join(HERE, "..", "queries.txt")
-KW_NEWS_FILE = os.path.join(HERE, "..", "kw_news.txt")
-KW_FEEDS_FILE = os.path.join(HERE, "..", "kw_feeds.txt")
-STATFILE = os.path.join(HERE, "..", "data", "query_performance.json")
-FEED_STATFILE = os.path.join(HERE, "..", "data", "feed_performance.json")
-EVFILE = os.path.join(HERE, "..", "data", "events.json")
-LOGFILE = os.path.join(HERE, "..", "data", "optimize_log.json")
+from llm_common import load_queries_tagged as _load_queries_tagged_raw, load_kw_file, EVENTS_FILE, FEED_PERF_FILE, KW_FEEDS_FILE, KW_NEWS_FILE, OPTIMIZE_LOG_FILE, QUERIES_FILE, QUERY_PERF_FILE, read_json, write_json
 
 MAX_QUERIES = 10
 MAX_BRAND = 4     # max queries (across all categories) that directly contain "samsung" or "galaxy"
@@ -86,7 +78,7 @@ GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 # logic below depends on. =====
 def load_queries_tagged():
     return [(cat if cat in CATEGORIES else "other", q)
-            for cat, q in _load_queries_tagged_raw(QFILE)]
+            for cat, q in _load_queries_tagged_raw(QUERIES_FILE)]
 
 def write_queries_tagged(items):
     header = (
@@ -99,7 +91,7 @@ def write_queries_tagged(items):
         "# 1 query that literally contains the category's own name as a word.\n\n"
     )
     body = "\n".join(f"{cat} | {q}" for cat, q in items)
-    open(QFILE, "w", encoding="utf-8").write(header + body + "\n")
+    open(QUERIES_FILE, "w", encoding="utf-8").write(header + body + "\n")
 
 
 # ===== kw_news.txt / kw_feeds.txt — reading is shared (llm_common.load_kw_file);
@@ -143,11 +135,8 @@ def recent_perf():
     LLM". kw_pass is absent from records written before 2026-08-04, so it
     defaults to 0 and keep_rate reads 0.0 for those days.
     """
-    try:
-        hist = json.load(open(STATFILE, encoding="utf-8"))
-        if isinstance(hist, dict): hist = [hist]
-    except Exception:
-        return {}
+    hist = read_json(QUERY_PERF_FILE, [])
+    if isinstance(hist, dict): hist = [hist]
     agg = {}
     for rec in hist[-7:]:  # last 7 days
         for q, p in (rec.get("per_query") or {}).items():
@@ -168,13 +157,10 @@ def recent_feed_perf():
     keep_rate = kept/kw_pass — a source that's on-topic (high kw_pass) but has
     a low keep_rate is one whose content keeps getting judged out by the LLM
     (e.g. a forecast-heavy trend source since the 2026-07-08 forecast-reject
-    rule), worth a human look even though it's not "broken" like check_feeds.py
+    rule), worth a human look even though it's not "broken" like check_health.py
     would flag."""
-    try:
-        hist = json.load(open(FEED_STATFILE, encoding="utf-8"))
-        if isinstance(hist, dict): hist = [hist]
-    except Exception:
-        return {}
+    hist = read_json(FEED_PERF_FILE, [])
+    if isinstance(hist, dict): hist = [hist]
     agg = {}
     for rec in hist[-7:]:  # last 7 days
         for label, p in (rec.get("per_feed") or {}).items():
@@ -188,10 +174,7 @@ def recent_feed_perf():
 def recent_kept_titles(n=25, prefix=None):
     """Sample recent event titles. prefix='A' -> news-pipeline events only,
     prefix='FP' -> first-party-feed events only, None -> either."""
-    try:
-        ev = json.load(open(EVFILE, encoding="utf-8"))
-    except Exception:
-        return []
+    ev = read_json(EVENTS_FILE, [])
     ev = [e for e in ev if e.get("category") != "company" or e.get("source")]  # tend to skip seeds
     if prefix:
         ev = [e for e in ev if str(e.get("event_id","")).startswith(prefix)]
@@ -425,17 +408,14 @@ def main():
         write_kw_file(KW_FEEDS_FILE, KW_FEEDS_HEADER, new_keep_feeds, new_drop_feeds)
 
     # Audit log
-    try:
-        log = json.load(open(LOGFILE, encoding="utf-8"))
-        if not isinstance(log, list): log = [log]
-    except Exception:
-        log = []
+    log = read_json(OPTIMIZE_LOG_FILE, [])
+    if not isinstance(log, list): log = []
     new_q = [q for _, q in new_tagged]
     log.append({"date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
                 "old_queries": cur_q, "new_queries": new_q,
                 "rationale": prop.get("rationale","")})
     log = log[-60:]
-    json.dump(log, open(LOGFILE,"w",encoding="utf-8"), ensure_ascii=False, indent=1)
+    write_json(OPTIMIZE_LOG_FILE, log)
     print("optimize done. queries:", new_q)
     print("  rationale:", prop.get("rationale",""))
 

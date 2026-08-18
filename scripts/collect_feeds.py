@@ -29,16 +29,11 @@ from xml.etree import ElementTree as ET
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
 from llm_common import (llm_filter_batch, diag_summary, INTERESTS,
+                        EVENTS_FILE, FEED_STATE_FILE, FEED_PERF_FILE,
+                        FEEDS_FILE, KW_FEEDS_FILE, read_json, write_json,
                         load_kw_file, clean_axis, clean_scope, clean_date_ex, BATCH,
                         DupIndex, DEDUP_WINDOW_DAYS)
 
-DATA = os.path.join(HERE, "..", "data", "events.json")
-STATE = os.path.join(HERE, "..", "data", "feed_state.json")
-FEEDS_FILE = os.path.join(HERE, "..", "feeds.txt")
-PERF = os.path.join(HERE, "..", "data", "feed_performance.json")
-
-# Keep an entry if its text contains any of these (cheap relevance gate,
-# before spending an LLM call on it). Loaded from kw_feeds.txt (refreshed
 # daily by optimize.py; collect_news.py has its own SEPARATE kw_news.txt,
 # since feed items differ in language/style — e.g. the Samsung newsroom KR
 # feed needs Korean keywords news articles never do). Same variable names
@@ -53,7 +48,7 @@ _DEFAULT_KEEP = [
     "xiaomi","vivo","oppo","tcl","hisense","bosch",
 ]
 _DEFAULT_DROP = ["job","hiring","career","obituary","sponsorship of","charity run"]
-KW_KEEP, KW_DROP = load_kw_file(os.path.join(HERE, "..", "kw_feeds.txt"))
+KW_KEEP, KW_DROP = load_kw_file(KW_FEEDS_FILE)
 if not (KW_KEEP and KW_DROP):
     KW_KEEP, KW_DROP = list(_DEFAULT_KEEP), list(_DEFAULT_DROP)
 # Add interest keywords (interests.txt), same as collect_news.py does for its
@@ -144,10 +139,8 @@ def relevant(text):
 
 
 def main():
-    try: events = json.load(open(DATA, encoding="utf-8"))
-    except Exception: events = []
-    try: state = json.load(open(STATE, encoding="utf-8"))
-    except Exception: state = {}
+    events = read_json(EVENTS_FILE, [])
+    state = read_json(FEED_STATE_FILE, {})
     existing_ids = {e.get("event_id") for e in events}
     # Near-duplicate suppression — see llm_common.DupIndex. Seeded from the
     # file collect_news.py wrote minutes earlier in the same workflow, so a
@@ -261,19 +254,16 @@ def main():
     # (often in the past relative to today) — re-sort by date every write so
     # the file-level invariant (CLAUDE.md's integrity checklist) never breaks.
     events.sort(key=lambda e: e.get("date", ""))
-    json.dump(events, open(DATA,"w",encoding="utf-8"), ensure_ascii=False, indent=1)
-    json.dump(state,  open(STATE,"w",encoding="utf-8"), ensure_ascii=False, indent=1)
+    write_json(EVENTS_FILE, events)
+    write_json(FEED_STATE_FILE, state)
     statrec = {"date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
                "total_raw": sum(p["raw"] for p in perf.values()),
                "total_dup_near": sum(p["dup_near"] for p in perf.values()),
                "total_kept": added, "per_feed": perf}
-    try:
-        hist = json.load(open(PERF, encoding="utf-8"))
-        if not isinstance(hist, list): hist = [hist]
-    except Exception:
-        hist = []
+    hist = read_json(FEED_PERF_FILE, [])
+    if not isinstance(hist, list): hist = [hist]
     hist.append(statrec); hist = hist[-30:]  # keep last 30 days only
-    json.dump(hist, open(PERF, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    write_json(FEED_PERF_FILE, hist)
     print(f"first-party (free) done. added {added}, total {len(events)} | "
           f"near-dup {sum(p['dup_near'] for p in perf.values())} (<={DEDUP_WINDOW_DAYS}d)")
     diag_summary("collect_feeds")

@@ -37,9 +37,10 @@ DESKTOP later if needed.
 """
 import os, json, time, urllib.request, urllib.error
 
+import sys
 HERE = os.path.dirname(__file__)
-OUT  = os.path.join(HERE, "..", "data", "crux_series.json")
-
+sys.path.insert(0, HERE)
+from llm_common import CRUX_FILE, write_json   # shared paths + JSON writer
 API_KEY = os.environ.get("CRUX_API_KEY", "")
 ORIGIN = "https://www.samsung.com"
 FORM_FACTOR = "PHONE"
@@ -114,12 +115,12 @@ def main():
         print("CrUX returned no usable series — keeping previous snapshot.")
         return
     from datetime import datetime, timezone
-    json.dump({
+    write_json(CRUX_FILE, {
         "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         "origin": ORIGIN,
         "form_factor": FORM_FACTOR,
         "metrics": out_metrics,
-    }, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    })
     print("CrUX series saved:",
           {k: len(v) for k, v in out_metrics.items()}, "weekly points")
 

@@ -31,10 +31,9 @@ from datetime import datetime, timezone
 
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
+from llm_common import EVENTS_FILE, LLM_AGREEMENT_FILE, read_json, write_json
 import llm_common as L
 
-EVENTS = os.path.join(HERE, "..", "data", "events.json")
-OUT = os.path.join(HERE, "..", "data", "llm_agreement.json")
 SAMPLE = int(os.environ.get("AGREEMENT_SAMPLE", "10"))
 KEEP_RUNS = 12
 
@@ -45,10 +44,7 @@ def recent_articles(n):
     Re-judging real items keeps the measurement on the same distribution the
     pipeline actually sees; a synthetic set would flatter the agreement.
     """
-    try:
-        ev = json.load(open(EVENTS, encoding="utf-8"))
-    except Exception:
-        return []
+    ev = read_json(EVENTS_FILE, [])
     out = []
     for e in reversed(ev):
         title = e.get("raw_title") or ""
@@ -149,20 +145,17 @@ def main():
                  "whichever provider answers first, so disagreement here is noise "
                  "already present in events.json."),
     }
-    try:
-        hist = json.load(open(OUT, encoding="utf-8"))
-        if not isinstance(hist, list):
-            hist = [hist]
-    except Exception:
-        hist = []
+    hist = read_json(LLM_AGREEMENT_FILE, [])
+    if not isinstance(hist, list):
+        hist = [hist]
     hist.append(rec)
     hist = hist[-KEEP_RUNS:]
-    json.dump(hist, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    write_json(LLM_AGREEMENT_FILE, hist)
 
     print(f"\n일치도 (비교쌍 {overall['n_comparisons']}건):")
     for k in ("relevant", "direction", "axis", "strength", "strength_within_1"):
         print(f"  {k:18s} {overall[k]}")
-    print("saved:", OUT)
+    print("saved:", LLM_AGREEMENT_FILE)
     L.diag_summary("check_llm_agreement")
 
 

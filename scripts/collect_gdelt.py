@@ -37,9 +37,9 @@ from datetime import datetime, timezone
 
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
-from llm_common import load_queries  # queries.txt ('category | query'), shared with collect_news.py
-
-RAW = os.path.join(HERE, "..", "data", "gdelt_pool.json")
+# queries.txt ('category | query') is shared with collect_news.py, so both
+# layers search for exactly the same things.
+from llm_common import load_queries, GDELT_POOL_FILE, write_json
 
 QUERIES = load_queries()
 MAX_PER_QUERY = 10   # 10 articles per query, same as NewsAPI
@@ -123,8 +123,7 @@ def main():
             it["date"] = f"{d[:4]}-{d[4:6]}-{d[6:8]}"
         else:
             it["date"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    json.dump(all_items, open(RAW, "w", encoding="utf-8"),
-              ensure_ascii=False, indent=1)
+    write_json(GDELT_POOL_FILE, all_items)
     print(f"GDELT done. {len(all_items)} unique articles -> data/gdelt_pool.json")
     if failed_queries:
         print(f"[diag] {len(failed_queries)}/{len(QUERIES)} queries returned nothing "

@@ -8,15 +8,13 @@ import os, sys, json
 from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from llm_common import SCOPE_REGIONS, SCOPE_ALL  # one definition of the regions
+# Shared with the collectors so the page and the pipeline cannot disagree
+# about where files live or which countries a region holds.
+from llm_common import (SCOPE_REGIONS, EVENTS_FILE, WIKI_FILE, IMF_FILE,
+                        CRUX_FILE, MODEL_STATUS_FILE, PREDICTION_SCORES_FILE,
+                        LLM_AGREEMENT_FILE, INDEX_HTML, read_json)
 
-HERE=os.path.dirname(__file__)
-DATA=os.path.join(HERE,"..","data","events.json")
-WIKI=os.path.join(HERE,"..","data","wiki_series.json")
-MSTAT=os.path.join(HERE,"..","data","model_status.json")
-OUT=os.path.join(HERE,"..","index.html")
-
-events=json.load(open(DATA,encoding="utf-8"))
+events=read_json(EVENTS_FILE, [])
 updated=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
 # Default period: year-to-date YoY (current = Jan 1..today, comparison = last year Jan 1..same day)
@@ -29,26 +27,19 @@ except ValueError:
     _ly_to = _today.replace(year=_today.year-1, day=28)  # 2/29 보정
 DEF_CMP_FROM = _ly_to.replace(month=1, day=1).isoformat()
 DEF_CMP_TO   = _ly_to.isoformat()
-try: wiki=json.load(open(WIKI,encoding="utf-8"))
-except Exception: wiki={"series":{},"divisions":{}}
-try: mstat=json.load(open(MSTAT,encoding="utf-8"))
-except Exception: mstat={}
+# Every input is optional except events.json: on a fresh clone the collectors
+# and the credibility layer have not run yet, and the page degrades to
+# "측정 없음" for the missing panels rather than failing to build.
+wiki=read_json(WIKI_FILE, {"series":{},"divisions":{}})
+mstat=read_json(MODEL_STATUS_FILE, {})
 _MSTAT_DEFAULT={"model":"unknown","status":"unknown","note":""}
 def _mstat_of(name):
     return mstat.get(name, _MSTAT_DEFAULT) or _MSTAT_DEFAULT
-try: imf_series=json.load(open(os.path.join(HERE,"..","data","imf_series.json"),encoding="utf-8"))
-except Exception: imf_series={"countries":{},"indicators":{},"data":{}}
-try: crux=json.load(open(os.path.join(HERE,"..","data","crux_series.json"),encoding="utf-8"))
-except Exception: crux={"metrics":{}}
-# Credibility layer (scripts/score_predictions.py + check_llm_agreement.py).
-# Absent on a fresh clone until those have run once — the dashboard degrades to
-# "측정 없음" rather than breaking.
-try: scores=json.load(open(os.path.join(HERE,"..","data","prediction_scores.json"),encoding="utf-8"))
-except Exception: scores={}
-try:
-    _ag=json.load(open(os.path.join(HERE,"..","data","llm_agreement.json"),encoding="utf-8"))
-    agreement=(_ag[-1] if isinstance(_ag,list) and _ag else (_ag if isinstance(_ag,dict) else {}))
-except Exception: agreement={}
+imf_series=read_json(IMF_FILE, {"countries":{},"indicators":{},"data":{}})
+crux=read_json(CRUX_FILE, {"metrics":{}})
+scores=read_json(PREDICTION_SCORES_FILE, {})
+_ag=read_json(LLM_AGREEMENT_FILE, {})
+agreement=(_ag[-1] if isinstance(_ag,list) and _ag else (_ag if isinstance(_ag,dict) else {}))
 # The country-statistics tab uses IMF monthly data only (World Bank removed)
 stats_series=imf_series
 
@@ -251,7 +242,7 @@ const EV=__DATA__;
 // "전체" is a scope VALUE, not a computed label: an event says either that it
 // applies everywhere or which countries it is about. Nothing to derive.
 const SCOPE_ALL="전체";
-const WIKI=__WIKI__;
+const WIKI_FILE=__WIKI__;
 const STATS=__STATS__;
 const CRUX=__CRUX__;
 const SCORES=__SCORES__;
@@ -512,7 +503,7 @@ function rows(withDate=true){let r=EV.slice();
  return r.sort((a,b)=>(b.date||'').localeCompare(a.date||''));}
 
 // ---- trend graph ----
-function wikiSeries(brand){return (WIKI.series&&WIKI.series[brand])||[];}
+function wikiSeries(brand){return (WIKI_FILE.series&&WIKI_FILE.series[brand])||[];}
 
 // ===== Uploaded real-traffic series (in-memory only, never persisted) =====
 // CSV format: country,date,traffic (daily). Parsed in-browser; cleared on refresh.
@@ -1669,5 +1660,5 @@ HTML=(HTML.replace("__DATA__",json.dumps(events,ensure_ascii=False))
           .replace("__REGION_GROUPS__",json.dumps(REGION_GROUPS,ensure_ascii=False))
           .replace("__PINNED__",json.dumps(PINNED,ensure_ascii=False))
           .replace("__UPDATED__",updated))
-open(OUT,"w",encoding="utf-8").write(HTML)
+open(INDEX_HTML,"w",encoding="utf-8").write(HTML)
 print("built index.html with",len(events),"events, wiki series:",list(wiki.get("series",{}).keys()))

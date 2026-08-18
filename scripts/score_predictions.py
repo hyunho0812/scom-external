@@ -36,7 +36,7 @@ HONESTY NOTES, because they decide how much any of this is worth:
     association, NOT an isolated causal effect. The pressure/traffic
     correlation handles overlap properly and is the more trustworthy number.
 
-  * date_source. repair_event_dates.py reconstructed most dates FROM the
+  * date_source. maintenance.py dates reconstructed most dates FROM the
     capture day. A date derived from the day we noticed something cannot also
     be evidence we foresaw it, so the foreknown subset (date_source url/llm,
     i.e. an independent witness) is reported separately. Treat that subset as
@@ -53,14 +53,8 @@ from datetime import date, timedelta
 
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
-from llm_common import parse_date
+from llm_common import parse_date, EVENTS_FILE, EVENT_PRESSURE_FILE, PREDICTION_SCORES_FILE, WIKI_FILE, read_json, write_json
 
-EVENTS = os.path.join(HERE, "..", "data", "events.json")
-WIKI   = os.path.join(HERE, "..", "data", "wiki_series.json")
-OUT_PRESSURE = os.path.join(HERE, "..", "data", "event_pressure.json")
-OUT_SCORES   = os.path.join(HERE, "..", "data", "prediction_scores.json")
-
-# How long an event keeps acting, by its declared horizon. Half-life of the
 # exponential decay, and the window its prediction is scored over.
 HORIZON = {
     "immediate": {"halflife": 3,  "window": 7},
@@ -73,6 +67,10 @@ DIR_SIGN = {"+": 1.0, "-": -1.0}
 AXES = ("demand", "share", "supply")
 
 BASELINE_DAYS = 14      # window before an event, for its "before" level
+# An event counts as scorable only when its whole horizon window is covered by
+# the traffic series. Not 1.0: the wikipedia feed occasionally drops a day, and
+# one missing day should not disqualify a finished 90-day horizon.
+MIN_WINDOW_COVERAGE = 0.95
 DECAY_CUTOFF = 4        # stop applying an event after this many half-lives
 FWD_DAYS = 7            # forward window for the pressure/traffic correlation
 PERMUTATIONS = 1000
@@ -173,9 +171,25 @@ def build_pressure(events, days):
 
 
 # --------------------------------------------------------- per-event scoring
+def window_coverage(smap, start, end):
+    """Fraction of the days in [start, end] the traffic series actually has."""
+    n = (end - start).days + 1
+    if n <= 0:
+        return 0.0
+    have = sum(1 for i in range(n) if (start + timedelta(days=i)) in smap)
+    return have / n
+
+
 def score_events(events, smap):
-    """Did each event's predicted direction actually happen?"""
-    scored, skipped = [], 0
+    """Did each event's predicted direction actually happen?
+
+    An event is scored only once its horizon has ELAPSED. window_mean() happily
+    averages whatever days exist, so the previous check ("after is not None")
+    let a 90-day-horizon event from last week be graded on six days of data —
+    half of everything being scored was an unfinished horizon, and the headline
+    hit rate was mostly measuring events that had not had time to happen yet.
+    """
+    scored, skipped, unfinished = [], 0, 0
     for e in events:
         d0 = parse_date(e.get("date"))
         sign = DIR_SIGN.get(e.get("impact_direction"))
@@ -183,9 +197,13 @@ def score_events(events, smap):
             skipped += 1
             continue
         win = HORIZON[horizon_of(e)]["window"]
+        a, b = d0 + timedelta(days=1), d0 + timedelta(days=win)
+        if window_coverage(smap, a, b) < MIN_WINDOW_COVERAGE:
+            unfinished += 1                 # horizon still running
+            continue
         before = window_mean(smap, d0 - timedelta(days=BASELINE_DAYS), d0 - timedelta(days=1))
-        after = window_mean(smap, d0 + timedelta(days=1), d0 + timedelta(days=win))
-        if not before or after is None:     # horizon not elapsed, or no data
+        after = window_mean(smap, a, b)
+        if not before or after is None:     # no traffic data around this date
             skipped += 1
             continue
         actual = (after - before) / before
@@ -201,7 +219,7 @@ def score_events(events, smap):
             "actual_pct": round(actual * 100, 2),
             "hit": (actual > 0) == (sign > 0),
         })
-    return scored, skipped
+    return scored, skipped, unfinished
 
 
 def summarise(scored):
@@ -339,8 +357,8 @@ def permutation_test(events, days, targets, observed, n=PERMUTATIONS, seed=20260
 
 # ------------------------------------------------------------------- driver
 def main():
-    events = json.load(open(EVENTS, encoding="utf-8"))
-    wiki = json.load(open(WIKI, encoding="utf-8")).get("series", {})
+    events = read_json(EVENTS_FILE, [])
+    wiki = read_json(WIKI_FILE, {}).get("series", {})
     samsung = series_map(wiki.get("Samsung", []))
     if not samsung:
         print("wiki Samsung series empty — nothing to score against")
@@ -399,23 +417,27 @@ def main():
                                       "supply": "samsung"}[ax]}
         targets[ax], observed[ax] = f, r
 
-    scored, skipped = score_events(events, samsung)
+    scored, skipped, unfinished = score_events(events, samsung)
     perm = permutation_test(events, dense_days, targets, observed)
 
-    json.dump({
+    write_json(EVENT_PRESSURE_FILE, {
         "updated": date.today().isoformat(),
         "window": {"from": start.isoformat(), "to": end.isoformat(), "days": len(days)},
         "halflife_days": {k: v["halflife"] for k, v in HORIZON.items()},
         "series": {a: [{"date": d.isoformat(), "p": round(grid[a][d], 3)} for d in days]
                    for a in AXES + ("all",)},
-    }, open(OUT_PRESSURE, "w", encoding="utf-8"), ensure_ascii=False)
+    }, indent=None)   # 4 axes x ~660 days
 
-    json.dump({
+    write_json(PREDICTION_SCORES_FILE, {
         "updated": date.today().isoformat(),
         "window": {"from": start.isoformat(), "to": end.isoformat(), "days": len(days)},
         "proxy": "wikipedia_samsung_pageviews",
         "scored": len(scored),
         "skipped": skipped,
+        # Horizon still running — not a failure, just not gradeable yet. Split
+        # out from `skipped` so a small `scored` reads as "too early" rather
+        # than "the data is broken".
+        "unfinished_horizon": unfinished,
         "summary": summarise(scored),
         "correlation": {
             "pressure_vs_forward_traffic_r": None if r_all is None else round(r_all, 4),
@@ -433,10 +455,11 @@ def main():
             "위키피디아 조회수는 samsung.com 트래픽의 대리지표이며, 그 대리 관계 자체는 아직 검증되지 않았습니다.",
             "일별 관측은 자기상관이 강해 일반 유의성 검정은 과신합니다 — 순열검정 p값을 기준으로 보세요.",
         ],
-    }, open(OUT_SCORES, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    })
 
     s = summarise(scored)
-    print(f"window {start} ~ {end} ({len(days)}일), 채점 {len(scored)}건 / 제외 {skipped}건")
+    print(f"window {start} ~ {end} ({len(days)}일), 채점 {len(scored)}건 / "
+          f"제외 {skipped}건 / horizon 진행중 {unfinished}건")
     print(f"  방향 적중률  전체 {s['all'].get('hit_rate')} (n={s['all'].get('n')})"
           f"  |  사전근거 {s['foreknown'].get('hit_rate')} (n={s['foreknown'].get('n')})")
     print(f"  압력지수 vs 향후{FWD_DAYS}일 트래픽")
@@ -452,7 +475,7 @@ def main():
         verdict = "유의" if pp.get("significant") else "유의하지 않음"
         print(f"    {ax:7s} vs {c['target']:14s} r = {c['r']:>7} (n={c['n']})  "
               f"p = {pp.get('p_value','-')}  {verdict}")
-    print("saved:", OUT_PRESSURE, OUT_SCORES)
+    print("saved:", EVENT_PRESSURE_FILE, PREDICTION_SCORES_FILE)
 
 
 if __name__ == "__main__":
