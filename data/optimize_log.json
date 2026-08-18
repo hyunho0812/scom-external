@@ -1146,5 +1146,33 @@
    "ai search traffic"
   ],
   "rationale": "쿼리 성능 및 키워드 유지율을 검토한 결과, 현재 쿼리들은 짧고 광범위한 형태로 유지되어야 합니다. 특히 raw 값이 낮은 쿼리는 더 짧게 만들면 오히려 결과가 줄어들 위험이 있어 변경하지 않습니다. 키워드 필터는 중복을 줄이면서도 관련성을 높이는 역할을 하므로, 기존 키워드 목록을 유지하고 한국어 키워드는 그대로 두어 삼성 뉴스룸(KR) 피드 처리를 유지합니다."
+ },
+ {
+  "date": "2026-08-18",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "online retail",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "online retail",
+   "ai search traffic"
+  ],
+  "rationale": "현재 쿼리 중 raw 수치가 낮거나 kept 수가 0인 쿼리들을 더 일반적이고 짧은 키워드로 대체하여 수집량을 늘리려고 했으나, 4단어 제한 및 기존 쿼리 성능이 준수하여 변경 없이 유지했습니다. kw_news 및 kw_feeds 키워드 목록은 전체적으로 잘 작동하고 있어 큰 변화가 필요하지 않다고 판단했습니다."
  }
 ]
