@@ -6,9 +6,9 @@
 # Policy (set 2026-07): OFFICIAL feeds only - no 3rd-party scraper/mirror
 # feeds, even ones that technically work. A mirror depends on a volunteer
 # keeping their scraper alive; if they stop, the feed goes silently stale.
-# Run scripts/check_feeds.py any time to verify every feed below still parses
+# Run scripts/check_health.py any time to verify every feed below still parses
 # and returns items (it also runs automatically every day, alongside
-# check_model.py and optimize.py).
+# check_health.py and optimize.py).
 
 # ---------- AI platforms (4, fixed - clear targeting, no periodic review needed) ----------
 OpenAI news | https://openai.com/news/rss.xml
@@ -63,7 +63,7 @@ Samsung newsroom (KR) | https://news.samsung.com/kr/feed
 # Only TWO things now keep a source out, and both are observable rather than
 # editorial: it errors/returns nothing (per data/feed_health.json), or it's a
 # 3rd-party scraper/mirror rather than the publisher's own feed.
-# Review cadence: no fixed schedule needed - scripts/check_feeds.py (daily)
+# Review cadence: no fixed schedule needed - scripts/check_health.py (daily)
 # catches breakage; revisit the SOURCE LIST itself occasionally (e.g. every
 # few months) using data/feed_performance.json (kw_pass_rate/keep_rate per
 # source) as a guide to what's actually producing useful events.
@@ -86,7 +86,7 @@ Practical Ecommerce | https://www.practicalecommerce.com/feed
 Digiday | https://digiday.com/feed
 # ^ Digiday's URL is confirmed consistently across multiple independent
 #   listings (all pointing at digiday.com's own domain), but wasn't directly
-#   fetch-tested like the others above - if check_feeds.py flags it, that's why.
+#   fetch-tested like the others above - if check_health.py flags it, that's why.
 
 # -- (c) Vendor / practitioner blogs (5) - restored 2026-08-04 when the
 # no-blogs rule was lifted. All five are the publisher's OWN feed on the
@@ -94,7 +94,7 @@ Digiday | https://digiday.com/feed
 # while previously active: data/feed_state.json shows them returning items on
 # every one of the 9 daily runs from 2026-06-29 to 2026-07-06 (item counts in
 # brackets below). Session egress blocked a live re-fetch on 2026-08-04, so
-# that run history IS the verification - check_feeds.py will re-confirm on its
+# that run history IS the verification - check_health.py will re-confirm on its
 # next daily run and flag any that have since broken. --
 Semrush | https://www.semrush.com/blog/feed/
 Ahrefs | https://ahrefs.com/blog/feed/
@@ -121,7 +121,7 @@ Neil Patel | https://neilpatel.com/blog/feed/
 #   TrendForce Consumer Electronics - fetches OK but always 0 items (not RSS/Atom)
 #   Search Engine Land - HTTP 403 (blocked, not a temporary rate limit)
 #     ^ these three removed 2026-07-14, confirmed over multiple days of
-#       check_feeds.py's daily data/feed_health.json (not a transient blip).
+#       check_health.py's daily data/feed_health.json (not a transient blip).
 #
 # (2) MIRROR / not the publisher's own feed:
 #   Claude (Anthropic) - www.anthropic.com/news is an HTML page, not a feed

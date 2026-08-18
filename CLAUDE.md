@@ -18,30 +18,32 @@ scripts/
   collect_gdelt.py    Layer 1a — GDELT 무료 뉴스풀 (키 불필요, 10개 쿼리 전부 시도)
   collect_news.py     Layer 1  — NewsAPI+GDELT → 키워드 사전필터 → LLM 판단체인
   collect_feeds.py    Layer 2  — 1차 소스 RSS(feeds.txt) → 키워드 사전필터 → LLM 판단체인
-  llm_common.py       Gemini→Groq→Mistral 판단체인 + 공유 설정(MARKETS/queries.txt·kw_*.txt
-                      파서/has_korean 등, 6개+ 스크립트가 여기서 import)
-                      + 근접 중복 억제 DupIndex/title_sim (아래 원칙 9)
+  llm_common.py       Gemini→Groq→Mistral 판단체인 + **공유되는 모든 것**:
+                      data/·설정 파일 경로 전부(EVENTS_FILE 등) + read_json/write_json,
+                      queries.txt·kw_*.txt·interests.txt 파서, clean_scope/clean_date/
+                      clean_axis, 근접 중복 억제 DupIndex, has_korean/parse_date.
+                      나머지 스크립트는 여기서 import만 한다
   collect_wiki.py     위키피디아 일별 조회수 (경쟁사 관심도 대리지표), 최초 730일 백필+이후 증분
   collect_imf.py      Layer 3 — IMF SDMX 월간 통계 (28일만 실행)
   collect_crux.py     공급축 — CrUX 실사용자 CWV 주간 시계열 (CRUX_API_KEY 없으면 조용히 스킵)
   optimize.py         매일 Gemini가 queries.txt/kw_news.txt/kw_feeds.txt 자동 튜닝
-  check_model.py      Gemini/Groq/Mistral 3개 모델 상태 체크 (매일) → data/model_status.json
-                      ※ 메타데이터 GET일 뿐 생성을 안 해봄 — 아래 llm_usage.json 참고
-  check_feeds.py       feeds.txt의 20개 피드 파싱 상태 체크 (매일) → data/feed_health.json
-  merge_past_events.py 수동 도구 — 이벤트 배치를 events.json에 병합(스키마 검증·정렬·중복제거)
-  check_feed_translation.py 수동 진단 — events.json 내 피드 항목 번역 품질 점검
+  check_health.py     매일 — ① Gemini/Groq/Mistral 도달 여부 → data/model_status.json
+                      ② feeds.txt 20개 피드 파싱 여부 → data/feed_health.json
+                      ※ ①은 메타데이터 GET일 뿐 생성을 안 해봄 — 아래 llm_usage.json 참고
   score_predictions.py 신뢰도 계층 (매일) — 이벤트 원장을 반증 가능하게 만듦.
                       ① 이벤트 압력지수(일별 시계열화) → data/event_pressure.json
                       ② 사후 채점·교정곡선·순열검정·축 검증 → data/prediction_scores.json
                       API 키 불필요 (events.json + wiki_series.json만 읽음)
   check_llm_agreement.py 주간(월) — 같은 기사를 3개 provider에 독립 판정시켜 라벨
                       일치도 측정 → data/llm_agreement.json. 라벨 신뢰도의 상한
-  repair_event_scope.py 1회용 복구 — scope의 WW/worldwide/지시문 잔재를 실제 국가코드로
-                      정규화 (아래 원칙 10). --dry-run 기본, 원본은 raw_scope에 보존
-  prune_duplicates.py 1회용 정리 — 이미 저장된 근접 중복 제거(원칙 9의 임계값 그대로),
-                      제거분 전문을 data/pruned_duplicates.json에 남김
-  repair_event_dates.py 1회용 복구 — 2026-08-10 날짜 버그로 어긋난 date 교정
-                      (아래 "날짜 앵커링 사고" 참고). --dry-run 기본, --apply로 저장
+  maintenance.py      수동 전용 도구 모음 (워크플로가 절대 부르지 않음). 전부
+                      기본 dry-run, `--apply`로만 저장:
+                        dates       날짜 앵커링 사고 복구 + date_source 보강 (원칙 7)
+                        scope       scope를 "전체"/한글 국가·지역명으로 정규화 (원칙 10)
+                        dedupe      이미 저장된 근접 중복 제거 (원칙 9의 임계값 그대로),
+                                    제거분 전문을 data/pruned_duplicates.json에 남김
+                        merge       수기 이벤트 배치를 events.json에 병합(스키마 검증)
+                        translation 피드 이벤트 번역 실패 점검
   build.py             모든 data/*.json → index.html 재빌드 (대시보드 JS 전부 여기 있음)
 
 data/                 자동 생성/갱신되는 JSON들 (스키마는 각 스크립트 상단 docstring 참고)
@@ -95,8 +97,7 @@ KEEP 리스트에 로드 시점에 자동으로 합쳐짐. 둘 다 `optimize.py`
 두 콜렉터의 변수명도 동일(`KW_KEEP`/`KW_DROP`) — 예전엔 collect_feeds.py만 `KEYWORDS`/
 `NEGATIVE`라는 다른 이름을 썼는데 2026-07-08 통일함. `queries.txt`/`kw_*.txt` 파싱,
 `MARKETS`(12개국 리스트), `has_korean()` 같은 조각들은 전부 `llm_common.py`에만 정의돼
-있고 나머지 스크립트(collect_news/collect_gdelt/collect_feeds/optimize/check_model/
-merge_past_events/check_feed_translation)는 거기서 import — 예전엔 3~4곳에 따로
+있고 나머지 스크립트는 거기서 import — 예전엔 3~4곳에 따로
 복붙돼 있어서 한 곳만 고치고 나머지를 깜빡하는 사고(Samsung KR 피드 사전필터 버그가
 정확히 이런 식으로 생겼었음)가 났었음. **새 설정 상수나 파일 파서를 또 추가해야 하면
 `llm_common.py`에 먼저 넣고 각 스크립트는 import만 하는 걸 기본으로 할 것.**
@@ -115,7 +116,7 @@ merge_past_events/check_feed_translation)는 거기서 import — 예전엔 3~4�
 - Mistral: `MISTRAL_API_KEY`, `MISTRAL_MODEL` (기본 `mistral-small-latest`, 무료
   Experiment 티어라 분당 2회 제한 — 3순위라 괜찮음)
 
-**`check_model.py`의 "ok"를 작동 증거로 믿지 말 것.** 이건 모델 메타데이터 GET이라
+**`check_health.py`의 모델 "ok"를 작동 증거로 믿지 말 것.** 이건 모델 메타데이터 GET이라
 생성을 안 해봄 — 위 Groq 증상은 한 달 내내 `model_status.json`에 `ok`로 찍혀 있었음.
 실제 작동 여부는 `data/llm_usage.json`의 `ok`/`empty`/`ko_reject`로 판단할 것.
 
@@ -186,6 +187,21 @@ GDELT가 종종 429를 낸다 — 우리 요청량보다는 같은 IP 대역을 
 줄이기보다 **10개 다 시도하고 실패하면 그냥 스킵**하는 쪽을 택함(상한선을 두면 최대
 커버리지만 낮아지고 성공률은 안 오를 수 있어서).
 
+### 11. 점수의 horizon은 끝나야 채점한다 (2026-08-18 수정)
+`score_predictions.py`가 **끝나지도 않은 horizon을 채점하고 있었다.** 판정 조건이
+"after 창의 평균이 None이 아님"이었는데, `window_mean()`은 창에 있는 날만 평균 내므로
+90일 horizon 이벤트가 **6일치 데이터로도 채점**됐다. 채점된 356건 중 **180건(50.6%)이
+미완주**였고 21건은 창의 10%도 안 찼다.
+
+`MIN_WINDOW_COVERAGE`(0.95)로 창이 거의 다 찼을 때만 채점하고, 아직 진행 중인 건은
+`unfinished_horizon`으로 따로 센다(제외 사유가 "데이터 이상"이 아니라 "아직 이르다"임을
+구분하기 위해). 1.0이 아닌 이유는 위키 피드가 가끔 하루를 빠뜨리기 때문 — 하루 결측으로
+끝난 90일 horizon을 버릴 이유는 없다.
+
+**수정 후 적중률이 0.556 → 0.508로 떨어졌다(n 356 → 179).** 기존 숫자는 "아직 일어날
+시간도 없었던 이벤트"를 절반이나 포함한 값이었다. 0.508은 사실상 동전던지기이고, 그게
+현재까지의 정직한 측정치다.
+
 ## 검증 체크리스트 (수정 후 항상 실행)
 
 ```bash
@@ -209,6 +225,9 @@ spec=importlib.util.spec_from_file_location('cf','scripts/collect_feeds.py')
 cf=importlib.util.module_from_spec(spec); spec.loader.exec_module(cf)
 print(len(cf.load_feeds()), '개 피드 파싱됨')
 "
+
+# 수동 도구 5개가 전부 dry-run으로 도는지 (events.json을 건드리지 않음)
+for c in dates scope dedupe translation; do python3 scripts/maintenance.py $c >/dev/null; done
 
 # 워크플로 YAML 파싱
 python3 -c "import yaml; yaml.safe_load(open('.github/workflows/daily-update.yml'))"
@@ -238,7 +257,7 @@ python3 scripts/build.py
   훨씬 정확히 측정하기 때문. 그때 빠졌던 Semrush/Ahrefs/Moz/HubSpot Marketing/Neil Patel
   5개 복구 — 활동 당시 `data/feed_state.json` 9일치(06-29~07-06) 전 회차에서 각각
   20/10/10/50/10건을 안정적으로 반환한 게 검증 근거(세션 egress 차단으로 실시간 재fetch는
-  불가, 다음 `check_feeds.py` 일간 실행이 재확인). **이제 소스를 배제하는 사유는 딱 둘,
+  불가, 다음 `check_health.py` 일간 실행이 재확인). **이제 소스를 배제하는 사유는 딱 둘,
   둘 다 관찰 가능한 사실이며 편집 판단이 아님**: (1) 에러/0건, (2) 미러(퍼블리셔 자체 피드가
   아님). 같이 빠졌던 Shopify Blog는 복구 대상이 아님 — 같은 9회차 전부 0건이라 (1)에 해당
   (TrendForce Consumer Electronics와 동일 패턴). Anthropic/Perplexity도 (2)라 계속 제외.
@@ -377,7 +396,7 @@ raw_title 4 / title 4 — 그중 가장 논쟁적인 건 "폴드8 울트라 인�
 `full list if worldwide` 13건**이 국가로 저장됐고, 필터가 못 읽는 그 101건(23%)은 국가를
 고르는 순간 사라졌다. 호주는 지역 구분에서 **"동남아"** 에 들어가 있었다(현재 오세아니아).
 
-- `scripts/repair_event_scope.py`가 기존 435건을 이 형식으로 마이그레이션(원본은 `raw_scope`
+- `scripts/maintenance.py scope`가 기존 435건을 이 형식으로 마이그레이션(원본은 `raw_scope`
   에 보존). **12개 마켓 전부를 나열한 271건은 `전체`로 옮겼다** — 옛 프롬프트의
   "full list if worldwide"가 곧 "전세계"라는 뜻이었기 때문(이 규칙은 마이그레이션 전용이라
   `migrate()`에만 있고 `clean_scope()`에는 없다).
@@ -391,5 +410,5 @@ raw_title 4 / title 4 — 그중 가장 논쟁적인 건 "폴드8 울트라 인�
 - 대시보드에서 `prediction_scores.json`의 수치를 **다시 계산**하기 — 읽기만 할 것
   (화면과 저장된 근거가 어긋나면 신뢰도 패널의 존재 이유가 사라짐)
 - 워크플로 스텝에 새 API 키 쓰는 스크립트 추가할 때 `env:` 블록에 그 키 추가하는 걸
-  깜빡하기 (실제로 한 번 이런 버그가 있었음 — check_model.py가 Groq/Mistral 키를 못 받아서
+  깜빡하기 (실제로 한 번 이런 버그가 있었음 — 모델 상태 체크가 Groq/Mistral 키를 못 받아서
   "키 없음"으로 잘못 표시된 적 있음)

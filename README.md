@@ -18,11 +18,11 @@ scripts/collect_feeds.py        <- Layer 2 daily: first-party RSS -> keyword pre
 scripts/collect_gdelt.py        <- Layer 1a daily: free GDELT news pool (no key)
 scripts/collect_imf.py          <- Layer 3 monthly (28th): IMF stats -> country-stats tab
 scripts/collect_wiki.py         <- daily: Wikipedia pageviews -> company trend graph
-scripts/llm_common.py           <- shared Gemini/Groq/Mistral fallback-chain helpers
-scripts/check_model.py          <- daily: health-checks all 3 LLMs -> dashboard badges
+scripts/llm_common.py           <- shared: the LLM chain, every file path, event-field cleaning
+scripts/check_health.py         <- daily: probes all 3 LLMs and every feed -> dashboard badges
 scripts/optimize.py             <- daily: Gemini tunes queries.txt/keyword filters
-scripts/merge_past_events.py    <- manual tool: merge AI/uploaded event batches
-scripts/check_feed_translation.py <- manual diagnostic: audit feed translation quality
+scripts/score_predictions.py    <- daily: scores the ledger's own past predictions
+scripts/maintenance.py          <- manual only: dates | scope | dedupe | merge | translation
 scripts/build.py                <- daily: rebuilds index.html from all data files
 feeds.txt                       ← first-party source list (edit to manage feeds)
 .github/workflows/daily-update.yml ← the free daily cron that runs everything
@@ -83,7 +83,7 @@ It is not perfect — skim the list weekly and delete any stragglers from
 - (Optional) the workflow sets GEMINI_MODEL to gemini-2.5-flash, GROQ_MODEL to
   openai/gpt-oss-120b, and MISTRAL_MODEL to mistral-small-latest. If any
   provider retires that model name, change it in the workflow to a current
-  free equivalent — `scripts/check_model.py` checks all three daily and the
+  free equivalent — `scripts/check_health.py` checks all three daily and the
   dashboard badge turns red ("retired") if one needs swapping.
 
 ### Free-tier comparison (as of 2026-07)
@@ -140,7 +140,7 @@ a list under the graph. Division mapping: MX=Apple, VD=LG, DA=Whirlpool.
 ## Model-status badges (knowing when to swap models)
 The dashboard shows three badges — one per LLM in the judgement chain
 (Gemini, Groq, Mistral) — each showing the model name, whether it's alive,
-and when it was last checked. Each daily run, `check_model.py` pings all
+and when it was last checked. Each daily run, `check_health.py` pings all
 three providers' model-info endpoints (a cheap GET, no generation):
 - **green "정상 ✓"** — model responds, nothing to do.
 - **red "종료됨 — 모델 교체 필요"** — the model 404s (the provider retired it).
