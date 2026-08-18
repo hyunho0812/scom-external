@@ -32,6 +32,13 @@ the event schema moves.
   merge        Merge hand-curated event JSON arrays into events.json, validating
                each record against the schema and renumbering ids (E101...).
 
+  split        Retrofit the 요약 / LLM 추론 split onto events collected before
+               2026-08-18, whose description carries the model's inference in
+               its trailing sentence(s). The inference half is already stored
+               separately in `impact`, so this only has to take it out of the
+               summary — no re-judging, no LLM. Originals kept in
+               raw_description.
+
   translation  Report feed events whose description never got translated —
                a symptom of the whole LLM chain failing for that run.
 
@@ -444,6 +451,101 @@ def cmd_translation(args):
           f"= LLM 체인(Gemini→Groq→Mistral)이 전부 실패했거나 키가 없음")
 
 
+# ============================================================ split
+# The old prompt asked for one `description` paragraph built as "sentence 1:
+# what happened. sentence 2: how this affects samsung.com web traffic", so
+# every event collected before 2026-08-18 has the model's inference glued onto
+# the article's facts. The dashboard now labels the two separately (요약 /
+# LLM 추론), and the inference half already exists on its own in `impact` —
+# all 435 stored events have one. So the retrofit is a split, not a re-judge:
+# take the trailing inference sentences out of description and keep the facts.
+#
+# No LLM is involved and none is needed. The whole original is kept in
+# raw_description, so anything the split gets wrong is recoverable and running
+# this twice changes nothing.
+# Split on punctuation only. Including 다 as a terminator looks right for
+# Korean until a postposition ends in it: "직접 방문하기보다 AI 에이전트를…"
+# and "평소보다 훨씬" both split mid-sentence, and the summary came out cut off
+# in the middle of a clause. Every stored description ends its sentences with
+# a period, so punctuation alone is both correct and unambiguous.
+_SENT_SPLIT = re.compile(r'(?<=[.!?])\s+')
+# Naming our own site is what marks a sentence as the inference half. Traffic
+# words alone are not enough: "AI 검색 결과에 마크다운 페이지가 더 잘 노출되도록
+# 광고를 활용한다" is the article reporting how Time's ad product works, and a
+# 노출/클릭 keyword would have thrown that fact out of the summary.
+_INFERENCE_MARK = re.compile(
+    r'삼성닷컴|samsung\.com|삼성\.com|브랜드 (공식 )?사이트|삼성 공식 사이트|자사몰')
+
+
+def sentences(text):
+    text = (text or "").strip()
+    return [p.strip() for p in _SENT_SPLIT.split(text) if p.strip()] if text else []
+
+
+def split_fact_inference(description):
+    """(facts, inference) sentence lists for one stored description.
+
+    Two sentences is the documented old shape — fact then inference — so the
+    second one goes, whatever words it happens to use: a market-level guess
+    like "소비자는 구매를 미루는 경향을 보인다" is still a guess. With three or
+    more, only the trailing sentences that NAME samsung.com are inference; the
+    middle ones are usually still reporting, and if none names it the old shape
+    still says the last one is the inference. The first sentence is never
+    dropped, so a summary can never come out empty.
+    """
+    s = sentences(description)
+    if len(s) < 2:
+        return s, []
+    if len(s) == 2:
+        return s[:1], s[1:]
+    k = len(s)
+    while k > 1 and _INFERENCE_MARK.search(s[k - 1]):
+        k -= 1
+    if k == len(s):          # none of them names the site — old shape says last
+        k -= 1
+    return s[:k], s[k:]
+
+
+def cmd_split(args):
+    events = read_json(EVENTS_FILE, [])
+    changes, unchanged = [], 0
+    for e in events:
+        # Always split from raw_description when it exists: it is the untouched
+        # original, so re-running reproduces the same answer instead of cutting
+        # an already-split summary in half, and a later fix to the splitter can
+        # simply be re-applied.
+        source = e.get("raw_description") or e.get("description", "")
+        facts, inference = split_fact_inference(source)
+        new_desc = " ".join(facts)
+        if not inference or new_desc == e.get("description", ""):
+            unchanged += 1
+            continue
+        changes.append((e, source, new_desc, " ".join(inference)))
+
+    kept_len = [len(new) for _, _, new, _ in changes]
+    print(f"events {len(events)}건 — 요약/추론 분리 대상 {len(changes)}건")
+    if changes:
+        print(f"  분리 후 요약 길이: 최소 {min(kept_len)}자 / 중앙값 "
+              f"{sorted(kept_len)[len(kept_len)//2]}자")
+    print(f"  그대로 두는 건: {unchanged}건 (이미 분리됐거나 사실만 있음)")
+    if changes:
+        print("\n표본 3건:")
+        for e, old, new, inf in changes[:3]:
+            print(f"  · {(e.get('title') or '')[:44]}")
+            print(f"    요약 ← {new[:74]}")
+            print(f"    떼어냄 {inf[:74]}")
+            print(f"    (impact) {(e.get('impact') or '')[:74]}")
+
+    if not args.apply:
+        print("\n(dry-run — 실제 저장하려면 --apply)")
+        return
+
+    for e, source, new_desc, _inf in changes:
+        e.setdefault("raw_description", source)  # the pre-split original
+        e["description"] = new_desc
+    write_json(EVENTS_FILE, events)
+    print(f"\n저장 완료: {len(changes)}건 분리 (원본은 raw_description에 보존)")
+
 # ============================================================ dispatch
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
@@ -469,6 +571,10 @@ def main():
     p.add_argument("folder", nargs="?", default="past_events")
     p.add_argument("out", nargs="?", default=EVENTS_FILE)
     p.set_defaults(func=cmd_merge)
+
+    p = sub.add_parser("split", help="split old description into 요약 / LLM 추론")
+    p.add_argument("--apply", action="store_true", help="write the split file")
+    p.set_defaults(func=cmd_split)
 
     p = sub.add_parser("translation", help="report untranslated feed events")
     p.add_argument("file", nargs="?", default=EVENTS_FILE)
