@@ -1200,7 +1200,8 @@
   "raw_title": "Here’s proof that high component costs are killing cheap phones",
   "raw_desc": "Sales of sub-$100 phones in the US fell by 64% in Q2 2026 due to a combination of factors, including rising component costs.",
   "raw_url": "https://www.androidauthority.com/sub-100-android-smartphone-us-sales-3698258/",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "llm"
  },
  {
   "event_id": "A0ae0f5ed",
@@ -8769,7 +8770,8 @@
   "raw_title": "삼성전자, 8세대 갤럭시 폴더블 기술 혁신 담은 ‘폴더블 헤리티지’ 전시",
   "raw_desc": "삼성전자가 7년간의 갤럭시 폴더블 기술 혁신을 집대성한 전시 공간 ‘폴더블 헤리티지’를 10일부터 삼성 강남 3층에서 상시 운영한다. 삼성전자는 2019년 최초의 ‘갤럭시 폴드’를 선보인 이후, 최근 출시한 ‘갤럭시 Z 폴드8 울트라·폴드8·플립8’에 이르기까지 끊임없는 폼팩터 혁신으로 폴더블 시장을 선도해왔다. ‘폴더블 헤리티지’는 ▲’갤럭시 폴드·플립’ 스토리 ▲디자인 스토리 ▲테크 스토리 등 3개 섹션으로 구성돼, 삼성전자의 폴더블 기술 진화 과정을 […]",
   "raw_url": "https://news.samsung.com/kr/%ec%82%bc%ec%84%b1%ec%a0%84%ec%9e%90-8%ec%84%b8%eb%8c%80-%ea%b0%a4%eb%9f%ad%ec%8b%9c-%ed%8f%b4%eb%8d%94%eb%b8%94-%ea%b8%b0%ec%88%a0-%ed%98%81%ec%8b%a0-%eb%8b%b4%ec%9d%80-%ed%8f%b4%eb%8d%94%eb%b8%94",
-  "raw_date": "2026-08-11"
+  "raw_date": "2026-08-11",
+  "date_source": "llm"
  },
  {
   "event_id": "FP4185731d",
@@ -8793,7 +8795,8 @@
   "raw_title": "Testing ads in ChatGPT",
   "raw_desc": "OpenAI begins testing ads in ChatGPT to support free access, with clear labeling, answer independence, strong privacy protections, and user control.",
   "raw_url": "https://openai.com/index/testing-ads-in-chatgpt",
-  "raw_date": "2026-08-11"
+  "raw_date": "2026-08-11",
+  "date_source": "url"
  },
  {
   "event_id": "FP7a068c74",
@@ -8817,7 +8820,8 @@
   "raw_title": "More than 1 billion people are using the Gemini app every month.",
   "raw_desc": "The Gemini app has officially surpassed 1 billion monthly users, making it the fastest-growing product in Google’s history. Here’s some data about how people are using G…",
   "raw_url": "https://blog.google/innovation-and-ai/products/gemini-app/one-billion-monthly-users/",
-  "raw_date": "2026-08-11"
+  "raw_date": "2026-08-11",
+  "date_source": "url"
  },
  {
   "event_id": "Aca9b34a9",
@@ -8841,7 +8845,8 @@
   "raw_title": "Is the Samsung Galaxy Ring 2 Worth Waiting for? Here’s What We Know",
   "raw_desc": "Samsung has officially confirmed the development of the Galaxy Ring 2, a next-generation smart ring designed to push the boundaries of wearable technology. This announcement has generated significant interest, though the company has stated that the device’s r…",
   "raw_url": "https://www.geeky-gadgets.com/samsung-galaxy-ring-2-news/",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "A61a49061",
@@ -8865,7 +8870,8 @@
   "raw_title": "Samsung targets Kenya's digital-first shoppers with new upgraded e-commerce platform",
   "raw_desc": "Samsung Electronics East Africa is doubling down on digital retail in Kenya, rolling out an upgraded e-commerce platform built to give both everyday shoppers and businesses a smoother way to buy.",
   "raw_url": "https://swalanyeti.co.ke/business/article/12313/samsung-targets-kenyas-digital-first-shoppers-with-new-upgraded-e-commerce-platform",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "Aa415e2b0",
@@ -8889,7 +8895,8 @@
   "raw_title": "Google Gemini Passes 1B Monthly Users, 63% Now Use Voice via @sejournal, @MattGSouthern",
   "raw_desc": "Google says its Gemini app passed 1 billion monthly users and reports that 63% now use voice, alongside camera, uploads, and app automation data.\nThe post Google Gemini Passes 1B Monthly Users, 63% Now Use Voice appeared first on Search Engine Journal.",
   "raw_url": "https://www.searchenginejournal.com/google-gemini-passes-1b-monthly-users-63-now-use-voice/585624/",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "A1cc091b8",
@@ -8913,7 +8920,8 @@
   "raw_title": "I ran Samsung's hidden app booster and my Galaxy opened apps 50% faster",
   "raw_desc": "It's almost too good to be true, but this tool made some of my apps launch 50% faster.",
   "raw_url": "https://www.makeuseof.com/samsung-app-booster/",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "A08acb004",
@@ -8937,7 +8945,8 @@
   "raw_title": "Will the iPhone Ultra avoid the issue that can still kill Samsung foldables?",
   "raw_desc": "The very first Samsung Galaxy Fold launched back in 2019 proved so vulnerable to screen damage by dust and dirt ingress that the company cancelled all pre-orders for the device. Eight generations later, we’re today learning that the issue still hasn’t been fi…",
   "raw_url": "https://9to5mac.com/2026/08/13/will-the-iphone-ultra-avoid-the-issue-that-can-still-kill-samsung-foldables/",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "Ae5b375ce",
@@ -8961,7 +8970,8 @@
   "raw_title": "Google Pixel 11 vs. Galaxy S26: 6 reasons I’m buying Pixel this year",
   "raw_desc": "The Galaxy S26 is a great flagship, but the Pixel 11 wins for me thanks to better battery, cameras, Qi2 support, and faster updates.",
   "raw_url": "https://www.androidauthority.com/google-pixel-11-vs-samsung-galaxy-s26-3697495/",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "A80fbac91",
@@ -8985,7 +8995,8 @@
   "raw_title": "Pixel 11 trade-in deals: Get a $1,250 discount and a free Pixel Watch 5",
   "raw_desc": "Trade-in deals for the new Pixel 11 series can help you save up to $1,250 and even a free Pixel Watch 5 with your new smartphone.",
   "raw_url": "https://www.androidauthority.com/pixel-11-trade-in-deals-3698031/",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "A8c782590",
@@ -9009,7 +9020,8 @@
   "raw_title": "Counterpoint: US smartphone market contracts, budget devices hit hardest",
   "raw_desc": "Counterpoint Research’s latest report examines smartphone sales in the US for the April 1 – June 30 period, aka Q2. The overall market fell by 5% compared to last year as the ongoing memory chip crisis resulted in increased average asking prices (ASP) for dev…",
   "raw_url": "https://www.gsmarena.com/counterpoint_us_smartphone_market_contracts_budget_devices_hit_hardest-news-74158.php",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "A0f182c8d",
@@ -9033,7 +9045,8 @@
   "raw_title": "The memory crisis is killing off sub-$100 smartphones as US sales plunge 64%",
   "raw_desc": "Counterpoint Research writes that US smartphone sales fell by 5% YoY in Q2 2026, with memory price increases the main culprit alongside other macroeconomic factors weakening consumer demand.Read Entire Article",
   "raw_url": "https://www.techspot.com/news/113473-memory-crisis-killing-off-sub-100-smartphones-us.html",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "A2c911b41",
@@ -9057,7 +9070,8 @@
   "raw_title": "Study Reveals Free Shipping Obsession; Online Shopping Trends Among Gen Z Americans",
   "raw_desc": "DELRAY BEACH, Fla., Aug. 13, 2026 /PRNewswire/ -- A new survey released today by FinanceBuzz, conducted in partnership with Bank of America, reveals key generational differences between younger and older online shoppers. According to the study's results, 93% …",
   "raw_url": "https://www.prnewswire.com/news-releases/study-reveals-free-shipping-obsession-online-shopping-trends-among-gen-z-americans-302850743.html",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "Ad08175b2",
@@ -9081,7 +9095,8 @@
   "raw_title": "Prompt Tracking: How to Find (and Fix) Your AI Visibility Gaps",
   "raw_desc": "Your brand could be ranking #1 on Google, but still be invisible to AI. Absent from conversations your customers are having with large language models (LLMs) about your category. Or worse, showing up inaccurately, with outdated or incorrect information that’l…",
   "raw_url": "https://backlinko.com/llm-prompt-tracking",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "A462cda24",
@@ -9105,7 +9120,8 @@
   "raw_title": "Beyond rakhis and mithai: Sibling gifting gets a premium makeover",
   "raw_desc": "From jewellery that doubles as a keepsake to personalised hampers and sibling getaways, Raksha Bandhan is becoming a bigger spending occasion as consumers look beyond the traditional envelope of cash",
   "raw_url": "https://www.business-standard.com/finance/personal-finance/beyond-rakhis-and-mithai-sibling-gifting-gets-a-premium-makeover-126081301352_1.html",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "A0fae939f",
@@ -9129,7 +9145,8 @@
   "raw_title": "Matic Cues feature lets you just talk to your robot vacuum or point at a mess to clean",
   "raw_desc": "Matic has added voice and gesture control to its robot vacuum and mop through a software update called Matic Cues. After testing both features, the short and sweet of it is that voice control is really good.\nJust say, “Hey Matic, vacuum the kitchen,” and Mati…",
   "raw_url": "https://9to5mac.com/2026/08/13/matic-cues-lets-you-just-talk-to-your-robot-vacuum-or-point-at-a-mess-to-clean/",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "Ade98b7aa",
@@ -9153,7 +9170,8 @@
   "raw_title": "3 camera features the Pixel 11 series quietly stole from other Android phones",
   "raw_desc": "Google's Pixel 11 series brings a ton of new camera features, but some of them are pretty familiar if you've used other Android phones.",
   "raw_url": "https://www.androidauthority.com/camera-features-pixel-11-copied-other-brands-3697036/",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "A09b32846",
@@ -9177,7 +9195,8 @@
   "raw_title": "The AirPods Max 2 is $100 Off",
   "raw_desc": "The next-generation AirPods Max is powered by the H2 chip to provide you with deep bass and high-quality audio. The earphones feature personalized Spatial Audio, placing sound all around you for an immersive listening experience. Enjoy 1.5x more Active Noise …",
   "raw_url": "https://www.ilounge.com/news/daily-deals/the-airpods-max-2-is-100-off-4",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "A3c1fbccd",
@@ -9201,7 +9220,8 @@
   "raw_title": "watchOS 27 brings dedicated Siri app and unified Find My experience to Apple Watch",
   "raw_desc": "Apple’s next major Apple Watch software update, watchOS 27, will introduce two brand-new apps that expand how users interact with Siri…\nThe post watchOS 27 brings dedicated Siri app and unified Find My experience to Apple Watch appeared first on MacDailyNews.",
   "raw_url": "https://macdailynews.com/2026/08/13/watchos-27-brings-dedicated-siri-app-and-unified-find-my-experience-to-apple-watch/",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "A24e15321",
@@ -9225,7 +9245,8 @@
   "raw_title": "How Do I Know If AI Overviews Are Taking Clicks From My Site And What Can I Do About It? – Ask An SEO via @sejournal, @HelenPollitt1",
   "raw_desc": "Stable rankings, stable impressions, falling CTR: the signature of AI Overview click loss. Learn to spot it and decide what's worth recovering.\nThe post How Do I Know If AI Overviews Are Taking Clicks From My Site And What Can I Do About It? – Ask An SEO appe…",
   "raw_url": "https://www.searchenginejournal.com/how-do-i-know-if-ai-overviews-are-taking-clicks-from-my-site-and-what-can-i-do-about-it-ask-an-seo/583417/",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "FPa20bb545",
@@ -9249,7 +9270,8 @@
   "raw_title": "[갤럭시 언팩 2026] 런던을 기록하는 세 가지 방법, 갤럭시 Z 폴드8 울트라·폴드8·플립8 카메라 체험기",
   "raw_desc": "오랜 전통과 혁신이 공존하는 영국 런던. 삼성전자는 이곳에서 ‘갤럭시 언팩 2026’을 개최하고 ‘갤럭시 Z 폴드8 울트라’, ‘갤럭시 Z 폴드8’, ‘갤럭시 Z 플립8’을 공개했다. 새로운 갤럭시 Z 시리즈는 하드웨어 혁신과 강력한 AI 기능을 결합해 한층 진화한 카메라 경험을 제공한다. 누구나 전문가 수준의 풍경 사진은 물론, 역동적인 순간을 담은 영상 콘텐츠와 개성 있는 셀피까지 손쉽게 촬영하고 편집할 […]",
   "raw_url": "https://news.samsung.com/kr/%ea%b0%a4%eb%9f%ad%ec%8b%9c-%ec%96%b8%ed%8c%a9-2026-%eb%9f%b0%eb%8d%98%ec%9d%84-%ea%b8%b0%eb%a1%9d%ed%95%98%eb%8a%94-%ec%84%b8-%ea%b0%80%ec%a7%80-%eb%b0%a9%eb%b2%95-%ea%b0%a4%eb%9f%ad%ec%8b%9c-z",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "FPad503843",
@@ -9273,7 +9295,8 @@
   "raw_title": "Ahrefs Brand Radar alternatives for marketing teams",
   "raw_desc": "G2’s 2026 Answer Economy research  found that 51% of B2B software buyers start their research with an AI chatbot more often than Google. That shift means marketing teams need to track not only traditional search performance but also how AI assistants and answer engines mention, cite, and recommend brands.",
   "raw_url": "https://blog.hubspot.com/marketing/ahrefs-brand-radar-alternatives",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "FPb8110ecd",
@@ -9297,7 +9320,8 @@
   "raw_title": "Scrunch AI alternatives compared: Features, pricing, and fit [2026]",
   "raw_desc": "If you’re comparing Scrunch alternatives, start by separating monitoring from execution. Monitoring tools show how brands appear in AI-generated answers. Optimization tools add recommendations, content briefs, or workflows that help teams act on those findings.",
   "raw_url": "https://blog.hubspot.com/marketing/scrunch-alternatives",
-  "raw_date": "2026-08-13"
+  "raw_date": "2026-08-13",
+  "date_source": "url"
  },
  {
   "event_id": "A536af333",
@@ -9321,7 +9345,8 @@
   "raw_title": "Samsung launches Galaxy Z Fold8 range in Australia",
   "raw_desc": "",
   "raw_url": "https://channellife.com.au/story/samsung-launches-galaxy-z-fold8-range-in-australia",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "Abb15a216",
@@ -9345,7 +9370,8 @@
   "raw_title": "Samsung Officially Launches Galaxy Z Fold8 Ultra , Fold8 , Flip8 , Watch Ultra2 and Watch9 in Australia",
   "raw_desc": "",
   "raw_url": "http://www.asiabulletin.com/news/279240837/samsung-officially-launches-galaxy-z-fold8-ultra-fold8-flip8-watch-ultra2-and-watch9-in-australia",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "A793de52a",
@@ -9369,7 +9395,8 @@
   "raw_title": "U . S . retail sales slump unexpectedly and sharply after a summer tax - refund boost fades",
   "raw_desc": "",
   "raw_url": "https://www.butlereagle.com/20260814/u-s-retail-sales-slump-unexpectedly-and-sharply-after-a-summer-tax-refund-boost-fades/",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "FP5d3aea97",
@@ -9393,7 +9420,8 @@
   "raw_title": "삼성리서치, 헬스 파운데이션 모델 기반 웨어러블 AI 연구 공개",
   "raw_desc": "심박수, 수면, 활동량 등 웨어러블 기기가 측정하는 생체신호 속에서 건강의 흐름을 읽어내는 AI 기술이 빠르게 발전하고 있다. 최근 갤럭시 언팩 2026 현장에서 진행된 헬스 포럼에서 삼성전자는 ‘사용자 맞춤형 인사이트 제공을 통한 예방적이고 개인화된 커넥티드 케어 경험’이라는 헬스 비전을 공유한 바 있다. 이러한 비전을 현실로 구현하기 위해 뒷받침 되어야할 것은 바로 고도화된 AI 기술. 그 바탕에는 […]",
   "raw_url": "https://news.samsung.com/kr/%ec%82%bc%ec%84%b1%eb%a6%ac%ec%84%9c%ec%b9%98-%ed%97%ac%ec%8a%a4-%ed%8c%8c%ec%9a%b4%eb%8d%b0%ec%9d%b4%ec%85%98-%eb%aa%a8%eb%8d%b8-%ea%b8%b0%eb%b0%98-%ec%9b%a8%ec%96%b4%eb%9f%ac%eb%b8%94-ai-%ec%97%b0",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "FP8f42fc22",
@@ -9417,7 +9445,8 @@
   "raw_title": "Google Search Is Becoming AI Search: What This Means for Your Brand",
   "raw_desc": "Key Takeaways Is Google Search still &#8220;search&#8221; at all? At Google I/O 2026, Search VP Liz Reid said it plainly: &#8220;Google search is AI search.&#8221; That’s not a product update. That’s a declaration that the platform has fundamentally changed what it is and what it does. For marketers, the implications are significant. However, they’re not [&#8230;]",
   "raw_url": "https://neilpatel.com/blog/google-search-becoming-ai-search/",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "Aca06f050",
@@ -9441,7 +9470,8 @@
   "raw_title": "(PR) Global OLED Monitor Shipments Grew 26.1% QoQ in 2Q26; ASUS Extended Its Lead Over Samsung While MSI Closed the Gap",
   "raw_desc": "TrendForce's latest market research shows that the global OLED monitor market maintained strong growth momentum in 2Q26. Shipment growth was driven by the launch of new models, strong demand generated by China's 618 shopping festival, and the continued adopti…",
   "raw_url": "https://www.techpowerup.com/351608/global-oled-monitor-shipments-grew-26-1-qoq-in-2q26-asus-extended-its-lead-over-samsung-while-msi-closed-the-gap",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "A9a46c922",
@@ -9465,7 +9495,8 @@
   "raw_title": "OLED monitor market surges 98 % as Asus leads Samsung and MSI",
   "raw_desc": "The OLED monitor market is growing at a blistering pace, with global shipments nearly doubling year over year in Q2 2026. ASUS retained the top spot, while MSI continued to close the gap with Samsung.",
   "raw_url": "https://www.notebookcheck.net/OLED-monitor-market-surges-98-as-Asus-leads-Samsung-and-MSI.1368959.0.html",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "Ad00cea6a",
@@ -9489,7 +9520,8 @@
   "raw_title": "Google Pixel Watch 5 vs. Samsung Galaxy Watch 9: Which Android smartwatch should you buy?",
   "raw_desc": "The Google Pixel Watch 5 and Samsung Galaxy Watch 9 are in a close race, but one stands out as the better option for most people.",
   "raw_url": "https://www.androidcentral.com/wearables/google-pixel-watch/google-pixel-watch-5-vs-samsung-galaxy-watch-9",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "Ab25367d1",
@@ -9513,7 +9545,8 @@
   "raw_title": "iFixit showed the shocking damage dust can do to the Samsung Galaxy Z Fold 8 — and the iPhone Ultra needs to solve this",
   "raw_desc": "iFixit tore down the Samsung Galaxy Z Fold 8 and discovered the huge damage dust can do to its hinge.",
   "raw_url": "https://www.techradar.com/phones/ifixit-showed-the-shocking-damage-dust-can-do-to-the-samsung-galaxy-z-fold-8-and-the-iphone-ultra-needs-to-solve-this",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "Af0c71ae1",
@@ -9537,7 +9570,8 @@
   "raw_title": "I used DeX to turn my Galaxy S25 Ultra into a lightweight gaming PC — and it actually worked",
   "raw_desc": "Is it possible to connect recent Samsung flagships to an external display and have a lightweight gaming PC experience? I gave it a go.",
   "raw_url": "https://www.androidauthority.com/galaxy-s25-ultra-dex-lightweight-gaming-pc-3668734/",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "Ad29f0706",
@@ -9561,7 +9595,8 @@
   "raw_title": "What Is The Most Powerful Phone To Play Fortnite On? Here's What Users & Reviewers Say",
   "raw_desc": "If you're looking for a phone with \"Fortnite\" and other games in mind, two specific models keep coming up in reviews and forum discussions.",
   "raw_url": "https://www.bgr.com/2232659/what-is-most-powerful-phone-play-fortnite-on/",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "A1d54bd4a",
@@ -9585,7 +9620,8 @@
   "raw_title": "Samsung retains Q2 Middle East lead despite big decline in shipments",
   "raw_desc": "Smartphone shipments have declined considerably across the globe so far this year. The numbers paint a similar picture when broken up by region. A new report highlights that smartphone shipments in the Middle East declined by 19% in Q2 2026 compared to Q2 202…",
   "raw_url": "https://www.sammobile.com/news/samsung-retains-q2-middle-east-lead-despite-big-decline-in-shipments/",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "A3f17c80b",
@@ -9609,7 +9645,8 @@
   "raw_title": "Galaxy Z Fold 8 is crushing it in one of Apple’s top markets",
   "raw_desc": "Japan is firmly Apple territory. They love their iPhones down there, and Samsung hasn't given them enough of a reason to switch. It appears that the tide might just be turning. News reports suggest that Samsung is seeing considerable interest for the Galaxy Z…",
   "raw_url": "https://www.sammobile.com/news/galaxy-z-fold-8-is-crushing-it-in-one-of-apples-top-markets/",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "Ae0964e6c",
@@ -9633,7 +9670,8 @@
   "raw_title": "Apple Cuts Deal with Alibaba to Finally Bring Apple Intelligence to China",
   "raw_desc": "Apple has teamed up with Alibaba to train and roll out a custom artificial intelligence model for iPhone users across mainland China.\nThe post Apple Cuts Deal with Alibaba to Finally Bring Apple Intelligence to China first appeared on iPhone in Canada.",
   "raw_url": "https://www.iphoneincanada.ca/2026/08/14/apple-cuts-deal-with-alibaba-to-finally-bring-apple-intelligence-to-china/",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "A60eea2ed",
@@ -9657,7 +9695,8 @@
   "raw_title": "No screen, more tracking: Why screenless fitness bands are making comeback",
   "raw_desc": "From Fitbit Air to Garmin's Cirqa, screen-free fitness bands are growing even as the wider wearable market shrinks - and Apple may be watching closely",
   "raw_url": "https://www.business-standard.com/technology/tech-news/screenless-fitness-wearables-comeback-google-fitbit-air-whoop-apple-126081401262_1.html",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "Acc233aed",
@@ -9681,7 +9720,8 @@
   "raw_title": "30 New Things Your iPhone Can Do in iOS 27",
   "raw_desc": "Apple will release iOS 27 in September, and despite the company's focus this year on refining its flagship operating system and nixing bugs, there are still many additional features on the way, not least of which is Apple's new context-aware Siri, re-tooled f…",
   "raw_url": "https://www.macrumors.com/2026/08/14/new-things-your-iphone-can-do-ios-27/",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "Aab8958f6",
@@ -9705,7 +9745,8 @@
   "raw_title": "Apple trained its own AI model for China with help from Alibaba",
   "raw_desc": "Apple has reportedly trained a custom AI model for the China market alongside domestic tech giant Alibaba, a rare cross-border partnership that cuts across growing tensions between Beijing and Washington. The China-focused large language model was developed i…",
   "raw_url": "https://www.theverge.com/ai-artificial-intelligence/980160/apple-intelligence-china-custom-ai-model-alibaba",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "A470f1a6f",
@@ -9729,7 +9770,8 @@
   "raw_title": "Apple Intelligence custom model is launching soon in China",
   "raw_desc": "Last year, reports confirmed that Apple had picked Alibaba to power its Apple Intelligence features in China. A new report from Reuters News suggests that Apple has finalized training its China-specific LLM, which will be powered by Alibaba’s Qwen AI.\n\n\n\nThis…",
   "raw_url": "https://www.gsmarena.com/apple_intelligence_custom_model_is_launching_soon_in_china_-news-74170.php",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "Ab0ab90e7",
@@ -9753,7 +9795,8 @@
   "raw_title": "Cloudflare: Machine Traffic Could Hit 1,000x Human Traffic In 5 Years via @sejournal, @slobodanmanic",
   "raw_desc": "One company measures the bot problem, frames it, and sells the fix. Cloudflare now owns both the meter and the valve. Check your own logs.\nThe post Cloudflare: Machine Traffic Could Hit 1,000x Human Traffic In 5 Years appeared first on Search Engine Journal.",
   "raw_url": "https://nohacks.co/blog/not-all-traffic-is-created-equal",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "Acafdf5af",
@@ -9777,7 +9820,8 @@
   "raw_title": "ChatGPT Already Knows Who It’ll Recommend Before It Searches via @sejournal, @suganthan",
   "raw_desc": "ChatGPT names brands in its own search queries before it fetches anything. Being in that query is worth 33 times more.\nThe post ChatGPT Already Knows Who It’ll Recommend Before It Searches appeared first on Search Engine Journal.",
   "raw_url": "https://suganthan.com/blog/chatgpt-decides-before-it-searches/",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "Af533246e",
@@ -9801,7 +9845,8 @@
   "raw_title": "OpenAI Says Robots.txt May Not Apply To ChatGPT’s Fetch Bot via @sejournal, @MattGSouthern",
   "raw_desc": "New data shows ChatGPT's page-fetching bot is reaching sites that have disallowed it, and OpenAI's own documentation explains why the file may not stop it.\nThe post OpenAI Says Robots.txt May Not Apply To ChatGPT’s Fetch Bot appeared first on Search Engine Jo…",
   "raw_url": "https://www.searchenginejournal.com/openai-says-robots-txt-may-not-apply-to-chatgpts-fetch-bot/585864/",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "A558db236",
@@ -9825,7 +9870,8 @@
   "raw_title": "Google Search Is Becoming AI Search: What This Means for Your Brand",
   "raw_desc": "Key Takeaways Is Google Search still “search” at all? At Google I/O 2026, Search VP Liz Reid said it plainly: “Google search is AI search.” That’s not a product update. That’s a declaration that the platform has fundamentally changed what it is and what it do…",
   "raw_url": "https://neilpatel.com/blog/google-search-becoming-ai-search/",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "FP3c141728",
@@ -9849,11 +9895,12 @@
   "raw_title": "Google Brings Gemini 3.7 Flash To AI Mode In Search via @sejournal, @MattGSouthern",
   "raw_desc": "Google is rolling out Gemini 3.7 Flash in AI Mode for Google AI Pro and Ultra subscribers, a day after the model's initial release. \n The post  Google Brings Gemini 3.7 Flash To AI Mode In Search  appeared first on  Search Engine Journal .",
   "raw_url": "https://www.searchenginejournal.com/google-brings-gemini-3-7-flash-to-ai-mode-in-search/585923/",
-  "raw_date": "2026-08-14"
+  "raw_date": "2026-08-14",
+  "date_source": "url"
  },
  {
   "event_id": "A66a81e8d",
-  "date": "2026-08-15",
+  "date": "2026-08-14",
   "captured_date": "2026-08-15",
   "scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR",
   "divisions": "MX",
@@ -9873,7 +9920,8 @@
   "raw_title": "Samsung Launches  Back To School  Deals On Many Of Its 2026 Gaming And Productivity Monitors",
   "raw_desc": "",
   "raw_url": "https://www.forbes.com/sites/johnarcher/2026/08/14/samsung-launches-back-to-school-deals-on-many-of-its-2026-gaming-and-productivity-monitors/",
-  "raw_date": "2026-08-15"
+  "raw_date": "2026-08-15",
+  "date_source": "url"
  },
  {
   "event_id": "Ae263bdf8",
@@ -9897,7 +9945,8 @@
   "raw_title": "Ditch old iPhone and Samsung for Google new Pixel 11 now up to £850 off",
   "raw_desc": "",
   "raw_url": "https://www.dailyrecord.co.uk/lifestyle/google-pixel-11-iphone-samsung-37553824",
-  "raw_date": "2026-08-15"
+  "raw_date": "2026-08-15",
+  "date_source": "url"
  },
  {
   "event_id": "FP6a708927",
@@ -9921,7 +9970,8 @@
   "raw_title": "ChatGPT’s Index, GA Benchmarks, Google Refiles Complaint – SEO Pulse via @sejournal, @MattGSouthern",
   "raw_desc": "Google Analytics adds campaign benchmarking, new data on ChatGPT's index search index, and Google refiles its SerpApi claims with new terms. \n The post  ChatGPT&#8217;s Index, GA Benchmarks, Google Refiles Complaint – SEO Pulse  appeared first on  Search Engine Journal .",
   "raw_url": "https://www.searchenginejournal.com/seo-pulse-chatgpts-index-ga-benchmarks-google-refiles-complaint/585748/",
-  "raw_date": "2026-08-15"
+  "raw_date": "2026-08-15",
+  "date_source": "url"
  },
  {
   "event_id": "A3b1618b3",
@@ -9945,7 +9995,8 @@
   "raw_title": "I reviewed the Samsung Galaxy Z Fold 8 Ultra and it has a problem. It's called the Galaxy Z Fold 8",
   "raw_desc": "It's an excellent phone, but there's more fun elsewhere",
   "raw_url": "https://www.androidpolice.com/samsung-galaxy-z-fold-8-ultra-review/",
-  "raw_date": "2026-08-15"
+  "raw_date": "2026-08-15",
+  "date_source": "url"
  },
  {
   "event_id": "A1f60a897",
@@ -9969,7 +10020,8 @@
   "raw_title": "I used to avoid used Android flagships, but 7-year updates changed that",
   "raw_desc": "I used to avoid used Android flagships, but 7-year updates changed thatandroidpolice.com",
   "raw_url": "https://www.androidpolice.com/used-android-flagships-seven-year-updates/",
-  "raw_date": "2026-08-15"
+  "raw_date": "2026-08-15",
+  "date_source": "url"
  },
  {
   "event_id": "A89c94243",
@@ -9993,7 +10045,8 @@
   "raw_title": "4 reasons why you should buy a Galaxy Z Fold 8, and 4 reasons why you should skip it",
   "raw_desc": "The Galaxy Z Fold 8 is a popular phone, but should you buy it? Here's what I think after testing it for the past few weeks.",
   "raw_url": "https://www.androidcentral.com/phones/samsung-galaxy/should-you-buy-the-samsung-galaxy-z-fold-8",
-  "raw_date": "2026-08-15"
+  "raw_date": "2026-08-15",
+  "date_source": "url"
  },
  {
   "event_id": "A503603c6",
@@ -10017,7 +10070,8 @@
   "raw_title": "11 Essential Galaxy Watch Apps You Should Install In 2026",
   "raw_desc": "The smartwatch keeps phones in pockets by bringing functionality to the wrist. These Galaxy apps will help you access just what you need from your watch.",
   "raw_url": "https://www.bgr.com/2233780/essential-galaxy-watch-apps-should-install/",
-  "raw_date": "2026-08-15"
+  "raw_date": "2026-08-15",
+  "date_source": "url"
  },
  {
   "event_id": "A92f7bfef",
@@ -10041,7 +10095,8 @@
   "raw_title": "What Makes Europe's Samsung Galaxy Z Flip 8 Different From The American One?",
   "raw_desc": "In the U.S. and Canada, the Flip 8 utilizes a Snapdragon 8 Elite Gen 5 chip, but in Europe, India, and South America, it uses Samsung's weaker Exynos 2600 chip.",
   "raw_url": "https://www.bgr.com/2233515/samsung-galaxy-z-flip-8-america-vs-europe-differences/",
-  "raw_date": "2026-08-15"
+  "raw_date": "2026-08-15",
+  "date_source": "url"
  },
  {
   "event_id": "A67f5c3bb",
@@ -10065,7 +10120,8 @@
   "raw_title": "Apple iPad Pro (M5) 11\" Wi-Fi/Cellular 256GB Space Black $2,048.40 Outright (RRP $2,349) + Free Delivery/C&C in-Store @ Optus",
   "raw_desc": "Not a \"great\" deal, but seems like Optus never increased the prices of their iPads after Apple cited AI data centre-driven memory shortage as the cause, back in June …",
   "raw_url": "https://www.ozbargain.com.au/node/971451",
-  "raw_date": "2026-08-15"
+  "raw_date": "2026-08-15",
+  "date_source": "url"
  },
  {
   "event_id": "A4add4773",
@@ -10089,7 +10145,8 @@
   "raw_title": "Apple Turns to Alibaba to Help Build AI Model for China",
   "raw_desc": "Apple is pairing its in-house model with Alibaba’s Qwen as it prepares to bring Apple Intelligence to Chinese iPhones.",
   "raw_url": "https://decrypt.co/375724/apple-alibaba-build-ai-model-china",
-  "raw_date": "2026-08-15"
+  "raw_date": "2026-08-15",
+  "date_source": "url"
  },
  {
   "event_id": "Aeb74ffa2",
@@ -10113,7 +10170,8 @@
   "raw_title": "‘The Qualcomm chipset offers very good performance for still image processing, but for video, it’s not good enough’: Honor explains why it created a dedicated imaging chipset for its gimbal-equipped Robot Phone",
   "raw_desc": "In an interview with TechRadar, Honor explained why it developed a custom imaging chip to sit alongside the Snapdragon 8 Elite Gen 5 in the Robot Phone.",
   "raw_url": "https://www.techradar.com/phones/honor-phones/the-qualcomm-chipset-offers-very-good-performance-for-still-image-processing-but-for-video-its-not-good-enough-honor-explains-why-it-created-a-dedicated-imaging-chipset-for-its-gimbal-equipped-robot-phone",
-  "raw_date": "2026-08-15"
+  "raw_date": "2026-08-15",
+  "date_source": "url"
  },
  {
   "event_id": "A97c14bf0",
@@ -10137,7 +10195,8 @@
   "raw_title": "DDR5 RAM Prices Explode To Nearly 5X July 2025 Levels In Germany As AI Boom Chokes Budget PC Builds",
   "raw_desc": "",
   "raw_url": "https://wccftech.com/ddr5-ram-prices-explode-to-nearly-5x-july-2025-levels-in-germany-as-ai-boom-chokes-budget-pc-builds/",
-  "raw_date": "2026-08-16"
+  "raw_date": "2026-08-16",
+  "date_source": "url"
  },
  {
   "event_id": "Aac60c3e4",
@@ -10161,7 +10220,8 @@
   "raw_title": "‘Never get blindsided by an empty battery’: I was pleased with the OnePlus Nord CE5's performance and camera, but its battery life is the part that truly impressed me in real-world testing",
   "raw_desc": "The Nord CE5 outperforms some rival affordable phones in terms of performance and photography — but it's the battery life that really sets it apart.",
   "raw_url": "https://www.techradar.com/phones/oneplus-phones/never-get-blindsided-by-an-empty-battery-i-was-pleased-with-the-oneplus-nord-ce5s-performance-and-camera-but-its-battery-life-can-outlast-many-flagships-on-the-market",
-  "raw_date": "2026-08-16"
+  "raw_date": "2026-08-16",
+  "date_source": "url"
  },
  {
   "event_id": "Af5c0ac06",
@@ -10185,7 +10245,8 @@
   "raw_title": "Deals: the Google Pixel 11 series is now on pre-order with gift cards and trade-in bonuses",
   "raw_desc": "Google launched its new Pixel 11 series earlier this week – there is a new vanilla, two new Pro and one new foldable model. All that’s missing now is an affordable a-phone.\n\nThe massive increase in RAM prices has affected the Pixel series. Google now offers 2…",
   "raw_url": "https://www.gsmarena.com/deals_the_google_pixel_11_series_is_now_on_preorder_with_gift_cards_and_tradein_bonuses-news-74174.php",
-  "raw_date": "2026-08-16"
+  "raw_date": "2026-08-16",
+  "date_source": "url"
  },
  {
   "event_id": "A4cfaa591",
@@ -10209,7 +10270,8 @@
   "raw_title": "Apple Vision Pro High Costs Hinder Mainstream AR Adoption",
   "raw_desc": "Smart glasses and mixed reality devices are advancing rapidly, with products like Apple Vision Pro and Snap SPECS illustrating both progress and ongoing challenges. Steven Sullivan examines this evolving field, noting advancements such as 6 Degrees of Freedom…",
   "raw_url": "https://www.geeky-gadgets.com/future-of-smart-glasses/",
-  "raw_date": "2026-08-16"
+  "raw_date": "2026-08-16",
+  "date_source": "url"
  },
  {
   "event_id": "A32c97c2b",
@@ -10233,7 +10295,8 @@
   "raw_title": "Which are the 36 brands that appear most frequently in artificial intelligence responses, according to Semrush?",
   "raw_desc": "Semrush warns that the growth of artificial intelligence assistants is changing the way people discover brands and make purchasing decisions",
   "raw_url": "https://www.merca20.com/these-are-the-36-brands-that-appear-in-practically-all-artificial-intelligence-responses-according-to-semrush/",
-  "raw_date": "2026-08-16"
+  "raw_date": "2026-08-16",
+  "date_source": "url"
  },
  {
   "event_id": "A4004220e",
@@ -10257,7 +10320,8 @@
   "raw_title": "Motorola Razr 2026 review : still the best mid - range flip phone , but it left me wanting more",
   "raw_desc": "",
   "raw_url": "https://www.techradar.com/phones/motorola-phones/motorola-razr-2026-review",
-  "raw_date": "2026-08-17"
+  "raw_date": "2026-08-17",
+  "date_source": "url"
  },
  {
   "event_id": "Afe41164b",
@@ -10281,7 +10345,8 @@
   "raw_title": "Samsung x Call of Duty : Modern Warfare 4 : HDR10+ Gaming , 32 : 9 Ultrawide Support and more",
   "raw_desc": "",
   "raw_url": "https://www.fonearena.com/blog/489675/samsung-call-of-duty-modern-warfare-4.html",
-  "raw_date": "2026-08-17"
+  "raw_date": "2026-08-17",
+  "date_source": "url"
  },
  {
   "event_id": "A866c3783",
@@ -10305,7 +10370,8 @@
   "raw_title": "Omdia : Wearable Shipments Fall 2 % as Screenless Trackers Gain Momentum",
   "raw_desc": "",
   "raw_url": "https://www.thefastmode.com/technology-solutions/50197-omdia-wearable-shipments-fall-2-as-screenless-trackers-gain-momentum",
-  "raw_date": "2026-08-17"
+  "raw_date": "2026-08-17",
+  "date_source": "url"
  },
  {
   "event_id": "Ae8436b53",
@@ -10329,7 +10395,8 @@
   "raw_title": "Samsung Galaxy Z Fold 8 Review : Smaller in Size , Bigger in Impact",
   "raw_desc": "",
   "raw_url": "https://themobileindian.com/reviews/samsung-galaxy-z-fold-8-review-smaller-in-size-bigger-in-impact",
-  "raw_date": "2026-08-17"
+  "raw_date": "2026-08-17",
+  "date_source": "url"
  },
  {
   "event_id": "A738c6a2a",
@@ -10353,7 +10420,8 @@
   "raw_title": "Vivo : India Smartphone Market Plummets 10 % Year - on - Year in 2Q26 Amid Rising Costs and Polarized Demand , ETTelecom",
   "raw_desc": "",
   "raw_url": "https://telecom.economictimes.indiatimes.com/news/devices/india-smartphone-market-declines-by-10-on-year-in-2q26-amid-cost-demand-pressures-cmr/133292921",
-  "raw_date": "2026-08-17"
+  "raw_date": "2026-08-17",
+  "date_source": "url"
  },
  {
   "event_id": "Af963c9df",
@@ -10377,7 +10445,8 @@
   "raw_title": "Australians buy more premium smartphones , Telsyte says",
   "raw_desc": "",
   "raw_url": "https://channellife.com.au/story/australians-buy-more-premium-smartphones-telsyte-says",
-  "raw_date": "2026-08-17"
+  "raw_date": "2026-08-17",
+  "date_source": "url"
  },
  {
   "event_id": "FP18f44c9a",
@@ -10401,7 +10470,8 @@
   "raw_title": "Get closer to the game with Gemini and Pixel",
   "raw_desc": "Google Gemini and Pixel partner with five global football clubs to elevate the fan matchday experience through AI and  Smartphone Technology.",
   "raw_url": "https://blog.google/products-and-platforms/products/gemini/google-gemini-pixel-football-club-partnerships/",
-  "raw_date": "2026-08-17"
+  "raw_date": "2026-08-17",
+  "date_source": "url"
  },
  {
   "event_id": "FPf11b78dc",
@@ -10425,7 +10495,8 @@
   "raw_title": "Get closer to the game with Gemini and Pixel",
   "raw_desc": "Google Gemini and Pixel partner with five global football clubs to elevate the fan matchday experience through AI and  Smartphone Technology.",
   "raw_url": "https://blog.google/products-and-platforms/products/gemini/google-gemini-pixel-football-club-partnerships/",
-  "raw_date": "2026-08-17"
+  "raw_date": "2026-08-17",
+  "date_source": "url"
  },
  {
   "event_id": "FP811938bd",
@@ -10449,7 +10520,8 @@
   "raw_title": "삼성전자, 액티비전 블리자드와 ‘콜 오브 듀티: 모던 워페어 4’ 파트너십 체결",
   "raw_desc": "삼성전자가 글로벌 게임 개발사 액티비전 블리자드(Activision Blizzard)와 대표 1인칭 슈팅 게임(FPS) 신작 ‘콜 오브 듀티®: 모던 워페어 4(Call of Duty®: Modern Warfare® 4)’의 공식 파트너십을 체결했다. 삼성전자는 ‘콜 오브 듀티®: 모던 워페어 4’의 개발 단계부터 참여해 TV, 모니터, 사운드바, Wi-Fi 스피커 등 주요 게이밍 제품을 게임 플레이에 최적화 했으며, 양사 간 파트너십을 기반으로 글로벌 마케팅을 […]",
   "raw_url": "https://news.samsung.com/kr/%ec%82%bc%ec%84%b1%ec%a0%84%ec%9e%90-%ec%95%a1%ed%8b%b0%eb%b9%84%ec%a0%84-%eb%b8%94%eb%a6%ac%ec%9e%90%eb%93%9c%ec%99%80-%ec%bd%9c-%ec%98%a4%eb%b8%8c-%eb%93%80%ed%8b%b0-%eb%aa%a8%eb%8d%98-%ec%9b%8c",
-  "raw_date": "2026-08-17"
+  "raw_date": "2026-08-17",
+  "date_source": "url"
  },
  {
   "event_id": "FP477f9dc5",
@@ -10473,7 +10545,8 @@
   "raw_title": "The AI Conversations Leaking Into Your Search Console via @sejournal, @suganthan",
   "raw_desc": "Search Console records what people say to AI Mode. Here's how to pull those fragments out and sort them into seven buckets. \n The post  The AI Conversations Leaking Into Your Search Console  appeared first on  Search Engine Journal .",
   "raw_url": "https://www.searchenginejournal.com/the-ai-conversations-leaking-into-your-search-console/585663/",
-  "raw_date": "2026-08-17"
+  "raw_date": "2026-08-17",
+  "date_source": "url"
  },
  {
   "event_id": "FP5069468c",
@@ -10497,7 +10570,8 @@
   "raw_title": "Llms.txt V2 Adds Formal Markdown Linking For AI Agents via @sejournal, @MattGSouthern",
   "raw_desc": "A v2 update to the llms.txt spec has shipped, adding formal link relations that help AI agents locate Markdown versions of pages. \n The post  Llms.txt V2 Adds Formal Markdown Linking For AI Agents  appeared first on  Search Engine Journal .",
   "raw_url": "https://www.searchenginejournal.com/llms-txt-v2-formal-markdown-linking-ai-agents/586119/",
-  "raw_date": "2026-08-17"
+  "raw_date": "2026-08-17",
+  "date_source": "url"
  },
  {
   "event_id": "FPfdb8e905",
@@ -10521,7 +10595,8 @@
   "raw_title": "AI Assistants Are Choosing Local Businesses For Your Customers via @sejournal, @MattGSouthern",
   "raw_desc": "AI assistants narrow local searches before customers reach a website. See how Google builds those answers and which local signals businesses can optimize. \n The post  AI Assistants Are Choosing Local Businesses For Your Customers  appeared first on  Search Engine Journal .",
   "raw_url": "https://www.searchenginejournal.com/ai-assistants-are-choosing-local-businesses-for-your-customers/585275/",
-  "raw_date": "2026-08-17"
+  "raw_date": "2026-08-17",
+  "date_source": "url"
  },
  {
   "event_id": "FP0e7eb491",
@@ -10545,7 +10620,8 @@
   "raw_title": "Back-to-school spending could be ‘moderate at best’",
   "raw_desc": "Growth is concentrated in higher-income consumers as many shoppers contemplate discretionary purchases, per new data from Circana.",
   "raw_url": "https://www.retaildive.com/news/back-to-school-spending-moderate-circana/828013/",
-  "raw_date": "2026-08-17"
+  "raw_date": "2026-08-17",
+  "date_source": "url"
  },
  {
   "event_id": "FP39c09515",
@@ -10569,7 +10645,8 @@
   "raw_title": "Why retail’s biggest AI assumption is wrong",
   "raw_desc": "Brand equity and marketing spend don&#39;t guarantee AI visibility. Structure does.",
   "raw_url": "https://www.retaildive.com/spons/why-retails-biggest-ai-assumption-is-wrong/826404/",
-  "raw_date": "2026-08-17"
+  "raw_date": "2026-08-17",
+  "date_source": "url"
  },
  {
   "event_id": "FP3b6c0162",
@@ -10593,6 +10670,7 @@
   "raw_title": "How Foreign Brands Sell in Indonesia",
   "raw_desc": "With high internet penetration and low retail sales, Indonesia offers much ecommerce potential. \n The post  How Foreign Brands Sell in Indonesia  appeared first on  Practical Ecommerce .",
   "raw_url": "https://www.practicalecommerce.com/how-foreign-brands-sell-in-indonesia",
-  "raw_date": "2026-08-17"
+  "raw_date": "2026-08-17",
+  "date_source": "url"
  }
 ]
