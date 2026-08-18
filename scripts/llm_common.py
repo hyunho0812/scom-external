@@ -119,8 +119,8 @@ def parse_date(v):
         return None
 
 
-def clean_date(value, published=None, today=None, max_backdate=None):
-    """Return a trustworthy YYYY-MM-DD for an event.
+def clean_date_ex(value, published=None, today=None, max_backdate=None):
+    """Return (YYYY-MM-DD, date_source) for an event.
 
     value      - the date the LLM extracted (may be junk)
     published  - the source's own publish date, when the collector has one.
@@ -130,18 +130,37 @@ def clean_date(value, published=None, today=None, max_backdate=None):
     predate its article (a report on last quarter's shipments), so the
     backdate allowance is generous — it only has to catch the training-era
     anchoring, which sat >365 days out.
+
+    The second element says WHERE the date came from, using the same vocabulary
+    repair_event_dates.py wrote and the dashboard/scorer read:
+      'llm'     the model's own date survived validation ("기사 명시일")
+      'url'     we fell back to the source's publish date ("발행일 확인")
+      'capture' we fell back to the collection day ("수집일 추정")
+    This is not cosmetic. score_predictions.py splits hit rates on it: a date
+    taken FROM the capture day cannot also be evidence we foresaw that day's
+    traffic, so 'capture' rows must land in the retrospective bucket. The
+    collectors used to drop this provenance on the floor, which silently
+    promoted every newly collected event into the foreknown bucket (they read
+    as the 'seed' default).
     """
     today = today or today_iso()
-    ref = parse_date(published) or parse_date(today)
+    pub = parse_date(published)
+    ref = pub or parse_date(today)
+    fallback = (published if pub else today, "url" if pub else "capture")
     limit = DATE_MAX_BACKDATE if max_backdate is None else max_backdate
     d = parse_date(value)
     if d is None or ref is None:
-        return (published if parse_date(published) else today)
+        return fallback
     if d > ref:                      # nothing is published before it happens
-        return ref.isoformat()
+        return (ref.isoformat(), fallback[1])
     if (ref - d).days > limit:       # training-era anchoring, not a real date
-        return ref.isoformat()
-    return d.isoformat()
+        return (ref.isoformat(), fallback[1])
+    return (d.isoformat(), "llm")
+
+
+def clean_date(value, published=None, today=None, max_backdate=None):
+    """Date only. Prefer clean_date_ex() so the provenance is stored too."""
+    return clean_date_ex(value, published, today, max_backdate)[0]
 
 
 def clip_sentence(text, limit=400):

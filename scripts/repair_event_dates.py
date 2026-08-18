@@ -77,6 +77,42 @@ def url_date(url):
     return None
 
 
+def infer_source(e):
+    """Reconstruct `date_source` for an event stored before the collectors
+    recorded it, by replaying llm_common.clean_date()'s decision.
+
+    The collectors validated dates from 2026-08-10 but did not save WHERE the
+    surviving date came from until 2026-08-18, so ~78 auto-collected events
+    carry no provenance. Both the dashboard badge and score_predictions.py
+    default a missing value to "seed", which reads as a hand-entered date and
+    puts the row in the foreknown bucket — the one place a capture-derived
+    date must never appear. clean_date() is deterministic given the stored
+    inputs, so its decision can be recovered exactly:
+
+      raw_date parses  -> it was the only fallback offered; date == raw_date
+                          means the fallback was taken ('url'), anything else
+                          means the model's date survived ('llm').
+      raw_date missing -> the fallback was the capture day; date ==
+                          captured_date means it was taken ('capture').
+
+    A publish date embedded in raw_url outranks both — it is an independent
+    witness, which is what 'url' meant when this script first ran.
+    """
+    cur = parse_date(e.get("date"))
+    pub = parse_date(e.get("raw_date"))
+    cap = parse_date(e.get("captured_date"))
+    ud = url_date(e.get("raw_url"))
+    if not cur:
+        return "capture"
+    if ud and ud == cur:
+        return "url"
+    if pub:
+        return "url" if cur == pub else "llm"
+    if cap and cur == cap:
+        return "capture"
+    return "llm"
+
+
 def repair(events, threshold=REPAIR_THRESHOLD):
     """Return (changes, stats). changes = [(event, old, new, reason)]."""
     changes, stats = [], {"seed_skipped": 0, "ok": 0,
@@ -89,6 +125,7 @@ def repair(events, threshold=REPAIR_THRESHOLD):
         cur = parse_date(e.get("date"))
         if cap is None:                      # nothing to anchor against
             stats["unfixable"] += 1
+            e.setdefault("date_source", infer_source(e))
             continue
 
         ud = url_date(e.get("raw_url"))
@@ -98,7 +135,7 @@ def repair(events, threshold=REPAIR_THRESHOLD):
                 stats["from_url"] += 1
             else:
                 stats["ok"] += 1
-                e["date_source"] = "url"
+                e.setdefault("date_source", infer_source(e))
             continue
 
         if cur is None or (cap - cur).days > threshold or cur > cap:
@@ -106,7 +143,7 @@ def repair(events, threshold=REPAIR_THRESHOLD):
             stats["from_capture"] += 1
         else:
             stats["ok"] += 1
-            e["date_source"] = "llm"
+            e.setdefault("date_source", infer_source(e))
     return changes, stats
 
 
@@ -117,12 +154,21 @@ def main():
     args = ap.parse_args()
 
     events = json.load(open(DATA, encoding="utf-8"))
+    missing = [e for e in events
+               if str(e.get("event_id", ""))[:1] in ("A", "F")
+               and not e.get("date_source")]
     changes, stats = repair(events, args.threshold)
 
     print(f"events {len(events)}건 — 시드 {stats['seed_skipped']} 제외, "
           f"정상 {stats['ok']}, 수정대상 {len(changes)} "
           f"(URL근거 {stats['from_url']}, 수집일근거 {stats['from_capture']}), "
           f"복구불가 {stats['unfixable']}")
+
+    if missing:
+        from collections import Counter
+        c = Counter(e.get("date_source", "?") for e in missing)
+        print(f"date_source 없던 자동수집 {len(missing)}건 → "
+              + ", ".join(f"{k} {v}" for k, v in sorted(c.items())))
 
     if changes:
         print("\n표본 10건:")
@@ -154,7 +200,7 @@ def main():
         deduped.append(e)
     dropped = len(events) - len(deduped)
     json.dump(deduped, open(DATA, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    print(f"\n저장 완료: {len(changes)}건 수정, 중복 {dropped}건 제거, 최종 {len(deduped)}건")
+    print(f"\n저장 완료: date_source {len(missing)}건 보강, {len(changes)}건 수정, 중복 {dropped}건 제거, 최종 {len(deduped)}건")
 
 
 if __name__ == "__main__":

@@ -39,7 +39,7 @@ from datetime import datetime, timedelta, timezone
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
 from llm_common import (llm_filter_batch, diag_summary, INTERESTS, MARKETS,
-                        load_queries, load_kw_file, clean_axis, clean_date, BATCH)
+                        load_queries, load_kw_file, clean_axis, clean_date_ex, BATCH)
 
 DATA = os.path.join(HERE, "..", "data", "events.json")
 NEWS_KEY = os.environ.get("NEWS_API_KEY", "")
@@ -128,13 +128,18 @@ def to_event(article, verdict, llm_used):
     _today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     # NewsAPI/GDELT give us the real publish date — pass it as ground truth so
     # clean_date() can fall back to it instead of trusting a bogus LLM date.
-    event_date = clean_date((verdict.get("date","") if verdict else ""),
-                            published=article.get("date"), today=_today)
+    event_date, date_source = clean_date_ex(
+        (verdict.get("date","") if verdict else ""),
+        published=article.get("date"), today=_today)
     title_ko = verdict.get("title") if verdict else ""
     desc_ko = verdict.get("description", "") if verdict else ""
     return {
         "event_id":"A"+hashlib.md5((article["title"]+event_date).encode()).hexdigest()[:8],
         "date":event_date,
+        # Where `date` came from — llm / url (publish date) / capture. The
+        # scorer needs it to keep a capture-derived date out of the foreknown
+        # bucket; without it every new event defaults to "seed".
+        "date_source":date_source,
         "captured_date":_today,
         "scope":";".join(verdict.get("scope") or MARKETS) if verdict else DEF_SCOPE,
         "divisions":";".join(verdict.get("divisions",[])) if verdict else "",

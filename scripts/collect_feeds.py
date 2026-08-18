@@ -29,7 +29,7 @@ from xml.etree import ElementTree as ET
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
 from llm_common import (llm_filter_batch, diag_summary, INTERESTS, MARKETS,
-                        load_kw_file, clean_axis, clean_date, BATCH)
+                        load_kw_file, clean_axis, clean_date_ex, BATCH)
 
 DATA = os.path.join(HERE, "..", "data", "events.json")
 STATE = os.path.join(HERE, "..", "data", "feed_state.json")
@@ -202,12 +202,16 @@ def main():
             if not verdict.get("relevant"):
                 continue  # the judging LLM says this isn't relevant after all
             _today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-            event_date = clean_date(verdict.get("date", ""),
-                                    published=it.get("published"), today=_today)
+            event_date, date_source = clean_date_ex(
+                verdict.get("date", ""),
+                published=it.get("published"), today=_today)
             title_ko = (verdict.get("title") or it["title"])[:60]
             events.append({
                 "event_id": eid,
                 "date": event_date,
+                # Provenance of `date` — llm / url (feed pubDate) / capture.
+                # See collect_news.to_event(); the scorer splits on this.
+                "date_source": date_source,
                 "captured_date": _today,
                 "scope": ";".join(verdict.get("scope") or MARKETS),
                 "divisions": ";".join(verdict.get("divisions", [])),
