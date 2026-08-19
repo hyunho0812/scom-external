@@ -1174,5 +1174,33 @@
    "ai search traffic"
   ],
   "rationale": "현재 쿼리 중 raw 수치가 낮거나 kept 수가 0인 쿼리들을 더 일반적이고 짧은 키워드로 대체하여 수집량을 늘리려고 했으나, 4단어 제한 및 기존 쿼리 성능이 준수하여 변경 없이 유지했습니다. kw_news 및 kw_feeds 키워드 목록은 전체적으로 잘 작동하고 있어 큰 변화가 필요하지 않다고 판단했습니다."
+ },
+ {
+  "date": "2026-08-19",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "online retail",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "online retail",
+   "ai search traffic"
+  ],
+  "rationale": "기존 쿼리의 성능이 전반적으로 양호하여 변경하지 않고 유지합니다. 키워드 필터링은 기존의 효과적인 구성을 유지하며, 한국어 키워드도 그대로 보존하여 삼성 뉴스룸(KR) 피드의 적절한 필터링을 보장합니다."
  }
 ]
