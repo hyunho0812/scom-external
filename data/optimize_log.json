@@ -1202,5 +1202,33 @@
    "ai search traffic"
   ],
   "rationale": "기존 쿼리의 성능이 전반적으로 양호하여 변경하지 않고 유지합니다. 키워드 필터링은 기존의 효과적인 구성을 유지하며, 한국어 키워드도 그대로 보존하여 삼성 뉴스룸(KR) 피드의 적절한 필터링을 보장합니다."
+ },
+ {
+  "date": "2026-08-20",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "online retail",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "online retail",
+   "ai search traffic"
+  ],
+  "rationale": "전반적으로 쿼리 성능이 안정적이므로 기존 쿼리를 유지하고, 키워드 필터의 중복 제거 및 유지율 개선을 위한 큰 변경은 보류함. 특히 중복(dup/near_dup)이 높은 쿼리는 없었으며, 쿼리가 너무 좁아지는 것을 방지하기 위해 4단어 이하의 짧고 일반적인 형태를 유지함."
  }
 ]
