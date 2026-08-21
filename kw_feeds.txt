@@ -666,6 +666,7 @@ iot 보안
 자동차 보안
 산업 제어 시스템 보안
 중요 인프라 보안
+ai device
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

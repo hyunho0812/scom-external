@@ -1,28 +1,5 @@
 [
  {
-  "date": "2026-07-19",
-  "total_raw": 6,
-  "total_dup": 0,
-  "total_kept": 1,
-  "per_query": {
-   "samsung electronics quarterly earnings report": {
-    "raw": 2,
-    "dup": 0,
-    "kept": 0
-   },
-   "apple intelligence strategy": {
-    "raw": 3,
-    "dup": 0,
-    "kept": 1
-   },
-   "retail channel innovation report": {
-    "raw": 1,
-    "dup": 0,
-    "kept": 0
-   }
-  }
- },
- {
   "date": "2026-07-20",
   "total_raw": 22,
   "total_dup": 1,
@@ -1606,6 +1583,86 @@
     "dup_near": 3,
     "kw_pass": 7,
     "kept": 4
+   }
+  }
+ },
+ {
+  "date": "2026-08-21",
+  "total_raw": 117,
+  "total_dup": 7,
+  "total_dup_near": 1,
+  "total_kw_pass": 102,
+  "total_kept": 23,
+  "per_query": {
+   "samsung product launch": {
+    "raw": 14,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 14,
+    "kept": 5
+   },
+   "samsung earnings report": {
+    "raw": 3,
+    "dup": 0,
+    "dup_near": 1,
+    "kw_pass": 2,
+    "kept": 0
+   },
+   "galaxy phone launch": {
+    "raw": 15,
+    "dup": 2,
+    "dup_near": 0,
+    "kw_pass": 10,
+    "kept": 4
+   },
+   "smartphone market share": {
+    "raw": 20,
+    "dup": 2,
+    "dup_near": 0,
+    "kw_pass": 18,
+    "kept": 5
+   },
+   "ecommerce trends": {
+    "raw": 12,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 11,
+    "kept": 0
+   },
+   "ai shopping trends": {
+    "raw": 4,
+    "dup": 1,
+    "dup_near": 0,
+    "kw_pass": 3,
+    "kept": 1
+   },
+   "apple intelligence": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 10,
+    "kept": 0
+   },
+   "semiconductor market": {
+    "raw": 19,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 16,
+    "kept": 1
+   },
+   "google ai search": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 10,
+    "kept": 4
+   },
+   "ai search traffic": {
+    "raw": 10,
+    "dup": 2,
+    "dup_near": 0,
+    "kw_pass": 8,
+    "kept": 3
    }
   }
  }

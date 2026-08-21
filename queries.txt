@@ -14,5 +14,5 @@ ecommerce | ecommerce trends
 ecommerce | ai shopping trends
 other | apple intelligence
 other | semiconductor market
-other | online retail
+other | google ai search
 other | ai search traffic

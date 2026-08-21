@@ -1230,5 +1230,33 @@
    "ai search traffic"
   ],
   "rationale": "전반적으로 쿼리 성능이 안정적이므로 기존 쿼리를 유지하고, 키워드 필터의 중복 제거 및 유지율 개선을 위한 큰 변경은 보류함. 특히 중복(dup/near_dup)이 높은 쿼리는 없었으며, 쿼리가 너무 좁아지는 것을 방지하기 위해 4단어 이하의 짧고 일반적인 형태를 유지함."
+ },
+ {
+  "date": "2026-08-21",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "online retail",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "rationale": "'ecommerce trends' 및 'ai search traffic' 쿼리의 낮은 통과율 개선을 위해 더 일반적인 키워드로 변경하고, 중복 및 낮은 통과율을 보이는 'online retail' 쿼리를 'ai device market'으로 대체하여 AI 관련 신규 트렌드 포착력을 높였습니다."
  }
 ]
