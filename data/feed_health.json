@@ -1,5 +1,5 @@
 {
- "checked": "2026-08-21 21:24 UTC",
+ "checked": "2026-08-22 21:21 UTC",
  "feeds": {
   "OpenAI news": {
    "status": "ok",
@@ -19,7 +19,7 @@
   },
   "Google Search Status": {
    "status": "ok",
-   "detail": "2 items"
+   "detail": "1 items"
   },
   "Google Search Central Blog": {
    "status": "ok",

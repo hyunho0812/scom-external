@@ -1,33 +1,5 @@
 [
  {
-  "date": "2026-07-20",
-  "total_raw": 22,
-  "total_dup": 1,
-  "total_kept": 2,
-  "per_query": {
-   "samsung electronics quarterly earnings report": {
-    "raw": 5,
-    "dup": 0,
-    "kept": 0
-   },
-   "retail channel innovation report": {
-    "raw": 1,
-    "dup": 0,
-    "kept": 0
-   },
-   "apple intelligence strategy": {
-    "raw": 15,
-    "dup": 1,
-    "kept": 1
-   },
-   "global smartphone market share shifts": {
-    "raw": 1,
-    "dup": 0,
-    "kept": 1
-   }
-  }
- },
- {
   "date": "2026-07-21",
   "total_raw": 33,
   "total_dup": 0,
@@ -1663,6 +1635,86 @@
     "dup_near": 0,
     "kw_pass": 8,
     "kept": 3
+   }
+  }
+ },
+ {
+  "date": "2026-08-22",
+  "total_raw": 88,
+  "total_dup": 12,
+  "total_dup_near": 3,
+  "total_kw_pass": 72,
+  "total_kept": 23,
+  "per_query": {
+   "samsung product launch": {
+    "raw": 14,
+    "dup": 0,
+    "dup_near": 1,
+    "kw_pass": 13,
+    "kept": 4
+   },
+   "samsung earnings report": {
+    "raw": 3,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 3,
+    "kept": 0
+   },
+   "galaxy phone launch": {
+    "raw": 10,
+    "dup": 6,
+    "dup_near": 0,
+    "kw_pass": 4,
+    "kept": 2
+   },
+   "smartphone market share": {
+    "raw": 15,
+    "dup": 1,
+    "dup_near": 1,
+    "kw_pass": 13,
+    "kept": 7
+   },
+   "ai shopping trends": {
+    "raw": 7,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 7,
+    "kept": 1
+   },
+   "apple intelligence": {
+    "raw": 8,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 8,
+    "kept": 1
+   },
+   "semiconductor market": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 10,
+    "kept": 1
+   },
+   "google ai search": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 1,
+    "kw_pass": 8,
+    "kept": 4
+   },
+   "ai search traffic": {
+    "raw": 10,
+    "dup": 5,
+    "dup_near": 0,
+    "kw_pass": 5,
+    "kept": 3
+   },
+   "ecommerce trends": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
    }
   }
  }
