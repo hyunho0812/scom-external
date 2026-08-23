@@ -1286,5 +1286,33 @@
    "ai search traffic"
   ],
   "rationale": "현재 쿼리 성능이 양호하여 변경 사항 없음. 키워드 필터의 중복 제거를 통해 효율성을 유지."
+ },
+ {
+  "date": "2026-08-23",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "rationale": "'samsung earnings report'의 낮은 kept 수를 개선하기 위해 'samsung earnings'로 축약하여 더 넓은 범위를 포괄하도록 했으며, 기존 키워드 목록은 한국어 필수어 포함으로 변경 없음."
  }
 ]

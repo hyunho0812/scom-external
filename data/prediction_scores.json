@@ -1,24 +1,24 @@
 {
- "updated": "2026-08-22",
+ "updated": "2026-08-23",
  "window": {
   "from": "2024-10-28",
-  "to": "2026-08-21",
-  "days": 663
+  "to": "2026-08-22",
+  "days": 664
  },
  "proxy": "wikipedia_samsung_pageviews",
- "scored": 214,
- "skipped": 80,
- "unfinished_horizon": 260,
+ "scored": 217,
+ "skipped": 82,
+ "unfinished_horizon": 261,
  "summary": {
   "all": {
-   "n": 214,
-   "hit_rate": 0.514,
-   "mean_abs_move_pct": 7.65,
+   "n": 217,
+   "hit_rate": 0.521,
+   "mean_abs_move_pct": 7.63,
    "by_strength": {
     "2": {
-     "n": 19,
-     "hit_rate": 0.526,
-     "mean_abs_move_pct": 9.68
+     "n": 22,
+     "hit_rate": 0.591,
+     "mean_abs_move_pct": 9.19
     },
     "3": {
      "n": 115,
@@ -42,20 +42,20 @@
      "hit_rate": 0.46
     },
     "med": {
-     "n": 75,
-     "hit_rate": 0.613
+     "n": 78,
+     "hit_rate": 0.628
     }
    }
   },
   "foreknown": {
-   "n": 102,
-   "hit_rate": 0.569,
-   "mean_abs_move_pct": 8.52,
+   "n": 105,
+   "hit_rate": 0.581,
+   "mean_abs_move_pct": 8.45,
    "by_strength": {
     "2": {
-     "n": 10,
-     "hit_rate": 0.4,
-     "mean_abs_move_pct": 9.43
+     "n": 13,
+     "hit_rate": 0.538,
+     "mean_abs_move_pct": 8.66
     },
     "3": {
      "n": 51,
@@ -79,8 +79,8 @@
      "hit_rate": 0.562
     },
     "med": {
-     "n": 29,
-     "hit_rate": 0.586
+     "n": 32,
+     "hit_rate": 0.625
     }
    }
   },
@@ -97,7 +97,7 @@
     "3": {
      "n": 64,
      "hit_rate": 0.484,
-     "mean_abs_move_pct": 7.0
+     "mean_abs_move_pct": 7.01
     },
     "4": {
      "n": 35,
@@ -123,19 +123,19 @@
   },
   "by_axis": {
    "demand": {
-    "n": 108,
-    "hit_rate": 0.426,
-    "mean_abs_move_pct": 6.47,
+    "n": 109,
+    "hit_rate": 0.431,
+    "mean_abs_move_pct": 6.45,
     "by_strength": {
      "2": {
-      "n": 8,
-      "hit_rate": 0.375,
-      "mean_abs_move_pct": 9.71
+      "n": 9,
+      "hit_rate": 0.444,
+      "mean_abs_move_pct": 9.08
      },
      "3": {
       "n": 55,
       "hit_rate": 0.473,
-      "mean_abs_move_pct": 6.85
+      "mean_abs_move_pct": 6.86
      },
      "4": {
       "n": 36,
@@ -154,20 +154,20 @@
       "hit_rate": 0.397
      },
      "med": {
-      "n": 35,
-      "hit_rate": 0.486
+      "n": 36,
+      "hit_rate": 0.5
      }
     }
    },
    "share": {
-    "n": 29,
-    "hit_rate": 0.586,
+    "n": 31,
+    "hit_rate": 0.613,
     "mean_abs_move_pct": 7.08,
     "by_strength": {
      "2": {
-      "n": 5,
+      "n": 7,
       "hit_rate": 1.0,
-      "mean_abs_move_pct": 9.93
+      "mean_abs_move_pct": 9.12
      },
      "3": {
       "n": 16,
@@ -186,8 +186,8 @@
       "hit_rate": 0.389
      },
      "med": {
-      "n": 11,
-      "hit_rate": 0.909
+      "n": 13,
+      "hit_rate": 0.923
      }
     }
    },
@@ -217,57 +217,57 @@
   }
  },
  "correlation": {
-  "pressure_vs_forward_traffic_r": 0.1795,
-  "n_days": 51,
+  "pressure_vs_forward_traffic_r": 0.2335,
+  "n_days": 52,
   "forward_days": 7,
   "dense_window_from": "2026-07-01",
-  "full_window_r": 0.0634,
-  "full_window_n_days": 662
+  "full_window_r": 0.0728,
+  "full_window_n_days": 663
  },
  "axis_validation": {
   "demand": {
-   "r": 0.2806,
-   "n": 51,
+   "r": 0.3547,
+   "n": 52,
    "target": "market_total"
   },
   "share": {
-   "r": 0.1887,
-   "n": 51,
+   "r": 0.1615,
+   "n": 52,
    "target": "samsung_share"
   },
   "supply": {
-   "r": 0.1231,
-   "n": 51,
+   "r": 0.1433,
+   "n": 52,
    "target": "samsung"
   }
  },
  "permutation": {
   "all": {
    "permutations": 1000,
-   "observed_r": 0.1795,
-   "null_p95_abs_r": 0.5437,
-   "p_value": 0.962,
+   "observed_r": 0.2335,
+   "null_p95_abs_r": 0.5647,
+   "p_value": 0.938,
    "significant": false
   },
   "demand": {
    "permutations": 1000,
-   "observed_r": 0.2806,
-   "null_p95_abs_r": 0.488,
-   "p_value": 0.284,
+   "observed_r": 0.3547,
+   "null_p95_abs_r": 0.4809,
+   "p_value": 0.184,
    "significant": false
   },
   "share": {
    "permutations": 1000,
-   "observed_r": 0.1887,
-   "null_p95_abs_r": 0.5412,
-   "p_value": 0.815,
+   "observed_r": 0.1615,
+   "null_p95_abs_r": 0.5307,
+   "p_value": 0.834,
    "significant": false
   },
   "supply": {
    "permutations": 1000,
-   "observed_r": 0.1231,
-   "null_p95_abs_r": 0.4986,
-   "p_value": 0.636,
+   "observed_r": 0.1433,
+   "null_p95_abs_r": 0.5151,
+   "p_value": 0.625,
    "significant": false
   }
  },
