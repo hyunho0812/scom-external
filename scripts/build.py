@@ -10,8 +10,8 @@ from datetime import datetime, timezone
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # Shared with the collectors so the page and the pipeline cannot disagree
 # about where files live or which countries a region holds.
-from llm_common import (SCOPE_REGIONS, EVENTS_FILE, WIKI_FILE, IMF_FILE,
-                        CRUX_FILE, MODEL_STATUS_FILE, PREDICTION_SCORES_FILE,
+from llm_common import (SCOPE_REGIONS, EVENTS_FILE, WIKI_FILE, CRUX_FILE,
+                        MODEL_STATUS_FILE, PREDICTION_SCORES_FILE,
                         LLM_AGREEMENT_FILE, INDEX_HTML, read_json)
 
 events=read_json(EVENTS_FILE, [])
@@ -35,13 +35,10 @@ mstat=read_json(MODEL_STATUS_FILE, {})
 _MSTAT_DEFAULT={"model":"unknown","status":"unknown","note":""}
 def _mstat_of(name):
     return mstat.get(name, _MSTAT_DEFAULT) or _MSTAT_DEFAULT
-imf_series=read_json(IMF_FILE, {"countries":{},"indicators":{},"data":{}})
 crux=read_json(CRUX_FILE, {"metrics":{}})
 scores=read_json(PREDICTION_SCORES_FILE, {})
 _ag=read_json(LLM_AGREEMENT_FILE, {})
 agreement=(_ag[-1] if isinstance(_ag,list) and _ag else (_ag if isinstance(_ag,dict) else {}))
-# The country-statistics tab uses IMF monthly data only (World Bank removed)
-stats_series=imf_series
 
 HTML=r"""<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -54,10 +51,6 @@ body{font-family:'Samsung Sharp Sans','SamsungOne',-apple-system,BlinkMacSystemF
 .brandbar{background:linear-gradient(100deg,var(--blue) 0%,var(--blue-d) 100%);color:#fff;padding:22px 28px;border-radius:16px;margin:20px 20px 0}
 .brandbar h1{font-size:21px;font-weight:600;letter-spacing:-0.01em;color:#fff;margin:0}
 .brandbar .sub{font-size:12.5px;color:rgba(255,255,255,0.82);margin-top:3px}
-.tabbar{display:flex;gap:4px;margin:16px 20px 0;border-bottom:2px solid var(--line)}
-.tab{padding:11px 20px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px}
-.tab.active{color:var(--blue);border-bottom-color:var(--blue)}
-.tabpane{display:none}.tabpane.active{display:block}
 .cp-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:0 1px 2px rgba(20,40,160,0.04);margin-bottom:12px}
 .cp-cause{border:1px solid var(--line);border-radius:0;padding:11px 14px;margin-bottom:8px}
 .cp-tag{font-size:11px;background:#f7f8fb;padding:3px 9px;border-radius:8px;margin-right:5px;color:#5f6368}
@@ -132,12 +125,7 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
 </style></head><body>
 <div class="brandbar"><h1>External Event Dashboard</h1>
   <div class="sub">S.com 외부 요인 모니터링 대시보드 · 매일 자동 갱신 · 마지막 빌드 __UPDATED__</div></div>
-<div class="tabbar">
-  <button class="tab active" data-tab="factors">외부 요인</button>
-  <button class="tab" data-tab="stats">국가별 통계</button>
-</div>
 <div class="wrap">
-<div id="tab-factors" class="tabpane active">
 <div class="mbadges">__MBADGES__</div>
 <div class="controls">
  <div class="filterrow">
@@ -206,7 +194,7 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
   <div id="axisSummary" style="font-size:13px;padding:11px 14px;border-radius:10px;background:var(--bg);margin-bottom:12px"></div>
   <div id="credPanel" style="margin-bottom:12px"></div>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px" id="axisCards"></div>
-  <div class="note">분석 기준은 <strong>업로드한 실측 트래픽</strong>이며, 업로드가 없을 때만 위키 관심도를 대리지표로 씁니다 · 수요 = 시장 전체 관심량(삼성+경쟁사 위키 조회수 합) — 경쟁사 실측 트래픽을 구할 무료 소스가 없어 이 축은 항상 위키 <em>지수</em>입니다 · 점유·전환 = 그 관심량 1단위가 실제로 만들어낸 유입(실측÷관심도), 업로드가 없으면 위키 점유율과 동일 · 공급 = 실사용자 사이트 성능(CrUX CWV) + 인덱싱·크롤링·장애 이벤트 · 각 축의 수치는 "전체 = 수요 × 점유·전환" 항등식의 로그 분해로 구한 <strong>단독 효과</strong>라, 곱하면 전체 변화와 정확히 일치합니다 · 카드의 요인 목록에서 "펼치기"로 축별 전체 이벤트를 딥다이브할 수 있습니다 · 인과 입증이 아니라 정황 분해입니다</div>
+  <div class="note">분석 기준은 <strong>업로드한 실측 트래픽</strong>이며, 업로드가 없을 때만 위키 조회수를 트래픽 대리지표로 씁니다 · 수요 = 시장 전체 트래픽 규모(삼성+경쟁사 위키 조회수 합) — 경쟁사 실측 트래픽을 구할 무료 소스가 없어 이 축은 항상 위키 <em>지수</em>입니다 · 점유·전환 = 그 시장 트래픽 1단위가 실제로 만들어낸 유입(실측÷대리지표), 업로드가 없으면 위키 점유율과 동일 · 공급 = 실사용자 사이트 성능(CrUX CWV) + 인덱싱·크롤링·장애 이벤트 · 각 축의 수치는 "전체 = 수요 × 점유·전환" 항등식의 로그 분해로 구한 <strong>단독 효과</strong>라, 곱하면 전체 변화와 정확히 일치합니다 · 카드의 요인 목록에서 "펼치기"로 축별 전체 이벤트를 딥다이브할 수 있습니다 · 인과 입증이 아니라 정황 분해입니다</div>
 </div>
 <div id="analysis" style="display:none;margin-bottom:16px">
   <div id="ana-period"></div>
@@ -216,23 +204,7 @@ select:focus,input[type=date]:focus{outline:none;border-color:var(--blue);box-sh
 <div class="cards" id="cards"></div>
 <div id="list"></div>
 <div class="foot">이벤트는 samsung.com 관련성 기준으로 자동 수집·필터링됩니다.</div>
-</div><!-- /tab-factors -->
 
-<div id="tab-stats" class="tabpane">
-  <div class="controls" style="margin-top:16px">
-    <div class="filterrow">
-      <div class="ctrl"><label>국가</label><select id="st_country"></select></div>
-      <div class="ctrl"><label>지표</label><select id="st_indicator"></select></div>
-    </div>
-  </div>
-  <div class="panel">
-    <div class="phead"><div class="ptitle" id="st_title">국가별 통계 추세</div>
-      <div class="legend" id="st_meta"></div></div>
-    <div style="position:relative;height:300px"><canvas id="st_chart"></canvas></div>
-    <div class="note">IMF 월 단위 공개 통계(data.imf.org) · 매월 갱신 · 무료·자동</div>
-  </div>
-  <div class="foot">국가별 거시 통계는 뉴스·블로그 수집과 별개로, IMF 월 단위 공개 데이터(data.imf.org)를 기반으로 합니다. 일부 지표·국가는 IMF 제공 범위에 따라 비어 있을 수 있습니다.</div>
-</div><!-- /tab-stats -->
 </div><!-- /wrap -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -243,7 +215,6 @@ const EV=__DATA__;
 // applies everywhere or which countries it is about. Nothing to derive.
 const SCOPE_ALL="전체";
 const WIKI_FILE=__WIKI__;
-const STATS=__STATS__;
 const CRUX=__CRUX__;
 const SCORES=__SCORES__;
 const AGREE=__AGREE__;
@@ -1119,7 +1090,7 @@ function renderAxisPanel(r,vd,numByDate){
  const cumNo=e=>cumIdx[cumKey(e)];
 
  const fmtSigned=(v,unit,dec)=>v==null?'—':`${v>=0?'+':''}${v.toFixed(dec)}${unit}`;
- const basisLabel=isReal?'실측 트래픽':'위키 관심도(대리지표)';
+ const basisLabel=isReal?'실측 트래픽':'추정 트래픽(위키 조회수 대리지표)';
  // The share axis means something different on each basis, so name it once
  // here and reuse everywhere (headline, bar segment, card title).
  const shareName=isReal?'점유·전환':'점유';
@@ -1188,12 +1159,12 @@ function renderAxisPanel(r,vd,numByDate){
     관측 ${fmtSigned(a.totalPct,'%',1)} = 계절성·추세로 <strong>예상되던 ${fmtSigned(a.expectedPct,'%',1)}</strong>
     + 설명이 필요한 <strong>${fmtSigned(a.residualPct,'%',1)}</strong>
     <span style="opacity:.85">(과거 동일 비교 ${a.base.n}회 기준)</span> · ${verdict}
-    ${unusual===false?' — 뉴스로 설명하기 전에, 원래 이런 시기일 가능성을 먼저 보세요.':''}</div>`;
+    ${unusual===false?' — 뉴스로 설명하기 전에, 원래 이런 시기일 가능성을 먼저 확인해야 합니다.':''}</div>`;
  }
  const basisEl=document.getElementById('axisBasis');
  if(basisEl) basisEl.textContent = isReal
    ? '(업로드한 실측 트래픽 기준)'
-   : '(위키 관심도 기준 추정 — 실측 트래픽 업로드 시 자동 전환)';
+   : '(위키 조회수로 추정한 트래픽 — 실측 트래픽 업로드 시 자동 전환)';
  document.getElementById('axisSummary').innerHTML=summary+barHtml;
  renderCredibility();
 
@@ -1238,7 +1209,7 @@ function renderAxisPanel(r,vd,numByDate){
     ? `<div style="font-size:12px;color:#8a6d1a;background:#fff8e8;border:1px solid #f0e2b8;border-radius:8px;padding:8px 10px;margin-top:4px">`
       +`⚠ 수치상 이 축이 변화의 ${(frac*100).toFixed(0)}%를 차지하지만, `
       +`현재 기간에 수집된 ${AXIS_KO[axis]} 축 이벤트가 없습니다 — `
-      +`구체적 원인 기사를 아직 못 찾았다는 뜻이지, 수치가 잘못됐다는 뜻은 아닙니다.${cum.length?' 아래 누적 요인을 확인해 보세요.':''}</div>`
+      +`구체적 원인 기사를 아직 못 찾았다는 뜻이지, 수치가 잘못됐다는 뜻은 아닙니다.${cum.length?' 아래 누적 요인을 확인할 수 있습니다.':''}</div>`
     : `<div style="font-size:12px;color:var(--muted);padding:6px 0">이 기간 ${AXIS_KO[axis]} 축 이벤트 없음</div>`;
    return head+cumHtml;
   }
@@ -1292,7 +1263,7 @@ function renderAxisPanel(r,vd,numByDate){
     <div style="font-size:12px;font-weight:600;color:${AXIS_COLOR.share}">${isReal?shareName+' — 관심 대비 실제 유입':shareName+' — 삼성이 가져가는 몫'}</div>
     <div style="font-size:21px;font-weight:600;color:${AXIS_COLOR.share}">${bigOf('share',isReal?'—':fmtSigned(sPpt,'%p',2))}</div>
     <div style="font-size:11px;color:var(--muted)">${isReal
-      ? '시장 관심도 1단위당 실제 유입의 변화 — 실측÷위키라 절대 수준은 의미 없고 변화율만 봅니다'
+      ? '시장 트래픽 1단위당 실제 유입의 변화 — 실측÷위키라 절대 수준은 의미 없고 변화율만 봅니다'
       : `몫 ${fmtSigned(sPpt,'%p',2)} (현재 ${sCur==null?'—':sCur.toFixed(1)+'%'} · 비교 ${sCmp==null?'—':sCmp.toFixed(1)+'%'})`}</div>
     ${spark('axis-spark-share')}${evList('share',attr?attr.alloc.share:0)}</div>`+
   `<div id="axis-card-supply" style="border:1px solid var(--line);border-left:3px solid ${AXIS_COLOR.supply};border-radius:10px;padding:12px 14px">
@@ -1474,7 +1445,7 @@ function render(){
  } else if(vd){
   perHtml=`<div class="cp-card"><div style="font-size:13px;color:var(--muted)">비교 기간 대비 변화가 미미합니다(${vd.pct.toFixed(1)}%).</div></div>`;
  } else {
-  perHtml=`<div class="cp-card"><div style="font-size:13px;color:var(--muted)">기간 비교를 위해 현재·비교 기간이 모두 필요합니다. 기간 선택기에서 비교 방식을 골라주세요.</div></div>`;
+  perHtml=`<div class="cp-card"><div style="font-size:13px;color:var(--muted)">기간 비교를 위해 현재·비교 기간이 모두 필요합니다. 기간 선택기에서 비교 방식을 선택해야 합니다.</div></div>`;
  }
  document.getElementById('ana-period').innerHTML=perHtml;
  anaBox.style.display='block';
@@ -1548,73 +1519,6 @@ document.getElementById('clearTrafficBtn').onclick=()=>{
 };
 refreshPeriod();
 
-// ===== Tab switching =====
-document.querySelectorAll('.tab').forEach(t=>{
- t.onclick=()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('active'));
-  t.classList.add('active');
-  document.getElementById('tab-'+t.dataset.tab).classList.add('active');
-  if(t.dataset.tab==='stats'){ ensureStatsInit(); }
- };
-});
-
-// ===== Country-statistics tab =====
-let statsChart, statsReady=false;
-const stCountry=document.getElementById('st_country'),
-      stIndicator=document.getElementById('st_indicator');
-function ensureStatsInit(){
- if(statsReady) return;
- statsReady=true;
- const countries=STATS.countries||{};
- const indicators=STATS.indicators||{};
- // Could restrict to countries with data; currently shows all
- const dataMap=STATS.data||{};
- const cList=Object.keys(countries);
- stCountry.innerHTML=cList.map((c,i)=>`<option value="${c}"${i===0?' selected':''}>${countries[c]}</option>`).join('');
- const iList=Object.keys(indicators);
- stIndicator.innerHTML=iList.map((code,i)=>`<option value="${code}"${i===0?' selected':''}>${indicators[code].label}</option>`).join('');
- stCountry.onchange=drawStats; stIndicator.onchange=drawStats;
- drawStats();
-}
-function fmtNum(v,unit){
- if(v==null) return '-';
- if(unit==='US$'){ if(v>=1e9)return (v/1e9).toFixed(1)+'B'; if(v>=1e6)return (v/1e6).toFixed(1)+'M'; return Math.round(v).toLocaleString(); }
- if(unit==='명'){ if(v>=1e6)return (v/1e6).toFixed(1)+'M'; return Math.round(v).toLocaleString(); }
- return (Math.round(v*10)/10)+(unit==='%'?'%':'');
-}
-function drawStats(){
- const c=stCountry.value, code=stIndicator.value;
- const ind=(STATS.indicators||{})[code]||{label:code,unit:''};
- const cname=(STATS.countries||{})[c]||c;
- const all=((STATS.data||{})[c]||{})[code]||[];
- // Recent window helper (kept for reference)
- const series=all.slice(-2).length>=1?all.slice(-Math.min(all.length, 2*1)):[];
- // Show the last several points so the trend is visible
- const show=all.slice(-6); // last up to 6 data points
- const labels=show.map(p=>p[0]);
- const vals=show.map(p=>p[1]);
- document.getElementById('st_title').textContent=`${cname} · ${ind.label}`;
- const last=vals[vals.length-1], prev=vals.length>1?vals[vals.length-2]:null;
- let metaTxt='';
- if(last!=null){
-  metaTxt=`최신 ${fmtNum(last,ind.unit)}`;
-  if(prev!=null){ const d=last-prev; const pct=prev?(d/prev*100):0;
-    metaTxt+=` · 전년대비 ${d>=0?'▲':'▼'} ${Math.abs(pct).toFixed(1)}%`; }
- } else { metaTxt='데이터 없음 — 다음 통계 수집 후 표시됩니다'; }
- document.getElementById('st_meta').textContent=metaTxt;
- if(statsChart)statsChart.destroy();
- statsChart=new Chart(document.getElementById('st_chart'),{type:'line',
-  data:{labels,datasets:[{label:ind.label,data:vals,borderColor:'#1428A0',
-    backgroundColor:'#1428A018',tension:0.3,pointRadius:3,pointBackgroundColor:'#1428A0',
-    borderWidth:2.5,fill:true,spanGaps:true}]},
-  options:{responsive:true,maintainAspectRatio:false,
-   plugins:{legend:{display:false},
-     tooltip:{callbacks:{label:ctx=>ind.label+': '+fmtNum(ctx.parsed.y,ind.unit)}}},
-   scales:{x:{ticks:{color:'#888780',font:{size:11}},grid:{display:false}},
-     y:{ticks:{color:'#888780',font:{size:11},callback:v=>fmtNum(v,ind.unit)},
-        grid:{color:'rgba(136,135,128,0.10)'}}}}});
-}
 
 </script></body></html>"""
 
@@ -1647,7 +1551,6 @@ PINNED = ["미국", "영국", "독일", "프랑스", "스페인", "포르투갈"
 
 HTML=(HTML.replace("__DATA__",json.dumps(events,ensure_ascii=False))
           .replace("__WIKI__",json.dumps(wiki,ensure_ascii=False))
-          .replace("__STATS__",json.dumps(stats_series,ensure_ascii=False))
           .replace("__CRUX__",json.dumps(crux,ensure_ascii=False))
           .replace("__SCORES__",json.dumps(scores,ensure_ascii=False))
           .replace("__AGREE__",json.dumps(agreement,ensure_ascii=False))
