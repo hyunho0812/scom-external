@@ -66,17 +66,8 @@ input[type=date]{color-scheme:dark}
   border:1px solid oklch(0.31 0.008 250);border-radius:3px;background:transparent;color:oklch(0.76 0.004 250);cursor:pointer}
 .btn:hover,#csvbtn:hover{border-color:var(--accent);color:var(--accent)}
 .spacer{flex-grow:1}
-.periodrow{display:flex;gap:14px;flex-wrap:wrap;align-items:stretch;width:100%;margin-top:9px}
-.pgroup{flex:1;min-width:280px;border:1px solid var(--line);border-radius:3px;padding:11px 13px;background:var(--card)}
-.pgroup.cur{border-color:oklch(0.36 0.05 195)}
-.pglabel{display:flex;align-items:center;gap:7px;margin-bottom:8px;font-family:var(--mono);
-  font-size:9.5px;letter-spacing:.09em;color:var(--muted)}
-.pgdot{width:7px;height:7px;border-radius:2px;background:var(--neu)}
-.pgroup.cur .pgdot{background:var(--accent)}
-.pgfields{display:flex;gap:8px;flex-wrap:wrap}
-.parrow{display:flex;align-items:center;color:var(--muted-2);font-size:16px}
-.btnwrap{display:flex}.btnwrap label{display:none}
 .rowbreak{flex-basis:100%;height:0}
+.controls .foot:not(:empty){margin-top:8px;margin-right:14px}
 
 /* ---- layout ---- */
 .wrap{padding:var(--gap) var(--pad) 40px;display:flex;flex-direction:column;gap:var(--gap)}
@@ -97,9 +88,6 @@ input[type=date]{color-scheme:dark}
 .card .lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:oklch(0.57 0.008 250);margin-bottom:7px}
 .card .val{font-family:var(--mono);font-size:24px;font-weight:500;letter-spacing:-0.02em}
 .card .vnote{font-family:var(--mono);font-size:10px;color:oklch(0.58 0.008 250);margin-left:8px}
-.cp-card{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:14px 16px;margin-bottom:10px}
-.cp-cause{border:1px solid var(--line-2);border-radius:2px;padding:10px 12px;margin-bottom:7px}
-.cp-tag{font-family:var(--mono);font-size:9.5px;background:oklch(0.24 0.008 250);padding:3px 8px;border-radius:2px;margin-right:5px;color:var(--muted)}
 
 /* ---- event list (master) ---- */
 .evlist{border:1px solid var(--line);border-radius:3px;overflow:hidden;display:flex;flex-direction:column;gap:1px;background:var(--line)}
@@ -197,7 +185,7 @@ input[type=date]{color-scheme:dark}
 
 <div class="topbar">
   <div class="brand"><h1>External Event Ledger</h1><span class="sub">samsung.com</span></div>
-  <div class="mbadges"><span class="mbadge ok" title="GEMINI · gemini-2.5-flash — 정상 ✓ (Model responds and supports generateContent.)"><span class="dot"></span>GEMINI</span><span class="mbadge ok" title="GROQ · openai/gpt-oss-120b — 정상 ✓ (Model responds and is active.)"><span class="dot"></span>GROQ</span><span class="mbadge ok" title="MISTRAL · mistral-small-latest — 정상 ✓ (Model found in the account's available model list.)"><span class="dot"></span>MISTRAL</span><span class="mbadge ok"><span class="dot"></span>FEEDS 20/20</span><span style="color:oklch(0.50 0.008 250)">2026-08-24 06:05 UTC</span></div>
+  <div class="mbadges"><span class="mbadge ok" title="GEMINI · gemini-2.5-flash — 정상 ✓ (Model responds and supports generateContent.)"><span class="dot"></span>GEMINI</span><span class="mbadge ok" title="GROQ · openai/gpt-oss-120b — 정상 ✓ (Model responds and is active.)"><span class="dot"></span>GROQ</span><span class="mbadge ok" title="MISTRAL · mistral-small-latest — 정상 ✓ (Model found in the account's available model list.)"><span class="dot"></span>MISTRAL</span><span class="mbadge ok"><span class="dot"></span>FEEDS 20/20</span><span style="color:oklch(0.50 0.008 250)">2026-08-24 06:25 UTC</span></div>
 </div>
 
 <div class="tabbar">
@@ -227,25 +215,15 @@ input[type=date]{color-scheme:dark}
  <button class="btn" id="clearTrafficBtn">CLEAR</button>
  <button class="btn" id="csvbtn">EXPORT CSV</button>
  <div class="rowbreak"></div>
- <div id="csvStatus" class="foot"></div>
  <div id="periodSummary" class="foot"></div>
- <div class="periodrow" style="display:none">
-  <div class="pgroup cmp">
-   <div class="pglabel"><span class="pgdot"></span>비교 기간</div>
-   <div class="pgfields">
-    <div class="ctrl"><label>시작</label><input type="date" id="csd" value="2025-01-01"></div>
-    <div class="ctrl"><label>종료</label><input type="date" id="ced" value="2025-08-24"></div>
-   </div>
-  </div>
-  <div class="parrow">→</div>
-  <div class="pgroup cur">
-   <div class="pglabel"><span class="pgdot"></span>현재 기간</div>
-   <div class="pgfields">
-    <div class="ctrl"><label>시작</label><input type="date" id="sd" value="2026-01-01"></div>
-    <div class="ctrl"><label>종료</label><input type="date" id="ed" value="2026-08-24"></div>
-   </div>
-  </div>
- </div>
+ <div id="csvStatus" class="foot"></div>
+ <!-- Resolved period bounds. The chips above are the control surface; these
+      hold the actual dates every calculation reads, so they stay in the DOM
+      but never render. -->
+ <input type="hidden" id="csd" value="2025-01-01">
+ <input type="hidden" id="ced" value="2025-08-24">
+ <input type="hidden" id="sd" value="2026-01-01">
+ <input type="hidden" id="ed" value="2026-08-24">
 </div>
 
 <div class="wrap">
@@ -259,7 +237,7 @@ input[type=date]{color-scheme:dark}
         <div class="legend" id="legend"></div>
       </div>
       <div style="position:relative;height:236px"><canvas id="trend"></canvas></div>
-      <div class="note">번호 핀 = 외부 요인 발생 시점, 아래 목록의 번호와 이어집니다 · 실측 트래픽을 올리지 않으면 위키피디아 일별 조회수로 추정한 값입니다.</div>
+      <div class="note" id="tnote"></div>
     </div>
 
     <div class="panel" id="axisPanel">
@@ -269,18 +247,6 @@ input[type=date]{color-scheme:dark}
       <div class="contrib" id="axisContrib"></div>
     </div>
   </div>
-
-  <div class="panel" id="axisDetail" style="display:none">
-    <div class="phead"><div class="ptitle">축별 상세<span class="psub">각 축을 무엇으로 쟀는지와, 그 축에 묶인 요인들</span></div></div>
-    <div id="axisSummary"></div>
-    <div id="axisCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:12px"></div>
-    <div id="credPanel" style="margin-top:12px"></div>
-    <div class="note">분석 기준은 <strong>업로드한 실측 트래픽</strong>이며, 업로드가 없을 때만 위키 조회수를 트래픽 대리지표로 씁니다 · 수요 = 시장 전체 트래픽 규모(삼성+경쟁사 위키 조회수 합) · 점유·전환 = 그 시장 트래픽 1단위가 만들어낸 유입 · 공급 = 실사용자 사이트 성능(CrUX CWV)과 인덱싱·크롤링·장애 이벤트 · 각 축의 수치는 "전체 = 수요 × 점유·전환" 항등식의 로그 분해로 구한 단독 효과라, 곱하면 전체 변화와 정확히 일치합니다 · 인과 입증이 아니라 정황 분해입니다.</div>
-  </div>
-
-  <div id="verdict" style="display:none"></div>
-  <div id="analysis" style="display:none"><div id="ana-period"></div></div>
-  <div id="topfactors" style="display:none"></div>
 
   <div>
     <div class="phead" style="margin-bottom:10px">
@@ -566,10 +532,9 @@ function onCountryChange(){
  showAll=false; render();
 }
 function activeCountrySet(){if(country.value!=='ALL')return [country.value];const reg=REGIONS[region.value];return reg?reg:null;}
-// withDate=false keeps the scope/division filters but skips the period filter —
-// needed by the 누적 요인 buckets, which look at events OUTSIDE the current
-// window. Sharing one function keeps those filters from drifting apart.
-function rows(withDate=true){let r=EV.slice();
+// Every active filter — region/country, division, and the selected period —
+// applied in one place, newest first.
+function rows(){let r=EV.slice();
  // Country/region: a specific value keeps events containing any of them; 'all' = no filter (union)
  const cs=activeCountrySet();
  // An event scoped 전체 applies everywhere, so it belongs to every country's
@@ -582,10 +547,8 @@ function rows(withDate=true){let r=EV.slice();
    return sc.some(t=>(REGION_MEMBERS[t]||[]).some(c=>cs.includes(c)));}); }
  // Division: specific value = contains it; 'all' = no filter
  if(dv.value!=='ALL'){ r=r.filter(e=>(e.divisions||'').split(';').includes(dv.value)); }
- if(withDate){
-  if(sd.value)r=r.filter(e=>(e.date||'')>=sd.value);
-  if(ed.value)r=r.filter(e=>(e.date||'')<=ed.value);
- }
+ if(sd.value)r=r.filter(e=>(e.date||'')>=sd.value);
+ if(ed.value)r=r.filter(e=>(e.date||'')<=ed.value);
  return r.sort((a,b)=>(b.date||'').localeCompare(a.date||''));}
 
 // ---- trend graph ----
@@ -715,9 +678,6 @@ function scrollToCard(n){
  el.classList.add('flash');
  setTimeout(()=>el.classList.remove('flash'),1600);
 }
-// The full detail card. Shared by the main (numbered) list and the 누적 요인
-// list at the bottom — the axis panel deliberately shows title+date only, so
-// this is the single place event details are actually rendered.
 // ---- master list row + detail pane ---------------------------------------
 // The list carries only what you scan by (direction, title, one-line summary,
 // date, axis/strength); everything else lives in the detail pane, so a row
@@ -787,16 +747,6 @@ function scrollToPin(n){
  if(c) c.scrollIntoView({behavior:'smooth',block:'center'});
 }
 
-
-// A cumulative factor happened OUTSIDE the current period, so it has no row in
-// the list — the detail pane shows it anyway, which is the only place it can
-// be read in full.
-function scrollToCumCard(i){
- const o=CUM_EVENTS[i]; if(!o) return;
- SEL=o.e.event_id; render();
- const d=document.getElementById('detail');
- if(d) d.scrollIntoView({behavior:'smooth',block:'center'});
-}
 function drawTrend(evSortedAsc, numByDate){
  const sam=wikiSeries("Samsung");
  const upSeries=uploadedSeriesForFilter();  // real traffic for current country filter, or null
@@ -849,13 +799,21 @@ function drawTrend(evSortedAsc, numByDate){
   const sv=curData[nearIdx];
   pins.push({n:(numByDate&&numByDate[e.date])||'',xLabel:xLabels[nearIdx],anchorY:sv==null?0:sv,color:DIRC[e.impact_direction]||'#999'});
  });
+ // Swatches read straight off the chart palette — hard-coding them here is
+ // how the legend silently drifted from the lines it labels.
+ const lg=(c,t,dash)=>`<span style="display:flex;align-items:center;gap:5px"><span style="width:13px;height:2px;${dash?`border-top:2px dashed ${c}`:`background:${c}`};display:inline-block"></span>${t}</span>`;
  document.getElementById('legend').innerHTML=
-  `<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#1428A0;display:inline-block"></span>Samsung 현재 기간</span>`+
-  (hasCmp?`<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;border-top:2px dashed #9a9a96;display:inline-block"></span>Samsung 비교 기간</span>`:'')+
-  `<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#D9A441;display:inline-block"></span>${compLabel()} (현재)</span>`+
-  (hasUpload?`<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;background:#D0392B;display:inline-block"></span>실제 트래픽(현재)</span>`:'')+
-  (hasUpload&&hasCmp?`<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:2px;border-top:2px dashed #D0392B;display:inline-block"></span>실제 트래픽(비교)</span>`:'');
- document.getElementById('tsub').textContent=hasCmp?`(현재·비교 기간을 일자 기준 나란히 비교, 각 ${N}일)`:`(현재 기간, ${N}일)`;
+  lg(C_SAM,'SAMSUNG')
+  +(hasCmp?lg(C_DIM,'비교 기간',true):'')
+  +lg(C_MKT,compLabel().toUpperCase())
+  +(hasUpload?lg(C_REAL,'실측'):'')
+  +(hasUpload&&hasCmp?lg(C_REAL,'실측 비교',true):'');
+ document.getElementById('tsub').textContent=hasCmp?`현재·비교 기간 일자 기준 · 각 ${N}일`:`현재 기간 ${N}일`;
+ // Says what the line IS and what the pins mean — the two things a reader
+ // cannot infer from the chart itself.
+ const tn=document.getElementById('tnote');
+ if(tn) tn.textContent = (upSeries?'실측 트래픽(업로드) 기준':'위키피디아 일별 조회수로 추정 · 실측 아님')
+   + ' · 번호 핀은 아래 목록의 번호와 같은 요인입니다.';
  if(chart)chart.destroy();
  const dsets=[
    {label:'Samsung 현재 기간',data:curData,borderColor:C_SAM,backgroundColor:'rgba(90,200,220,0.10)',tension:0.35,pointRadius:0,borderWidth:2.5,spanGaps:true,yAxisID:'y'}];
@@ -962,16 +920,6 @@ function shareSeries(){
   return {date:p.date,views:tot?p.views/tot*100:null};
  }).filter(p=>p.views!=null);
 }
-// Capture rate: real traffic per unit of market attention, per day. Only used
-// for the sparkline (the headline number comes from the exact log residual);
-// the absolute level is an arbitrary unit, so only its shape/trend is read.
-function captureSeries(){
- const mktMap={}; marketTotalSeries().forEach(p=>mktMap[p.date]=p.views);
- return samSeries().map(p=>{
-  const m=mktMap[p.date];
-  return m?{date:p.date,views:p.views/m}:null;
- }).filter(Boolean);
-}
 function avgInRange(ser,from,to){
  const vals=ser.filter(p=>(!from||p.date>=from)&&(!to||p.date<=to)).map(p=>p.views);
  return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
@@ -1012,75 +960,10 @@ function seasonalBaseline(ser, curFrom, curTo, cmpFrom, cmpTo, maxBack=10){
  const mad=median(ratios.map(r=>Math.abs(r-m)));
  return {expectedLog:m, sigma:(mad*1.4826)||null, n:ratios.length};
 }
-let axisCharts=[];
-// Filled by renderAxisPanel(), consumed by render() a few lines later to draw
-// the bottom 누적 요인 section. Keeps the two lists in exact sync.
-let CUM_EVENTS=[];
-// Expand/collapse an axis card's full event list and bring the card into view
-function toggleAxisList(axis){
- const el=document.getElementById('axis-full-'+axis);
- if(el) el.style.display = el.style.display==='none' ? 'block' : 'none';
- const card=document.getElementById('axis-card-'+axis);
- if(card) card.scrollIntoView({behavior:'smooth',block:'center'});
-}
-// Does the ledger actually predict anything? Everything above is an
-// explanation; this is the check on whether explanations of this kind have
-// ever held up. Reads what score_predictions.py measured — never recomputes,
-// so the page cannot quietly disagree with the stored evidence.
-function renderCredibility(){
- const el=document.getElementById('credPanel'); if(!el) return;
- const S=SCORES||{}, sum=(S.summary||{}), c=(S.correlation||{}),
-       perm=((S.permutation||{}).all)||null, ax=(S.axis_validation||{});
- if(!S.updated){
-  el.innerHTML=`<div style="font-size:11px;color:oklch(0.53 0.008 250);padding:9px 12px;border:1px dashed var(--line);border-radius:9px">
-    예측 검증 데이터 없음 — <code>scripts/score_predictions.py</code>가 아직 실행되지 않았습니다.</div>`;
-  return;
- }
- const pct=v=>v==null?'—':(v*100).toFixed(0)+'%';
- const fk=sum.foreknown||{}, all=sum.all||{};
- // A hit rate is only meaningful against the 50% a coin would score.
- const edge = all.hit_rate==null?null:(all.hit_rate-0.5)*100;
- const sig = perm && perm.significant;
- const badge = sig
-   ? `<span style="background:#e6f4ec;color:var(--pos);padding:2px 8px;border-radius:99px;font-weight:600">무작위 대비 유의</span>`
-   : `<span style="background:#fdecea;color:var(--neg);padding:2px 8px;border-radius:99px;font-weight:600">아직 유의하지 않음</span>`;
- const axRow=Object.keys(ax).map(k=>{
-   const a=ax[k]||{}, p=((S.permutation||{})[k])||{};
-   const nm={demand:'수요',share:'점유',supply:'공급'}[k]||k;
-   return `${nm} r=${a.r==null?'—':a.r}${p.p_value!=null?` (p=${p.p_value})`:''}`;
- }).join(' · ');
- el.innerHTML=`<details style="border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:12px">
-   <summary style="cursor:pointer;font-weight:600;list-style:none">
-     예측 검증 ${badge}
-     <span style="font-weight:400;color:var(--muted)">— 방향 적중률 ${pct(all.hit_rate)} (n=${all.n||0}),
-     상관 r=${c.pressure_vs_forward_traffic_r==null?'—':c.pressure_vs_forward_traffic_r}</span>
-   </summary>
-   <div style="margin-top:9px;line-height:1.85;color:var(--muted)">
-     <div><strong>방향 적중률</strong> 전체 ${pct(all.hit_rate)} (n=${all.n||0}) ·
-       사전근거만 ${pct(fk.hit_rate)} (n=${fk.n||0})
-       ${edge==null?'':`— 동전던지기(50%) 대비 ${edge>=0?'+':''}${edge.toFixed(1)}%p`}</div>
-     <div><strong>이벤트 압력지수 → 향후 ${c.forward_days||7}일 트래픽</strong>
-       r=${c.pressure_vs_forward_traffic_r==null?'—':c.pressure_vs_forward_traffic_r}
-       (조밀구간 ${c.dense_window_from||'—'} 이후, n=${c.n_days||0}일)</div>
-     ${perm?`<div><strong>순열검정</strong> p=${perm.p_value} — 이벤트 날짜를 무작위로 섞었을 때
-       |r|이 이만큼 나올 확률. 귀무분포 |r| 95%=${perm.null_p95_abs_r}
-       ${sig?'':' → 현재 표본으로는 우연과 구별되지 않습니다.'}</div>`:''}
-     ${axRow?`<div><strong>축 검증</strong> ${axRow}
-       <span style="opacity:.8">— 각 축의 이벤트가 그 축이 대변해야 할 계열을 실제로 예측하는지</span></div>`:''}
-     ${AGREE&&AGREE.overall?`<div><strong>LLM 간 라벨 일치도</strong>
-       방향 ${pct(AGREE.overall.direction)} · 축 ${pct(AGREE.overall.axis)} ·
-       강도±1 ${pct(AGREE.overall.strength_within_1)}
-       <span style="opacity:.8">(${AGREE.sample}건, ${AGREE.checked}) — 라벨 신뢰도의 상한</span></div>`:''}
-     <div style="margin-top:7px;padding-top:7px;border-top:1px dashed var(--line);font-size:11px">
-       ${(S.caveats||[]).map(x=>'· '+x).join('<br>')}
-       <br>· 대리지표: ${S.proxy||'—'} · 갱신 ${S.updated}
-     </div>
-   </div></details>`;
-}
-// ---- compact axis panel (the 420px column) --------------------------------
-// The wide per-axis cards moved below the fold; what stays beside the chart is
-// the answer to "what moved and which axis did it": three sentences, the three
-// single-axis effects, and how the move splits between them.
+// ---- axis panel (the 420px column) ----------------------------------------
+// The whole three-axis read-out lives here, beside the chart: three sentences
+// saying what moved, the three single-axis effects, and how the move splits
+// between them. Nothing about the axes renders anywhere else on the page.
 function renderCompactAxis(attr, vd, axName, fmtSigned){
  const sum3=document.getElementById('axisSum3');
  const rowsEl=document.getElementById('axisRows');
@@ -1138,18 +1021,9 @@ function renderCompactAxis(attr, vd, axName, fmtSigned){
 
 function renderAxisPanel(r,vd,numByDate){
  const panel=document.getElementById('axisPanel');
- CUM_EVENTS=[];  // reset before any early return, so a stale list can't survive a re-render
  if(!(csd.value&&ced.value&&sd.value&&ed.value)){panel.style.display='none';return;}
- axisCharts.forEach(c=>c.destroy()); axisCharts=[];
- const mkt=marketTotalSeries(), shr=shareSeries();
+ const mkt=marketTotalSeries();
  const dCur=avgInRange(mkt,sd.value,ed.value), dCmp=avgInRange(mkt,csd.value,ced.value);
- const sCur=avgInRange(shr,sd.value,ed.value), sCmp=avgInRange(shr,csd.value,ced.value);
- const dPct=(dCur!=null&&dCmp)?(dCur-dCmp)/dCmp*100:null;
- const sPpt=(sCur!=null&&sCmp!=null)?(sCur-sCmp):null;
- const inCur=e=>(!sd.value||(e.date||'')>=sd.value)&&(!ed.value||(e.date||'')<=ed.value);
- const lcpSer=((CRUX.metrics||{}).lcp_ms)||[];
- const inpSer=((CRUX.metrics||{}).inp_ms)||[];
- const clsSer=((CRUX.metrics||{}).cls)||[];
 
  // ---- Attribution: multiplicative decomposition of the traffic change ----
  // Basis: REAL uploaded traffic whenever one is loaded, wiki Samsung views
@@ -1165,20 +1039,13 @@ function renderAxisPanel(r,vd,numByDate){
  //     RESIDUAL (gC = gT - gM) rather than a separately averaged ratio, so
  //     the two effects multiply back to the observed change EXACTLY (an
  //     independently averaged ratio leaves a Jensen gap).
- //
- // The bar allocates 100% across the axes that DROVE the move — i.e. only
- // those pushing the same way as the total. The question being answered is
- // "traffic went down; what drove it down?", so an axis pushing the other way
- // is not a cause: it gets 0% and is reported separately as having cushioned
- // the move. (Allocating in log space means that when every axis moves the
- // same way, this reduces exactly to the plain contribution share — e.g. the
- // wiki-only case still reads 수요 54% / 점유 46%.)
  const basisSer=samSeries();
  const tCur=avgInRange(basisSer,sd.value,ed.value), tCmp=avgInRange(basisSer,csd.value,ced.value);
  const isReal=!!UPLOADED_TRAFFIC && !!uploadedSeriesForFilter();
  // An upload that doesn't span BOTH periods can't be decomposed at all —
  // surfaced explicitly rather than silently falling back to a different basis.
  const basisGap=isReal && (tCur==null || !tCmp);
+ const lcpSer=((CRUX.metrics||{}).lcp_ms)||[];
  let attr=null;
  if(tCur!=null && tCmp && dCur!=null && dCmp){
   const gT=Math.log(tCur/tCmp), gM=Math.log(dCur/dCmp);
@@ -1199,17 +1066,11 @@ function renderAxisPanel(r,vd,numByDate){
    // axis always shares the total's sign; an empty causes list is impossible.
    const drove=g=>(gT<0?g<-1e-9:g>1e-9);
    const gs={demand:gM, share:gC, supply:gSu};
-   const causeSum=Object.values(gs).filter(drove).reduce((a,g)=>a+Math.abs(g),0)||1;
-   const alloc={}, eff={};
-   for(const k in gs){
-    alloc[k]=drove(gs[k])?Math.abs(gs[k])/causeSum:0;  // 0% when it cushioned
-    eff[k]=Math.exp(gs[k])-1;                          // its own standalone effect
-   }
+   const eff={};
+   for(const k in gs) eff[k]=Math.exp(gs[k])-1;   // its own standalone effect
    // Split the observed move into the part this period-over-period step
    // normally produces (seasonality/trend) and the part that actually needs
-   // explaining. The axes still allocate the OBSERVED move — that is what the
-   // reader asked to see — but the anomaly line says how much of it was news
-   // to begin with, and the z-score says whether it is unusual at all.
+   // explaining, so a routine seasonal dip is not read as news-driven.
    const base=seasonalBaseline(basisSer, sd.value, ed.value, csd.value, ced.value);
    let expectedPct=null, residualPct=null, z=null;
    if(base){
@@ -1217,437 +1078,45 @@ function renderAxisPanel(r,vd,numByDate){
     residualPct=(Math.exp(gT-base.expectedLog)-1)*100;
     if(base.sigma) z=(gT-base.expectedLog)/base.sigma;
    }
-   attr={alloc,eff,gs,drove,lcpDelta,totalPct:(Math.exp(gT)-1)*100,
+   attr={eff,gs,drove,lcpDelta,totalPct:(Math.exp(gT)-1)*100,
          base,expectedPct,residualPct,z};
   }
  }
 
- // Bucket this period's events by axis, keeping only those whose OWN
- // impact_direction matches the direction of the overall move. The panel
- // answers "traffic went down — what drove it down?", so an event that pushed
- // traffic UP is not an explanation for a decline; listing it under the
- // demand card just muddies the read. neutral/unknown are dropped for the
- // same reason (they explain no direction). Counted so the exclusion can be
- // stated rather than silently hiding data.
- const trendDir=attr?(attr.totalPct<0?'-':'+'):null;
- const byAxis={demand:[],share:[],supply:[]};
- let oppCount=0;
- r.filter(inCur).forEach(e=>{
-  if(trendDir && e.impact_direction!==trendDir){ oppCount++; return; }
-  byAxis[axisOf(e)].push(e);
- });
-
- // ---- 누적 요인 (cumulative factors) ----
- // A period-over-period gap is driven by more than what happened INSIDE the
- // current window. Two other groups move the number and were invisible before:
- //
- //  carry (이월): dated AFTER the comparison window closed but BEFORE the
- //    current one opened. Their effect is fully present now and was entirely
- //    absent from the baseline, so they drive the delta without ever falling
- //    in either window. Restricted to impact_horizon='months' — the LLM
- //    already judged those as lasting months, whereas an 'immediate' event
- //    from half a year ago has nothing left to contribute.
- //
- //  base (기저): dated INSIDE the comparison window. These shaped the
- //    baseline, so the direction test INVERTS — on a YoY decline it's the
- //    events that pushed traffic UP a year ago that make today look lower.
- //
- // Only meaningful when the two windows don't touch (YoY/YTD). For adjacent
- // comparisons (DoD/WoW/MoM/QoQ) the gap is empty and 'base' is suppressed,
- // since there the baseline is the immediately preceding stretch and its
- // events are better read as ordinary context than as a separate group.
- const hasGap = csd.value && ced.value && sd.value && ced.value < sd.value;
- const byAxisCum={demand:[],share:[],supply:[]};
- if(trendDir && hasGap){
-  const oppDir = trendDir==='-'?'+':'-';
-  // r is already period-filtered, so the pool here must skip the date filter.
-  rows(false).forEach(e=>{
-   const d=e.date||'';
-   if(d>ced.value && d<sd.value){
-    if(e.impact_horizon==='months' && e.impact_direction===trendDir)
-     byAxisCum[axisOf(e)].push({e,kind:'carry'});
-   } else if(d>=csd.value && d<=ced.value){
-    if(e.impact_direction===oppDir)
-     byAxisCum[axisOf(e)].push({e,kind:'base'});
-   }
-  });
- }
- const cumTotal=byAxisCum.demand.length+byAxisCum.share.length+byAxisCum.supply.length;
- // Cumulative events sit OUTSIDE the current period, so they never appear in
- // the bottom list (which renders `r`). Collect them into a flat, de-duplicated
- // list here — render() reads it right after this call and renders a matching
- // 누적 요인 section at the bottom, giving each row a real scroll target.
- CUM_EVENTS=[];
- const cumIdx={};
- const cumKey=e=>`${e.event_id||''}|${e.date||''}|${e.title||''}`;
- ['demand','share','supply'].forEach(ax=>byAxisCum[ax].forEach(o=>{
-  const k=cumKey(o.e);
-  if(!(k in cumIdx)){ cumIdx[k]=CUM_EVENTS.length; CUM_EVENTS.push({e:o.e,kind:o.kind,axis:ax}); }
- }));
- const cumNo=e=>cumIdx[cumKey(e)];
-
  const fmtSigned=(v,unit,dec)=>v==null?'—':`${v>=0?'+':''}${v.toFixed(dec)}${unit}`;
- const basisLabel=isReal?'실측 트래픽':'추정 트래픽(위키 조회수 대리지표)';
  // The share axis means something different on each basis, so name it once
- // here and reuse everywhere (headline, bar segment, card title).
+ // here and reuse everywhere.
  const shareName=isReal?'점유·전환':'점유';
  const axName=(ax)=>ax==='share'?shareName:AXIS_KO[ax];
- // Headline names only the axes that pushed the SAME way as the total — those
- // are the actual causes. An axis moving the other way gets called out as
- // having cushioned the move, which is the question "is share a problem?"
- // answered directly.
- let summary;
- if(!attr){
-  summary = basisGap
-    ? '업로드한 실측 트래픽이 비교 기간을 덮지 않아 축별 분해를 할 수 없습니다 — 두 기간을 모두 포함하는 CSV를 올리거나, 업로드를 지우면 위키 기준으로 분해합니다.'
-    : 'Samsung 변화가 미미해 축별 원인 진단은 참고용입니다.';
- } else {
-  const word=attr.totalPct<0?'하락':'상승';
-  const NAME={demand:'수요',share:shareName,supply:'공급'};
-  const causes=Object.keys(NAME).filter(k=>attr.alloc[k]>0.005)
-    .sort((a,b)=>attr.alloc[b]-attr.alloc[a])
-    .map(k=>`${NAME[k]} ${(attr.alloc[k]*100).toFixed(0)}%`);
-  const cushions=Object.keys(NAME).filter(k=>!attr.drove(attr.gs[k]) && Math.abs(attr.eff[k])>0.005)
-    .map(k=>`${NAME[k]} ${fmtSigned(attr.eff[k]*100,'%',1)}`);
-  // "축이" works after any of the axis names, unlike 은/는 which would need
-  // per-name selection based on the final consonant.
-  summary = `<strong>${word} 요인: ${causes.join(' · ')}</strong>`
-    + (cushions.length?` <span style="font-weight:400;color:var(--muted)">(${cushions.join('·')} 축이 반대로 작용해 ${word}을 완화 — ${word} 원인은 아님)</span>`:'');
-  if(byAxis.supply.length) summary+=` <span style="color:var(--warn)">공급측 신호 ${byAxis.supply.length}건 감지.</span>`;
-  if(oppCount) summary+=` <span style="font-weight:400;color:var(--muted)">· 방향이 반대이거나 중립인 이벤트 ${oppCount}건은 ${word} 설명에서 제외.</span>`;
-  if(cumTotal) summary+=` <span style="font-weight:400;color:var(--accent)">· 현재 기간 밖 <strong>누적 요인 ${cumTotal}건</strong>도 이번 비교에 영향 (각 카드에서 펼쳐보기).</span>`;
- }
- // Allocation bar: 100% split across the axes that DROVE the move. Axes that
- // pushed the other way are excluded (0%) — they aren't causes of the move
- // being explained — and are named in a caption instead.
- let barHtml='';
- if(attr){
-  const dn=attr.totalPct<0;
-  const segs=[['demand',attr.alloc.demand],['share',attr.alloc.share],['supply',attr.alloc.supply]]
-    .filter(s=>s[1]>0.005);
-  const cushions=['demand','share','supply']
-    .filter(k=>!attr.drove(attr.gs[k]) && Math.abs(attr.eff[k])>0.005)
-    .map(k=>`${axName(k)} ${fmtSigned(attr.eff[k]*100,'%',1)}`);
-  barHtml=`<div style="display:flex;align-items:baseline;gap:10px;margin-top:10px;flex-wrap:wrap">
-    <span style="font-size:20px;font-weight:600;color:${dn?'var(--neg)':'var(--pos)'}">${fmtSigned(attr.totalPct,'%',1)}</span>
-    <span style="font-size:12px;color:var(--muted)">${basisLabel} ${dn?'하락':'상승'} · 요인별 기여 배분</span></div>
-   <div style="display:flex;height:30px;border-radius:9px;overflow:hidden;margin-top:6px">`+
-   segs.map(([ax,a])=>
-    `<div onclick="toggleAxisList('${ax}')" title="${axName(ax)} 축 요인 펼쳐보기 (단독 효과 ${fmtSigned(attr.eff[ax]*100,'%',1)})" style="width:${(a*100).toFixed(1)}%;background:${AXIS_COLOR[ax]};display:flex;align-items:center;justify-content:center;font-size:11px;color:oklch(0.16 0.01 250);font-weight:600;cursor:pointer;overflow:hidden;white-space:nowrap">${axName(ax)} ${(a*100).toFixed(0)}%</div>`
-   ).join('')+`</div>
-   <div style="font-size:11px;color:oklch(0.53 0.008 250);margin-top:5px">${dn?'하락':'상승'}을 <strong>유발한 축들만</strong> 100%로 배분한 값입니다 (각 축 단독 효과: ${segs.map(s=>`${axName(s[0])} ${fmtSigned(attr.eff[s[0]]*100,'%',1)}`).join(' · ')})`
-   +(cushions.length?` · 반대로 작용한 <strong>${cushions.join('·')}</strong> 축은 ${dn?'하락':'상승'} 원인이 아니므로 배분에서 제외했습니다`:'')
-   +`${attr.alloc.supply>0.005?' · 공급은 CrUX 성능 회귀 기반 추정':''} · 막대 클릭 시 해당 축 요인 목록으로 이동</div>`
-   +anomalyLine(attr);
- } else if(vd && Math.abs(vd.pct)>=1 && !basisGap){
-  barHtml=`<div style="font-size:11px;color:oklch(0.53 0.008 250);margin-top:8px">축별 효과 계산 불가 — 시장(경쟁사) 시계열이 두 기간을 모두 덮지 못합니다.</div>`;
- }
- // How much of the move was routine, and is it unusual at all? Without this
- // the panel attributes a change that may simply be what this period always
- // does — a seasonal dip dressed up as a news-driven one.
- function anomalyLine(a){
-  if(!a||!a.base) return `<div style="font-size:11px;color:oklch(0.53 0.008 250);margin-top:6px">계절성 기준선: 과거 반복 구간이 3회 미만이라 계산 불가 — 아래 배분은 관측된 변화 전체를 나눈 값입니다.</div>`;
-  const z=a.z, unusual = z==null?null:Math.abs(z)>=2;
-  const verdict = z==null ? '이례성 판단 보류(과거 변동폭 추정 불가)'
-    : unusual ? `과거 같은 구간 대비 <strong>이례적</strong> (z=${z.toFixed(1)})`
-              : `과거 같은 구간의 통상 범위 안 (z=${z.toFixed(1)})`;
-  const col = unusual===true?'var(--warn)':'oklch(0.53 0.008 250)';
-  return `<div style="font-size:11px;color:${col};margin-top:6px;line-height:1.6">
-    관측 ${fmtSigned(a.totalPct,'%',1)} = 계절성·추세로 <strong>예상되던 ${fmtSigned(a.expectedPct,'%',1)}</strong>
-    + 설명이 필요한 <strong>${fmtSigned(a.residualPct,'%',1)}</strong>
-    <span style="opacity:.85">(과거 동일 비교 ${a.base.n}회 기준)</span> · ${verdict}
-    ${unusual===false?' — 뉴스로 설명하기 전에, 원래 이런 시기일 가능성을 먼저 확인해야 합니다.':''}</div>`;
- }
- const basisEl=document.getElementById('axisBasis');
- if(basisEl) basisEl.textContent = isReal
-   ? '(업로드한 실측 트래픽 기준)'
-   : '(위키 조회수로 추정한 트래픽 — 실측 트래픽 업로드 시 자동 전환)';
- document.getElementById('axisSummary').innerHTML=summary+barHtml;
- const axDet=document.getElementById('axisDetail'); if(axDet) axDet.style.display='block';
- renderCredibility();
- renderCompactAxis(attr, vd, axName, fmtSigned);
 
- // Per-axis event lists: top 3 visible, rest expandable (deep-dive)
- const wOf=e=>Math.max(1,Math.min(5,+e.impact_strength||2))*(CONFW[e.confidence]||1);
- // Deliberately title + date ONLY. These lists are scan-aids for "which axis
- // is this coming from"; once a handful of events accumulate, inlining impact
- // text and strength/confidence tags here buries the axis %s under a wall of
- // text. The full detail lives in the bottom card the title links to.
- const evItem=(e,tag,click)=>
-  `<div style="padding:6px 0;border-top:1px dashed var(--line);font-size:12px;display:flex;justify-content:space-between;gap:6px;align-items:baseline">
-    <span style="cursor:pointer;font-weight:500" title="클릭하면 하단 상세 카드로 이동합니다" onclick="${click||`scrollToCard(${numByDate[e.date]||0})`}">${tag||''}${e.title}</span>
-    <span style="color:var(--muted);white-space:nowrap">${e.date||''}</span>
-  </div>`;
- // frac (optional): this axis's allocation share (attr.alloc[ax]), so an
- // empty event list can distinguish "genuinely nothing going on" from "the
- // wiki-based quantitative split says this axis matters, but no collected
- // news article explains why" — those look identical without this check,
- // and the gap is real: the %s come from an exact log-decomposition of the
- // wiki data, while the event list only reflects whatever news/feed items
- // happened to be collected and LLM-tagged that axis in this window. A large
- // % with zero events is not a bug, just an unexplained (yet) data-backed shift.
- const KIND_TAG={carry:'이월', base:'기저'};
- const KIND_WHY={carry:'비교 기간 이후 발생 — 지금은 영향이 있지만 비교 기간엔 없었음',
-                 base:'비교 기간에 발생 — 기준선을 끌어올려 상대적 낙폭을 키움'};
- const cumItem=({e,kind})=>evItem(e,
-   `<span class="cp-tag" style="background:#eef1fb;color:var(--accent);margin-right:5px" title="${KIND_WHY[kind]}">${KIND_TAG[kind]}</span>`,
-   `scrollToCumCard(${cumNo(e)})`);
- const evList=(axis,frac)=>{
-  const items=byAxis[axis].slice().sort((a,b)=>wOf(b)-wOf(a));
-  const cum=byAxisCum[axis].slice().sort((a,b)=>wOf(b.e)-wOf(a.e));
-  // 누적 요인: events outside the current window that still move the
-  // comparison. Collapsed by default so the current period stays the headline.
-  const cumHtml = cum.length
-    ? `<div style="margin-top:8px;border-top:1px solid var(--line);padding-top:6px">`
-      +`<span style="font-size:11px;color:var(--accent);cursor:pointer;font-weight:600" onclick="toggleAxisList('${axis}-cum')">누적 요인 ${cum.length}건 펼치기/접기</span>`
-      +`<div style="font-size:10.5px;color:oklch(0.53 0.008 250);margin-top:2px">현재 기간 밖에서 발생했지만 이번 비교에 영향을 주는 요인</div>`
-      +`<div id="axis-full-${axis}-cum" style="display:none">${cum.map(o=>cumItem(o)).join('')}</div></div>`
-    : '';
-  if(!items.length){
-   const head = (attr && Math.abs(frac||0)>=0.02)
-    ? `<div style="font-size:12px;color:var(--warn);background:oklch(0.24 0.03 85);border:1px solid oklch(0.34 0.05 85);border-radius:3px;padding:8px 10px;margin-top:4px">`
-      +`⚠ 수치상 이 축이 변화의 ${(frac*100).toFixed(0)}%를 차지하지만, `
-      +`현재 기간에 수집된 ${AXIS_KO[axis]} 축 이벤트가 없습니다 — `
-      +`구체적 원인 기사를 아직 못 찾았다는 뜻이지, 수치가 잘못됐다는 뜻은 아닙니다.${cum.length?' 아래 누적 요인을 확인할 수 있습니다.':''}</div>`
-    : `<div style="font-size:12px;color:var(--muted);padding:6px 0">이 기간 ${AXIS_KO[axis]} 축 이벤트 없음</div>`;
-   return head+cumHtml;
-  }
-  const top=items.slice(0,3), rest=items.slice(3);
-  // NOT .map(evItem) — Array.map passes (el, index, array), which would land in
-  // evItem's optional tag/click params.
-  return top.map(e=>evItem(e)).join('')+
-   `<div id="axis-full-${axis}" style="display:none">${rest.map(e=>evItem(e)).join('')}</div>`+
-   (rest.length?`<div style="padding:6px 0;border-top:1px dashed var(--line)"><span style="font-size:11px;color:var(--accent);cursor:pointer;font-weight:500" onclick="toggleAxisList('${axis}')">외 ${rest.length}건 펼치기/접기</span></div>`:'')
-   +cumHtml;
- };
- const spark=(id)=>`<div style="height:56px;margin:8px 0"><canvas id="${id}"></canvas></div>`;
- // Big number per card: that axis's share of the move it helped cause. An axis
- // that pushed the other way shows 0% (it didn't cause the move) with its own
- // effect spelled out beside it, so "0%" can't be misread as "didn't move".
- const dnAll=attr&&attr.totalPct<0;
- const bigOf=(ax,fallback)=>{
-  if(!attr) return fallback;
-  const a=attr.alloc[ax], e=attr.eff[ax];
-  return a>0.005 ? `${(a*100).toFixed(0)}%`
-       : (Math.abs(e)>0.005 ? `0% <span style="font-size:12px;font-weight:500">(${fmtSigned(e*100,'%',1)} 반대작용)</span>` : '0%');
- };
- // Supply quantitative signal: CrUX real-user CWV (weekly, 28-day rolling —
- // a slow regression detector, not a day-of incident detector)
- let supplyQuant;
- if(lcpSer.length>=3){
-  const latest=lcpSer[lcpSer.length-1].p75;
-  const prev=lcpSer.slice(-9,-1).map(p=>p.p75).sort((a,b)=>a-b);
-  const med=prev.length?prev[Math.floor(prev.length/2)]:null;
-  const dPctL=med?(latest-med)/med*100:null;
-  // CWV thresholds: LCP good <=2.5s, poor >4s
-  const lcpCol=latest<=2500?'var(--pos)':(latest>4000?'var(--neg)':'var(--warn)');
-  const worse=dPctL!=null&&dPctL>10;
-  const chips=[inpSer.length?`INP ${Math.round(inpSer[inpSer.length-1].p75)}ms`:'',
-               clsSer.length?`CLS ${clsSer[clsSer.length-1].p75.toFixed(2)}`:''].filter(Boolean).join(' · ');
-  supplyQuant=`<div style="font-size:21px;font-weight:600;color:${AXIS_COLOR.supply}">${bigOf('supply',`LCP ${(latest/1000).toFixed(2)}s`)}</div>
-   <div style="font-size:11px;color:${worse?'var(--neg)':'var(--muted)'}">LCP ${(latest/1000).toFixed(2)}s <span style="color:${lcpCol}">●</span> 모바일 p75, 8주 중앙값 대비 ${dPctL==null?'—':(dPctL>=0?'+':'')+dPctL.toFixed(1)+'%'}${worse?' ⚠ 성능 회귀 의심':''}${chips?' · '+chips:''}</div>
-   ${spark('axis-spark-supply')}`;
- } else {
-  supplyQuant=`<div style="font-size:21px;font-weight:600;color:${attr?AXIS_COLOR.supply:'var(--muted)'}">${bigOf('supply',byAxis.supply.length+'건')}</div>
-   <div style="font-size:11px;color:var(--muted)">${attr?'CrUX 미연동 — 성능 신호 없이 0%로 처리':'이 기간 감지된 공급측 이벤트'}</div>
-   <div style="height:56px;margin:8px 0;display:flex;align-items:center;font-size:11px;color:oklch(0.53 0.008 250)">CrUX 미연동 — CRUX_API_KEY 등록 시 실사용자 성능(CWV) 시리즈가 표시됩니다</div>`;
- }
- document.getElementById('axisCards').innerHTML=
-  `<div id="axis-card-demand" style="border:1px solid var(--line);border-left:3px solid ${AXIS_COLOR.demand};border-radius:10px;padding:12px 14px">
-    <div style="font-size:12px;font-weight:600;color:${AXIS_COLOR.demand}">수요 — 시장 전체 관심</div>
-    <div style="font-size:21px;font-weight:600;color:${AXIS_COLOR.demand}">${bigOf('demand',fmtSigned(dPct,'%',1))}</div>
-    <div style="font-size:11px;color:var(--muted)">관심량 ${fmtSigned(dPct,'%',1)} (삼성+경쟁사 위키 합, 비교 기간 대비)</div>
-    ${spark('axis-spark-demand')}${evList('demand',attr?attr.alloc.demand:0)}</div>`+
-  `<div id="axis-card-share" style="border:1px solid var(--line);border-left:3px solid ${AXIS_COLOR.share};border-radius:10px;padding:12px 14px">
-    <div style="font-size:12px;font-weight:600;color:${AXIS_COLOR.share}">${isReal?shareName+' — 관심 대비 실제 유입':shareName+' — 삼성이 가져가는 몫'}</div>
-    <div style="font-size:21px;font-weight:600;color:${AXIS_COLOR.share}">${bigOf('share',isReal?'—':fmtSigned(sPpt,'%p',2))}</div>
-    <div style="font-size:11px;color:var(--muted)">${isReal
-      ? '시장 트래픽 1단위당 실제 유입의 변화 — 실측÷위키라 절대 수준은 의미 없고 변화율만 봅니다'
-      : `몫 ${fmtSigned(sPpt,'%p',2)} (현재 ${sCur==null?'—':sCur.toFixed(1)+'%'} · 비교 ${sCmp==null?'—':sCmp.toFixed(1)+'%'})`}</div>
-    ${spark('axis-spark-share')}${evList('share',attr?attr.alloc.share:0)}</div>`+
-  `<div id="axis-card-supply" style="border:1px solid var(--line);border-left:3px solid ${AXIS_COLOR.supply};border-radius:10px;padding:12px 14px">
-    <div style="font-size:12px;font-weight:600;color:${AXIS_COLOR.supply}">공급 — 사이트 성능·인덱싱 신호</div>
-    ${supplyQuant}
-    <div style="font-size:11px;color:var(--muted);margin-bottom:2px">공급측 이벤트 ${byAxis.supply.length}건 (Google Search Status 등)</div>
-    ${evList('supply',attr?attr.alloc.supply:0)}</div>`;
- // Sparklines for the two quantitative axes, current period only
- const mkSpark=(id,ser,unit)=>{
-  const pts=ser.filter(p=>(!sd.value||p.date>=sd.value)&&(!ed.value||p.date<=ed.value));
-  const el=document.getElementById(id);
-  if(!el||pts.length<5){ if(el)el.parentNode.style.display='none'; return; }
-  axisCharts.push(new Chart(el,{type:'line',
-   data:{labels:pts.map(p=>p.date),datasets:[{data:pts.map(p=>p.views),
-     borderColor:AXIS_COLOR[id.includes('demand')?'demand':'share'],borderWidth:1.5,pointRadius:0,tension:0.35,fill:false}]},
-   options:{responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.y.toFixed(unit==='%'?1:0)}${unit==='%'?'%':'회'}`}}},
-    scales:{x:{display:false},y:{display:false}}}}));
- };
- mkSpark('axis-spark-demand',mkt,'');
- // With real traffic the share axis is a capture RATE (traffic per unit of
- // market attention), so plot that instead of the wiki share percentage.
- mkSpark('axis-spark-share', isReal?captureSeries():shr, isReal?'':'%');
- // Supply sparkline: always the last 26 weeks regardless of the selected
- // period — CrUX's 28-day rolling window makes short-period slicing useless
- if(lcpSer.length>=3){
-  const pts=lcpSer.slice(-26);
-  const el=document.getElementById('axis-spark-supply');
-  if(el) axisCharts.push(new Chart(el,{type:'line',
-   data:{labels:pts.map(p=>p.date),datasets:[{data:pts.map(p=>p.p75),
-     borderColor:AXIS_COLOR.supply,borderWidth:1.5,pointRadius:0,tension:0.35,fill:false}]},
-   options:{responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`LCP p75 ${(c.parsed.y/1000).toFixed(2)}s`}}},
-    scales:{x:{display:false},y:{display:false}}}}));
- }
+ const basisEl=document.getElementById('axisBasis');
+ if(basisEl) basisEl.textContent = basisGap
+   ? '(업로드한 실측 트래픽이 비교 기간을 덮지 않음)'
+   : isReal ? '(업로드한 실측 트래픽 기준)'
+            : '(위키 조회수로 추정한 트래픽 — 실측 트래픽 업로드 시 자동 전환)';
+ renderCompactAxis(attr, vd, axName, fmtSigned);
  panel.style.display='block';
 }
 
 function render(){
  let r=rows();  // result after all active filters (region/country/division/KPI/period)
- // With a verdict: trend-direction factors first, others still shown by confidence (neutral last)
  const vd=trendVerdict();
- const vbox=document.getElementById('verdict');
+ // Default ordering only — the list's own 정렬 segment overrides it below.
+ // Trend-direction factors first, then confidence, neutral last, newest last.
  const confRank=e=>CONFW[e.confidence]||0;
  if(vd && vd.dir!=='neutral'){
-  // Sort: (1) same direction as trend (2) confidence high->low (3) neutral last within a tier (4) newest
   const dirMatch=e=> e.impact_direction===vd.dir ? 0 : (e.impact_direction==='neutral'?2:1);
   r.sort((a,b)=>
     dirMatch(a)-dirMatch(b)
     || confRank(b)-confRank(a)
     || ((a.impact_direction==='neutral'?1:0)-(b.impact_direction==='neutral'?1:0))
     || (b.date||'').localeCompare(a.date||''));
-  const vc=vd.dir==='-'?'#E24B4A':'#1D9E75';
-  const arrow=vd.dir==='-'?'▼':'▲';
-  const dirWord=vd.dir==='-'?'하락':'상승';
-  const cv=compVerdict();
-  let marketLabel;
-  if(!cv){
-    marketLabel=`${compLabel()} 비교 데이터 없음`;
-  } else if(cv.dir==='neutral'){
-    marketLabel=`${compLabel()} 변화 미미 → Samsung.com 단독 ${dirWord}`;
-  } else if(cv.dir===vd.dir){
-    marketLabel=`${compLabel()}도 동반 ${dirWord} → 시장 전체 ${dirWord}`;
-  } else {
-    marketLabel=`${compLabel()}는 반대 방향 → Samsung.com 단독 ${dirWord}`;
-  }
-  vbox.style.display='block'; vbox.style.background=vc+'14'; vbox.style.border='1px solid '+vc+'44';
-  // Market number = competitor aggregate's own % change (cv.pct), separate
-  // from marketLabel's qualitative same-direction/opposite-direction read.
-  // On its own line below Samsung's, not crowded onto the same line.
-  const cvArrow=cv?(cv.dir==='-'?'▼':(cv.dir==='+'?'▲':'―')):'';
-  const cvColor=cv?(cv.dir==='-'?'#E24B4A':(cv.dir==='+'?'#1D9E75':'#9a9a96')):'';
-  const marketLine=cv?`<div style="margin-top:4px"><span style="color:${cvColor};font-weight:600">Market ${cvArrow} ${cv.pct.toFixed(1)}%</span></div>`:'';
-  vbox.innerHTML=`<div><span style="color:${vc};font-weight:600">Samsung ${arrow} ${vd.pct.toFixed(1)}%</span></div>${marketLine}<div style="margin-top:4px"><span style="color:var(--muted)">${marketLabel}</span></div>`;
  } else if(vd){
-  // Negligible change: sort by confidence (neutral last)
   r.sort((a,b)=> confRank(b)-confRank(a) || ((a.impact_direction==='neutral'?1:0)-(b.impact_direction==='neutral'?1:0)) || (b.date||'').localeCompare(a.date||''));
-  vbox.style.display='block'; vbox.style.background='var(--card)'; vbox.style.border='1px solid var(--line)';
-  vbox.innerHTML=`<span style="color:var(--muted)">Samsung 변화 미미(${vd.pct.toFixed(1)}%) — 신뢰도순 정렬</span>`;
- } else { vbox.style.display='none'; }
+ }
 
  const numByDate={}; r.forEach((e,i)=>{ if(!(e.date in numByDate)) numByDate[e.date]=i+1; });
 
- // ===== Cause analysis: change-point view + period-attribution view =====
- const anaBox=document.getElementById('analysis');
- const tbox=document.getElementById('topfactors');
- tbox.style.display='none';  // replaced by the analysis section
- const sam=samSeries();
- const samMap={}; sam.forEach(p=>samMap[p.date]=p.views);
- const samDates=sam.map(p=>p.date).sort();
- function postEventChange(dateStr){
-  if(!dateStr || !samDates.length) return null;
-  const idx=samDates.findIndex(d=>d>=dateStr);
-  if(idx<0) return null;
-  const before=[], after=[];
-  for(let k=1;k<=3;k++){ const bi=idx-k; if(bi>=0) before.push(samMap[samDates[bi]]); }
-  for(let k=0;k<3;k++){ const ai=idx+k; if(ai<samDates.length) after.push(samMap[samDates[ai]]); }
-  if(!before.length || !after.length) return null;
-  const bAvg=before.reduce((a,b)=>a+b,0)/before.length;
-  const aAvg=after.reduce((a,b)=>a+b,0)/after.length;
-  return bAvg? (aAvg-bAvg)/bAvg*100 : null;
- }
- const inCur=e=>(!sd.value||(e.date||'')>=sd.value)&&(!ed.value||(e.date||'')<=ed.value);
- const CONFNORM={high:1.0, med:0.66, low:0.33};
-
- // ---- Change-points (computed; folded into period attribution below) ----
- const cps=(window._changePoints)||[];
- // For an event, find a change-point within 7 days AFTER the event (same direction)
- function linkedChangePoint(e){
-  const ed2=new Date(e.date);
-  let best=null;
-  cps.forEach(cp=>{
-   if(cp.dir!==e.impact_direction) return;
-   const gap=(new Date(cp.date)-ed2)/864e5;
-   if(gap>=0 && gap<=7){ if(!best||gap<best.gap) best={cp,gap}; }
-  });
-  return best;
- }
-
- // ---- Period attribution: why current vs comparison, with clickable groups ----
- let perHtml='';
- if(vd && vd.dir!=='neutral'){
-  const vc=vd.dir==='-'?'#D0392B':'#137a52';
-  const dirWord=vd.dir==='-'?'감소':'증가';
-  const active=r.filter(e=>e.impact_direction===vd.dir && inCur(e));
-  const CATKO={competitor:'경쟁',company:'경쟁',economy:'경제',geopolitics:'지정학',
-    social_issue:'사회',marketing:'마케팅',platform:'AI·플랫폼',ai:'AI·플랫폼',regulation:'규제',culture:'문화',other:'기타'};
-  const groups={};
-  active.forEach(e=>{
-   const cat=CATKO[e.category]||'기타';
-   const w=STRENGTH(e)*(CONFNORM[e.confidence]||0.5);
-   groups[cat]=groups[cat]||{w:0,items:[]};
-   groups[cat].w+=w; groups[cat].items.push(e);
-  });
-  const totalW=Object.values(groups).reduce((a,g)=>a+g.w,0)||1;
-  const totalPct=Math.abs(vd.pct);
-  const ranked=Object.entries(groups).map(([cat,g])=>({cat,...g,
-    share:g.w/totalW, ppt:(g.w/totalW)*totalPct})).sort((a,b)=>b.w-a.w);
-  const palette=['#E24B4A','#EF9F27','#534AB7','#185FA5','#1D9E75','#888780'];
-  // change-point summary line (folded in)
-  const cpNote = cps.length
-    ? `이 기간 내 급변점 ${cps.length}곳 감지 — 아래 그룹을 펼치면 관련 요인에 연결 표시됩니다.`
-    : `이 기간 내 뚜렷한 급변점(±8%)은 없습니다 — 완만한 누적 변화로 보입니다.`;
-  if(ranked.length){
-   const barSeg=ranked.map((g,i)=>`<div style="width:${(g.share*100).toFixed(1)}%;background:${palette[i%palette.length]};display:flex;align-items:center;justify-content:center;font-size:11px;color:oklch(0.16 0.01 250);font-weight:500;overflow:hidden;white-space:nowrap">${g.cat} ${vd.dir}${g.ppt.toFixed(1)}%p</div>`).join('');
-   perHtml=`<div class="cp-card">
-     <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px">
-       <span style="font-size:22px;font-weight:600;color:${vc}">${(vd.pct>=0?'+':'')+vd.pct.toFixed(1)}%</span>
-       <span style="font-size:14px;font-weight:500">현재 기간 트래픽, 비교 기간 대비 ${dirWord}</span></div>
-     <div style="font-size:12px;color:var(--muted);margin-bottom:4px">현재 ${vd.curFrom}~${vd.curTo} · 비교 ${vd.baseFrom}~${vd.baseTo} · 주요 사유는 ${ranked[0].cat}</div>
-     <div style="font-size:11px;color:var(--muted);margin-bottom:14px"><i class="ti ti-activity" style="vertical-align:-2px"></i> ${cpNote}</div>
-     <div style="font-size:12px;color:var(--muted);margin-bottom:8px">요인별 기여도 (추정) · 그룹을 클릭하면 하위 요인이 펼쳐집니다</div>
-     <div style="display:flex;height:28px;border-radius:9px;overflow:hidden;margin-bottom:6px">${barSeg}</div>
-     <div style="font-size:11px;color:oklch(0.53 0.008 250);margin-bottom:16px">전체 ${vd.dir}${totalPct.toFixed(1)}%p를 활성 요인의 영향강도·신뢰도로 비례 배분한 추정</div>
-     ${ranked.map((g,i)=>{
-        const col=palette[i%palette.length];
-        const sub=g.items.sort((a,b)=>STRENGTH(b)-STRENGTH(a)).map(e=>{
-          const n=numByDate[e.date]||'';
-          const link=linkedChangePoint(e);
-          const cpTag=link?`<span class="cp-tag" style="color:${vc};background:${vc}14">${link.cp.date} 급변(${(link.cp.pct>=0?'+':'')+link.cp.pct.toFixed(0)}%)과 연결</span>`:'';
-          return `<div style="padding:8px 0;border-top:1px solid var(--line)">
-            <div style="display:flex;justify-content:space-between;gap:8px">
-              <span style="font-size:13px;font-weight:600;cursor:pointer" onclick="scrollToCard(${n})">${e.title}</span>
-              <span style="font-size:11px;color:var(--muted);white-space:nowrap">${e.date||''}</span></div>
-            <div style="font-size:12px;color:var(--muted);margin:3px 0 5px">${e.impact||''}</div>
-            <div><span class="cp-tag">영향강도 ${STRENGTH(e)}/5</span><span class="cp-tag">신뢰도 ${e.confidence||'-'}</span>${cpTag}</div>
-          </div>`;}).join('');
-        return `<div class="grp" style="border:1px solid var(--line);border-left:3px solid ${col};border-radius:0;margin-bottom:8px">
-          <div class="grp-head" style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;cursor:pointer" onclick="this.parentNode.querySelector('.grp-body').style.display=this.parentNode.querySelector('.grp-body').style.display==='none'?'block':'none';this.querySelector('.grp-chev').style.transform=this.querySelector('.grp-chev').style.transform==='rotate(90deg)'?'':'rotate(90deg)'">
-            <span style="font-size:13px;font-weight:600"><span class="grp-chev" style="display:inline-block;transition:transform .15s">▸</span> ${g.cat} (약 ${vd.dir}${g.ppt.toFixed(1)}%p)</span>
-            <span style="font-size:11px;color:var(--muted)">활성 요인 ${g.items.length}건</span></div>
-          <div class="grp-body" style="display:none;padding:0 14px 10px">${sub}</div>
-        </div>`;}).join('')}
-     <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.6">기여도는 해당 기간 활성 요인의 영향강도·신뢰도로 비례 배분한 추정입니다. "급변과 연결"은 그 요인 발생 직후 7일 내 트래픽 급변점이 있었음을 뜻합니다. 인과 입증이 아니며, 위키 대리지표(또는 업로드 트래픽) 기준입니다.<br>영향강도: 이 요인이 samsung.com 트래픽에 주는 영향의 크기(1~5) · 신뢰도: 그 영향 판단이 맞다고 보는 확신 정도(high/med/low)</div>
-   </div>`;
-  } else {
-   perHtml=`<div class="cp-card"><div style="font-size:13px;color:var(--muted)">비교 기간 대비 ${dirWord}했으나, 현재 기간 내 방향이 일치하는 외부 요인이 수집되지 않았습니다.</div></div>`;
-  }
- } else if(vd){
-  perHtml=`<div class="cp-card"><div style="font-size:13px;color:var(--muted)">비교 기간 대비 변화가 미미합니다(${vd.pct.toFixed(1)}%).</div></div>`;
- } else {
-  perHtml=`<div class="cp-card"><div style="font-size:13px;color:var(--muted)">기간 비교를 위해 현재·비교 기간이 모두 필요합니다. 기간 선택기에서 비교 방식을 선택해야 합니다.</div></div>`;
- }
- document.getElementById('ana-period').innerHTML=perHtml;
- anaBox.style.display='block';
 
  const evAsc=r.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
  drawTrend(evAsc, numByDate);
@@ -1676,7 +1145,9 @@ function render(){
  let lr=r.slice();
  if(FDIR!=='ALL') lr=lr.filter(e=>e.impact_direction===FDIR);
  if(FAXIS!=='ALL') lr=lr.filter(e=>axisOf(e)===FAXIS);
- if(FSORT==='strength') lr.sort((a,b)=>STRENGTH(b)-STRENGTH(a)||(b.date||'').localeCompare(a.date||''));
+ lr.sort(FSORT==='strength'
+   ? (a,b)=>STRENGTH(b)-STRENGTH(a)||(b.date||'').localeCompare(a.date||'')
+   : (a,b)=>(b.date||'').localeCompare(a.date||''));
  // suffix names which filter actually narrowed the set, so "필터 적용" never
  // shows up when nothing is filtered at all
  const _sfx = lr.length!==r.length ? ' · 목록 필터 적용'
@@ -1699,13 +1170,7 @@ function render(){
  let selEv=null, selNo=0;
  const selIdx=shown.findIndex(e=>e.event_id===SEL);
  if(selIdx>=0){ selEv=shown[selIdx]; selNo=selIdx+1; }
- else {
-  // A cumulative factor can be selected from the axis panel even though it has
-  // no row here; only when nothing is selected at all do we default to row 1.
-  const cum=CUM_EVENTS.find(o=>o.e.event_id===SEL);
-  if(cum){ selEv=cum.e; }
-  else if(shown.length){ SEL=shown[0].event_id; selEv=shown[0]; selNo=1; }
- }
+ else if(shown.length){ SEL=shown[0].event_id; selEv=shown[0]; selNo=1; }
  if(selNo){ const el=document.getElementById('evt-'+selNo); if(el) el.classList.add('on'); }
  document.getElementById('detail').innerHTML = detailHtml(selEv, selNo);
 }
