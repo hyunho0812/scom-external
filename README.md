@@ -16,7 +16,6 @@ data/feed_state.json            <- remembers seen RSS entries (auto-managed)
 scripts/collect_news.py         <- Layer 1 daily: NewsAPI+GDELT -> keyword pre-filter -> LLM judgement
 scripts/collect_feeds.py        <- Layer 2 daily: first-party RSS -> keyword pre-filter -> LLM judgement
 scripts/collect_gdelt.py        <- Layer 1a daily: free GDELT news pool (no key)
-scripts/collect_imf.py          <- Layer 3 monthly (28th): IMF stats -> country-stats tab
 scripts/collect_wiki.py         <- daily: Wikipedia pageviews -> company trend graph
 scripts/llm_common.py           <- shared: the LLM chain, every file path, event-field cleaning
 scripts/check_health.py         <- daily: probes all 3 LLMs and every feed -> dashboard badges
@@ -34,9 +33,6 @@ STATES (aging) and sub-threshold changes (a tiny ChatGPT UI tweak). So:
 1. **Layer 1 - news (daily):** broad pull from NewsAPI+GDELT, Gemini filters for relevance.
 2. **Layer 2 - first-party feeds (daily):** official platform blogs/release notes,
    so small changes are caught straight from the source, no press needed.
-3. **Layer 3 - IMF stats (monthly):** IMF SDMX monthly indicators (overall/furnishings/housing/communications/recreation CPI, retail sales, labor-force participation) for the country-stats tab. Runs on the 28th for the previous month. (Previously
-   a slow trend (aging, GDP/capita, internet penetration) crosses a threshold.
-
 Even with these layers, full coverage is impossible — the aim is to make missing
 something important *unlikely*, not guaranteed-never.
 
@@ -125,7 +121,6 @@ carrying a full day's leftover translations once in a while.
   (HTTP 429), Groq judges instead; if Groq also fails, Mistral does — only if
   ALL THREE are unavailable is an item skipped, rather than stored with
   English text or guessed classification.
-- Layer 3 stats (IMF SDMX): FREE, no key. Monthly. World Bank (annual) was removed.
 So the whole pipeline runs at $0. Note: free tiers can change their limits/policy
 over time, and free-tier inputs (here: public news titles/summaries — nothing
 sensitive) may be used by the provider for model improvement.

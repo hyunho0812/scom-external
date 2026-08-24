@@ -9,7 +9,7 @@ samsung.com organic traffic/revenue에 영향을 줄 수 있는 **외부 요인*
 - **URL**: `https://hyunho0812.github.io/scom-external/`
 - **UI 언어**: 한국어. 코드 주석/커밋은 영어.
 - **자동화**: `.github/workflows/daily-update.yml`이 매일 21:00 UTC(06:00 KST) 전체
-  파이프라인을 실행하고 결과를 커밋. 28일엔 IMF 월간 통계도 추가로 실행.
+  파이프라인을 실행하고 결과를 커밋.
 
 ## 파일 구조와 역할
 
@@ -23,8 +23,7 @@ scripts/
                       queries.txt·kw_*.txt·interests.txt 파서, clean_scope/clean_date/
                       clean_axis, 근접 중복 억제 DupIndex, has_korean/parse_date.
                       나머지 스크립트는 여기서 import만 한다
-  collect_wiki.py     위키피디아 일별 조회수 (경쟁사 관심도 대리지표), 최초 730일 백필+이후 증분
-  collect_imf.py      Layer 3 — IMF SDMX 월간 통계 (28일만 실행)
+  collect_wiki.py     위키피디아 일별 조회수 (트래픽 대리지표), 최초 730일 백필+이후 증분
   collect_crux.py     공급축 — CrUX 실사용자 CWV 주간 시계열 (CRUX_API_KEY 없으면 조용히 스킵)
   optimize.py         매일 Gemini가 queries.txt/kw_news.txt/kw_feeds.txt 자동 튜닝
   check_health.py     매일 — ① Gemini/Groq/Mistral 도달 여부 → data/model_status.json
@@ -148,8 +147,13 @@ URL을 넣지 말고, feeds.txt에 "확인했지만 없음" 주석으로 남길 
 | `description` | **요약:** | 기사가 보도한 **사실만**. 한국어 1~3문장(기사가 한 가지만 말하면 1문장에서 끝낼 것). samsung.com 해석 금지 |
 | `impact` | **LLM 추론:** | **모델의 판단**. samsung.com 웹 트래픽이 어떻게·왜 움직일지 1~2문장. 요약 내용을 되풀이하지 말 것 |
 
-둘 다 "다/했다/이다"체(요/습니다체 금지), 쉬운 일상 단어(전문용어·딱딱한 문어체 금지).
+둘 다 쉬운 일상 단어를 쓴다(전문용어·딱딱한 문어체 금지).
 카드에서도 요약이 먼저, 추론이 그다음이다(사실 → 판단 순서).
+
+**문체 규칙 (2026-08-18 개정, 화면 문구 포함 전 범위)**: "다/했다/이다"체와
+"~습니다"체 **둘 다 허용**한다. **"~요"체만 금지**("보세요", "골라주세요", "~어요").
+예전 규칙은 습니다체까지 막았는데, 화면 안내 문구는 습니다체가 자연스럽고 실제로
+그렇게 쓰이고 있었다. 금지 대상은 반말에 가까운 요체뿐이다.
 
 **기존 435건도 소급 적용됐다 — LLM 재판정 없이.** 추론 절반은 이미 `impact`에 따로
 저장돼 있었으므로(435건 전부 비어있지 않음) 재판정이 아니라 **분리**면 충분했다:
@@ -282,7 +286,7 @@ python3 scripts/build.py
   1개 항상 유지하도록 강제함(자세한 내용은 `optimize.py`의 `apply_query_constraints()`
   docstring 참고).
 - `data/wiki_series.json`(dict, 3개 시리즈), `data/gdelt_pool.json`(list, 33건),
-  `data/feed_state.json`(dict, 13개), `data/imf_series.json`(dict, 4개) 등은 더 이상
+  `data/feed_state.json`(dict, 13개) 등은 더 이상
   비어있지 않음 — GitHub Actions가 이미 여러 차례 돌면서 채워진 상태. 로컬 클론 직후에는
   git에 커밋된 최신 스냅샷이 그대로 보이므로, "비어있다"고 가정하지 말고 실제 파일을
   확인할 것.
@@ -414,6 +418,16 @@ raw_title 4 / title 4 — 그중 가장 논쟁적인 건 "폴드8 울트라 인�
   "full list if worldwide"가 곧 "전세계"라는 뜻이었기 때문(이 규칙은 마이그레이션 전용이라
   `migrate()`에만 있고 `clean_scope()`에는 없다).
 - `llm_common.LEGACY_MARKETS`가 그 12개 목록이며 위 마이그레이션 용도로만 남아 있다.
+
+### 12. IMF / 국가별 통계 제거 (2026-08-18)
+`collect_imf.py`, `data/imf_series.json`, 대시보드의 "국가별 통계" 탭, 워크플로의
+28일 스텝을 전부 제거했다. 거시 지표는 이벤트 원장과 아무 데서도 만나지 않았고
+(3축 분해에도, 채점에도 쓰이지 않음) 탭 하나를 따로 차지하고 있었다. 탭이 하나만
+남아 탭바 자체도 뺐다 — 새 UI에서 "용어 설명" 탭이 들어올 때 다시 만든다.
+
+**대시보드 지표 명칭**: 화면에서 "관심도"라는 말을 쓰지 않는다. 전부 "트래픽"으로
+쓰되, 실측이 아닐 때는 "추정 트래픽(위키 조회수 대리지표)"처럼 **근거를 함께** 적는다
+— 대리 관계 자체가 아직 검증되지 않았기 때문이다(미결 과제).
 
 ## 하지 말아야 할 것
 - `index.html`을 직접 편집 — 항상 `build.py`가 생성
