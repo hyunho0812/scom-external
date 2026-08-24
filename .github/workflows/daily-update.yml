@@ -3,7 +3,6 @@ name: daily-update
 on:
   schedule:
     - cron: '0 21 * * *'        # 21:00 UTC daily ≈ 06:00 KST — news/blogs/wiki
-    - cron: '0 21 28 * *'       # 28th of month — IMF monthly stats (previous month)
   workflow_dispatch: {}          # manual run from the Actions tab
 
 permissions:
