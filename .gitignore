@@ -1,2 +1,7 @@
 __pycache__/
 *.pyc
+
+# UI design mockups (scripts/build.py stays the only source of the real page).
+# The seeded canvas alone is 2.3 MB of editor payload — working material for
+# picking a direction, not repository source.
+.design/
