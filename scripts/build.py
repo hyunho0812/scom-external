@@ -119,8 +119,10 @@ input[type=date]{color-scheme:dark}
 /* ---- panels & cards ---- */
 .panel{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:15px 18px 16px}
 .phead{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:12px;margin-bottom:12px}
-.ptitle{font-size:12.5px;font-weight:600;display:flex;align-items:baseline;gap:9px}
-.ptitle .psub{font-family:var(--mono);font-size:10px;color:oklch(0.55 0.008 250);font-weight:400}
+.ptitle{font-size:12.5px;font-weight:600;display:flex;align-items:baseline;gap:9px;min-width:0}
+.ptitle>:first-child,.ptitle{white-space:nowrap}
+.ptitle .psub{font-family:var(--mono);font-size:10px;color:oklch(0.55 0.008 250);font-weight:400;
+  white-space:normal;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .legend{display:flex;gap:11px;font-family:var(--mono);font-size:9.5px;color:oklch(0.62 0.008 250)}
 .note{font-size:10.5px;color:oklch(0.53 0.008 250);margin-top:10px;line-height:1.55}
 .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);
@@ -244,18 +246,19 @@ input[type=date]{color-scheme:dark}
    <option value="ALL">전체</option><option value="MX">MX</option><option value="VD">VD</option><option value="DA">DA</option></select></div>
  <div class="ctrl"><label>기간</label>
   <select id="ptype">
-   <option value="day">Day</option><option value="week">Week</option><option value="month">Month</option>
-   <option value="quarter">Quarter</option><option value="year">Year</option>
-   <option value="mtd">MTD</option><option value="qtd">QTD</option><option value="ytd" selected>YTD</option>
+   <option value="day">일</option><option value="week">주</option><option value="month">월</option>
+   <option value="quarter">분기</option><option value="year">연</option>
+   <option value="mtd">이번 달 누적</option><option value="qtd">이번 분기 누적</option>
+   <option value="ytd" selected>올해 누적</option>
   </select>
  </div>
  <div class="ctrl" id="pickerWrap"></div>
  <div class="ctrl"><label>비교</label><select id="cmpBasis"></select></div>
  <div class="spacer"></div>
  <input type="file" id="trafficFile" accept=".csv" style="display:none">
- <button class="btn" id="uploadBtn" title="국가,날짜,트래픽 형식의 CSV. 브라우저에서만 처리되며 저장되지 않습니다.">UPLOAD TRAFFIC</button>
- <button class="btn" id="clearTrafficBtn">CLEAR</button>
- <button class="btn" id="csvbtn">EXPORT CSV</button>
+ <button class="btn" id="uploadBtn" title="국가,날짜,트래픽 형식의 CSV. 브라우저에서만 처리되며 저장되지 않습니다.">실측 트래픽 올리기</button>
+ <button class="btn" id="clearTrafficBtn">지우기</button>
+ <button class="btn" id="csvbtn">CSV 내보내기</button>
  <div class="rowbreak"></div>
  <div id="periodSummary" class="foot"></div>
  <div id="csvStatus" class="foot"></div>
@@ -401,8 +404,7 @@ function divLabel(divs){
  if(ALL_DIVS.every(dd=>arr.includes(dd))) return '전체';
  return arr.join(', ');
 }
-const DIRC={"-":"#E24B4A","+":"#1D9E75","neutral":"#9a9a96","unknown":"#9a9a96"};
-const CONFC={"high":"#1D9E75","med":"#EF9F27","low":"#9a9a96"};
+const DIRC={"-":"#f2716a","+":"#43c07a","neutral":"#6f7580","unknown":"#6f7580"};
 const DIRCLS={"-":"neg","+":"pos","neutral":"","unknown":""};
 const STRENGTH=e=>Math.max(1,Math.min(5,+e.impact_strength||2));
 // Show the article's host rather than the raw URL — collected URLs are often
@@ -412,6 +414,9 @@ const region=document.getElementById('region'),country=document.getElementById('
 const ptype=document.getElementById('ptype'),cmpBasis=document.getElementById('cmpBasis'),pickerWrap=document.getElementById('pickerWrap');
 
 // ===== Flexible period selector =====
+// The option VALUES stay as the internal codes shiftPeriod() switches on;
+// only what the reader sees is Korean.
+const BASIS_KO={DoD:'전일 대비',WoW:'전주 대비',MoM:'전월 대비',QoQ:'전분기 대비',YoY:'전년 동기'};
 const PERIOD_PAIRS={
   day:["DoD","WoW","YoY"],
   week:["WoW","YoY"],
@@ -474,44 +479,12 @@ function refreshPeriod(){
   const t=ptype.value;
   pickerWrap.innerHTML=buildPicker(t);
   pickerWrap.querySelectorAll('input,select').forEach(el=>el.onchange=()=>{applyPeriod();showAll=false;render();});
-  cmpBasis.innerHTML=PERIOD_PAIRS[t].map((p,i)=>`<option value="${p}"${i===PERIOD_PAIRS[t].length-1?' selected':''}>${p}</option>`).join('');
+  cmpBasis.innerHTML=PERIOD_PAIRS[t].map((p,i)=>`<option value="${p}"${i===PERIOD_PAIRS[t].length-1?' selected':''}>${BASIS_KO[p]||p}</option>`).join('');
   applyPeriod(); showAll=false; render();
 }
 const CONFW={high:3,med:2,low:1};
 let showAll=false;  // 'show more' expanded state
 
-// Detect change-points in Samsung wiki series within the current period (sd~ed).
-// Method: compare 3-day trailing avg before vs 3-day avg after each day; flag days
-// where the % change exceeds a threshold (sharp moves). Returns [{date,pct,dir}].
-function detectChangePoints(fromD, toD, threshold){
- const sam=samSeries(); if(sam.length<11) return [];
- const inRange=sam.filter(p=>(!fromD||p.date>=fromD)&&(!toD||p.date<=toD)).sort((a,b)=>a.date.localeCompare(b.date));
- if(inRange.length<11) return [];
- const raw=inRange.map(p=>p.views), dates=inRange.map(p=>p.date);
- // 5-day moving average to suppress daily noise before detection
- const views=raw.map((_,i)=>{
-  let s=0,c=0; for(let k=-2;k<=2;k++){const j=i+k; if(j>=0&&j<raw.length){s+=raw[j];c++;}}
-  return s/c;
- });
- const cps=[];
- for(let i=5;i<views.length-4;i++){
-  const before=(views[i-5]+views[i-4]+views[i-3])/3;
-  const after=(views[i+2]+views[i+3]+views[i+4])/3;
-  if(!before) continue;
-  const pct=(after-before)/before*100;
-  if(Math.abs(pct)>=threshold) cps.push({date:dates[i], pct, dir:pct<0?'-':'+', before:Math.round(before), after:Math.round(after)});
- }
- // Merge nearby change-points (within 10 days) keeping the largest-magnitude one
- const merged=[];
- cps.sort((a,b)=>a.date.localeCompare(b.date));
- for(const cp of cps){
-  const last=merged[merged.length-1];
-  if(last && Math.abs(new Date(cp.date)-new Date(last.date))<10*864e5){
-   if(Math.abs(cp.pct)>Math.abs(last.pct)) merged[merged.length-1]=cp;
-  } else merged.push(cp);
- }
- return merged;
-}
 
 // Verdict: % change of Samsung average views, comparison period vs current period
 function trendVerdict(){
@@ -658,50 +631,30 @@ function compNames(){
 function compLabel(){const n=compNames();return n.length>1?'경쟁사 합산':(n[0]||'');}
 let chart;
 // Custom plugin drawing event pins (circle body + tail + glowing anchor + connector)
-const cpPlugin={
- id:'changepoints',
- afterDraw(c){
-  const cps=(c._changePoints)||[]; if(!cps.length) return;
-  const ctx=c.ctx, x=c.scales.x, y=c.scales.y;
-  cps.forEach(cp=>{
-   const px=x.getPixelForValue(cp.xIdx); if(px==null||isNaN(px)) return;
-   const py=y.getPixelForValue(cp.after);
-   const color=cp.dir==='-'?'#E24B4A':'#1D9E75';
-   ctx.save();
-   ctx.strokeStyle=color; ctx.setLineDash([4,3]); ctx.lineWidth=1.5;
-   ctx.beginPath(); ctx.moveTo(px,y.top); ctx.lineTo(px,y.bottom); ctx.stroke();
-   ctx.setLineDash([]);
-   ctx.beginPath(); ctx.arc(px,py,6,0,Math.PI*2); ctx.fillStyle=color; ctx.fill();
-   ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(px,py,2.5,0,Math.PI*2); ctx.fill();
-   ctx.fillStyle=color; ctx.font='600 11px sans-serif'; ctx.textAlign='center';
-   ctx.fillText((cp.pct>=0?'+':'')+cp.pct.toFixed(0)+'%', px, y.top-4);
-   ctx.restore();
-  });
- }
-};
+// A numbered disc sitting ON the line, with a dashed drop line to the floor —
+// the marker from the design. It punches a hole in the series by filling with
+// the panel colour first, so the line never runs through the number.
 const pinPlugin={
  id:'pins',
  afterDatasetsDraw(c){
-  const ctx=c.ctx; const pins=c._pins||[];
+  const ctx=c.ctx, y=c.scales.y, pins=c._pins||[];
   pins.forEach(p=>{
    const x=c.scales.x.getPixelForValue(p.xLabel);
-   const yLine=c.scales.y.getPixelForValue(p.anchorY);
-   const r=12, pinY=yLine-30;
+   const py=y.getPixelForValue(p.anchorY);
+   if(x==null||isNaN(x)||py==null||isNaN(py)) return;
+   // The pin carries the event's row number, which runs into three digits on
+   // a wide period — grow the disc rather than letting the label spill out.
+   const R=String(p.n).length>2?11.5:9;
    ctx.save();
-   ctx.strokeStyle=p.color; ctx.lineWidth=1.5; ctx.globalAlpha=0.5;
-   ctx.beginPath(); ctx.moveTo(x,yLine-3); ctx.lineTo(x,pinY+r); ctx.stroke();
-   ctx.globalAlpha=1;
-   ctx.beginPath(); ctx.arc(x,yLine,5,0,7); ctx.fillStyle=p.color; ctx.globalAlpha=0.25; ctx.fill();
-   ctx.globalAlpha=1; ctx.beginPath(); ctx.arc(x,yLine,3,0,7); ctx.fillStyle=p.color; ctx.fill();
-   ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
-   ctx.shadowColor='rgba(0,0,0,0.18)'; ctx.shadowBlur=6; ctx.shadowOffsetY=2;
-   ctx.beginPath(); ctx.moveTo(x-5,pinY+r-2); ctx.lineTo(x+5,pinY+r-2); ctx.lineTo(x,pinY+r+6); ctx.closePath();
-   ctx.fillStyle=p.color; ctx.fill();
-   ctx.beginPath(); ctx.arc(x,pinY,r,0,7); ctx.fillStyle=p.color; ctx.fill();
-   ctx.shadowColor='transparent';
-   ctx.lineWidth=2; ctx.strokeStyle='#fff'; ctx.stroke();
-   ctx.fillStyle='#fff'; ctx.font='bold 12px -apple-system,Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
-   ctx.fillText(String(p.n),x,pinY);
+   ctx.strokeStyle=C_PINLINE; ctx.lineWidth=1; ctx.setLineDash([2,3]);
+   ctx.beginPath(); ctx.moveTo(x,py+R); ctx.lineTo(x,y.bottom); ctx.stroke();
+   ctx.setLineDash([]);
+   ctx.beginPath(); ctx.arc(x,py,R,0,Math.PI*2);
+   ctx.fillStyle=C_PANEL; ctx.fill();
+   ctx.strokeStyle=p.color; ctx.lineWidth=1.5; ctx.stroke();
+   ctx.fillStyle=p.color; ctx.font="500 9.5px 'IBM Plex Mono',monospace";
+   ctx.textAlign='center'; ctx.textBaseline='middle';
+   ctx.fillText(String(p.n),x,py+0.5);
    ctx.restore();
   });
  }
@@ -819,35 +772,61 @@ function drawTrend(evSortedAsc, numByDate){
  const upCurData=xLabels.map((_,i)=>upAt(curDates,i));
  const upCmpData=hasCmp?xLabels.map((_,i)=>upAt(cmpDates,i)):[];
  const hasUpload=upSeries&&(upCurData.some(v=>v!=null)||upCmpData.some(v=>v!=null));
- // Change-points within the CURRENT period (sd~ed), threshold 8% (on active source)
- const changePoints=detectChangePoints(sd.value, ed.value, 8);
- window._changePoints=changePoints;  // real dates — used by render() for cause cards
- const chartChangePoints=changePoints.map(cp=>{
-  let xIdx=null; for(let k=0;k<curDates.length;k++){ if(curDates[k]<=cp.date) xIdx=xLabels[k]; }
-  return Object.assign({},cp,{xIdx});
- });
- const dataMax=Math.max(1,...curData.filter(v=>v!=null),...cmpData.filter(v=>v!=null));
- const yMax=Math.ceil(dataMax*1.25/1000)*1000;
- const compMax=Math.max(1,...total);
- const compYMax=Math.ceil(compMax*1.25/1000)*1000;
+ // Fit each scale to its own series instead of anchoring at zero. Wiki views
+ // never approach zero, so a zero-based axis pressed every line flat against
+ // the bottom of the panel and threw away the shape the chart exists to show.
+ // No tick labels are printed (see the scales block), so there is no risk of
+ // a reader misreading a truncated axis as a zero-based one.
+ const span=(vals)=>{
+  const v=vals.filter(x=>x!=null&&!isNaN(x));
+  if(!v.length) return {};
+  const lo=Math.min(...v), hi=Math.max(...v);
+  const pad=(hi-lo||Math.abs(hi)||1)*0.18;
+  return {min:lo-pad, max:hi+pad};
+ };
+ const ySpan=span([...curData,...cmpData]);
+ const compSpan=span(total);
+ const upSpan=span([...upCurData,...upCmpData]);
  // Format a YYYY-MM-DD date as "7/7" for x-axis ticks (current-period date at
  // that index; the comparison line's own real date still shows in tooltips).
  const fmtMD=(d)=>{ if(!d) return ''; const p=d.split('-'); return `${+p[1]}/${+p[2]}`; };
- // Pins: map each CURRENT-period event to its day-index on the 현재 기간 line
- const pins=[];
+ // Pins: map CURRENT-period events onto the 현재 기간 line.
+ //
+ // Pinning every event does not work at this scale — a YTD view holds a few
+ // hundred of them, the discs overlap into an unreadable band along the
+ // bottom, and no single one can be clicked. So the chart marks only the
+ // events strong enough to be worth looking for on a trend line: one per day
+ // position (the strongest that day), then the PIN_LIMIT strongest overall.
+ // Every event still has a numbered row in the list below — the pin is a
+ // pointer INTO that list, not a second copy of it.
+ const PIN_LIMIT=10;
+ const byX=new Map();
  evSortedAsc.forEach((e)=>{
   if(!curDates.length || e.date<curDates[0] || e.date>curDates[curDates.length-1]) return;
   let nearIdx=0; for(let k=0;k<curDates.length;k++){ if(curDates[k]<=e.date) nearIdx=k; }
   const sv=curData[nearIdx];
-  pins.push({n:(numByDate&&numByDate[e.date])||'',xLabel:xLabels[nearIdx],anchorY:sv==null?0:sv,color:DIRC[e.impact_direction]||'#999'});
+  const cand={n:(numByDate&&numByDate[e.date])||'',xLabel:xLabels[nearIdx],
+    anchorY:sv==null?0:sv,color:DIRC[e.impact_direction]||C_DIM,w:STRENGTH(e)};
+  const prev=byX.get(nearIdx);
+  if(!prev || cand.w>prev.w) byX.set(nearIdx,cand);
  });
+ // Strongest first, but skip any pin that would land on top of one already
+ // taken: two discs closer than ~1/24 of the axis overlap at this panel width.
+ const minGap=Math.max(1,Math.round(N/24));
+ const pins=[];
+ [...byX.values()].sort((a,b)=>b.w-a.w).forEach(cand=>{
+  if(pins.length>=PIN_LIMIT) return;
+  if(pins.some(p=>Math.abs(p.xLabel-cand.xLabel)<minGap)) return;
+  pins.push(cand);
+ });
+ pins.sort((a,b)=>a.xLabel-b.xLabel);
  // Swatches read straight off the chart palette — hard-coding them here is
  // how the legend silently drifted from the lines it labels.
  const lg=(c,t,dash)=>`<span style="display:flex;align-items:center;gap:5px"><span style="width:13px;height:2px;${dash?`border-top:2px dashed ${c}`:`background:${c}`};display:inline-block"></span>${t}</span>`;
  document.getElementById('legend').innerHTML=
-  lg(C_SAM,'SAMSUNG')
+  lg(C_SAM,'삼성')
   +(hasCmp?lg(C_DIM,'비교 기간',true):'')
-  +lg(C_MKT,compLabel().toUpperCase())
+  +lg(C_MKT,compLabel())
   +(hasUpload?lg(C_REAL,'실측'):'')
   +(hasUpload&&hasCmp?lg(C_REAL,'실측 비교',true):'');
  document.getElementById('tsub').textContent=hasCmp?`현재·비교 기간 일자 기준 · 각 ${N}일`:`현재 기간 ${N}일`;
@@ -857,23 +836,50 @@ function drawTrend(evSortedAsc, numByDate){
  if(tn) tn.textContent = (upSeries?'실측 트래픽(업로드) 기준':'위키피디아 일별 조회수로 추정 · 실측 아님')
    + ' · 번호 핀은 아래 목록의 번호와 같은 요인입니다.';
  if(chart)chart.destroy();
+ // Vertical fade under the primary line, as in the design. Built per draw
+ // because the gradient needs the chart area's pixel height, which only
+ // exists once Chart.js has laid the canvas out.
+ // Gradient anchored to the SERIES, not to the panel. Spanning the whole
+ // chart area put the opaque end at the top of the panel, so a line sitting
+ // low in its scale got only the transparent tail and showed no fill at all.
+ // Starting at the series' own high point keeps the wash directly under the
+ // line wherever the line happens to sit.
+ const fade=(hex)=>(ctx)=>{
+  const a=ctx.chart.chartArea; if(!a) return 'transparent';
+  const sc=ctx.chart.scales[ctx.dataset.yAxisID];
+  const vals=(ctx.dataset.data||[]).filter(v=>v!=null&&!isNaN(v));
+  let top=a.top;
+  if(sc&&vals.length){
+   const px=sc.getPixelForValue(Math.max(...vals));
+   if(px!=null&&!isNaN(px)) top=Math.max(a.top,Math.min(px,a.bottom-1));
+  }
+  const g=ctx.chart.ctx.createLinearGradient(0,top,0,a.bottom);
+  g.addColorStop(0,hex+'3d'); g.addColorStop(1,hex+'00');
+  return g;
+ };
+ // Thin strokes, one filled series, comparisons dashed and dimmed — the
+ // reading order is current > comparison > context.
+ const LINE={tension:0.3,pointRadius:0,pointHoverRadius:3,spanGaps:true};
  const dsets=[
-   {label:'Samsung 현재 기간',data:curData,borderColor:C_SAM,backgroundColor:'rgba(90,200,220,0.10)',tension:0.35,pointRadius:0,borderWidth:2.5,spanGaps:true,yAxisID:'y'}];
+   Object.assign({label:'삼성 현재 기간',data:curData,borderColor:C_SAM,
+     backgroundColor:fade(C_SAM),fill:'origin',borderWidth:1.75,yAxisID:'y'},LINE)];
  if(hasCmp){
-   dsets.push({label:'Samsung 비교 기간',data:cmpData,borderColor:C_DIM,backgroundColor:'transparent',tension:0.35,pointRadius:0,borderWidth:2,borderDash:[5,4],spanGaps:true,yAxisID:'y'});
+   dsets.push(Object.assign({label:'삼성 비교 기간',data:cmpData,borderColor:C_DIM,
+     backgroundColor:'transparent',borderWidth:1.5,borderDash:[4,3],yAxisID:'y'},LINE));
  }
- dsets.push({label:compLabel()+' (현재)',data:total,borderColor:C_MKT,backgroundColor:'rgba(200,160,80,0.10)',tension:0.35,pointRadius:0,borderWidth:2,yAxisID:'yComp'});
+ dsets.push(Object.assign({label:compLabel()+' (현재)',data:total,borderColor:C_MKT,
+   backgroundColor:'transparent',borderWidth:1.5,yAxisID:'yComp'},LINE));
  if(hasUpload){
-   dsets.push({label:'실제 트래픽(현재)',data:upCurData,borderColor:C_REAL,backgroundColor:'rgba(230,110,90,0.10)',
-     tension:0.35,pointRadius:0,borderWidth:2.5,spanGaps:true,yAxisID:'yUpload'});
+   dsets.push(Object.assign({label:'실측 트래픽(현재)',data:upCurData,borderColor:C_REAL,
+     backgroundColor:fade(C_REAL),fill:'origin',borderWidth:1.75,yAxisID:'yUpload'},LINE));
    if(hasCmp){
-     dsets.push({label:'실제 트래픽(비교)',data:upCmpData,borderColor:C_REAL,backgroundColor:'transparent',
-       tension:0.35,pointRadius:0,borderWidth:2,borderDash:[5,4],spanGaps:true,yAxisID:'yUpload'});
+     dsets.push(Object.assign({label:'실측 트래픽(비교)',data:upCmpData,borderColor:C_REAL,
+       backgroundColor:'transparent',borderWidth:1.5,borderDash:[4,3],yAxisID:'yUpload'},LINE));
    }
  }
  chart=new Chart(document.getElementById('trend'),{type:'line',
   data:{labels:xLabels,datasets:dsets},
-  options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:30}},
+  options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:16,right:4,left:2}},
    onClick:(evt)=>{
      const rect=evt.chart.canvas.getBoundingClientRect();
      const px=evt.x; const py=evt.y;
@@ -881,15 +887,17 @@ function drawTrend(evSortedAsc, numByDate){
      let best=null,bestD=1e9;
      ps.forEach(p=>{
       const x=evt.chart.scales.x.getPixelForValue(p.xLabel);
-      const yLine=evt.chart.scales.y.getPixelForValue(p.anchorY);
-      const pinY=yLine-30;
+      const pinY=evt.chart.scales.y.getPixelForValue(p.anchorY);
       const dx=px-x, dy=py-pinY; const dist=Math.sqrt(dx*dx+dy*dy);
       if(dist<bestD){bestD=dist;best=p;}
      });
      if(best && bestD<24){ scrollToCard(best.n); }
    },
    plugins:{legend:{display:false},
-     tooltip:{callbacks:{
+     tooltip:{backgroundColor:'#1b1e22',borderColor:'#2c3138',borderWidth:1,
+       titleColor:'#b9bec6',bodyColor:'#e6e9ee',displayColors:false,padding:9,
+       titleFont:{family:MONO,size:10},bodyFont:{size:11.5},
+       callbacks:{
        title:(items)=>(items[0]?items[0].label+'일차':''),
        label:(c)=>{
          const i=c.dataIndex; const lbl=c.dataset.label;
@@ -897,12 +905,22 @@ function drawTrend(evSortedAsc, numByDate){
          const d=isCmp?(cmpDates[i]||''):(curDates[i]||'');
          return `${lbl}${d?' ('+d+')':''}: ${(c.parsed.y||0).toLocaleString()}회`;
        }}}},
-   scales:{x:{ticks:{color:C_TICK,font:{size:11},maxTicksLimit:8,callback:(v,i)=>fmtMD(curDates[i])},grid:{display:false}},
-     y:{suggestedMax:yMax,ticks:{color:C_TICK,font:{size:11},callback:v=>(v/1000)+'k'},grid:{color:C_GRID}},
-     yComp:{display:true,position:'right',suggestedMax:compYMax,ticks:{color:C_MKT,font:{size:10},callback:v=>(v/1000)+'k'},grid:{display:false},title:{display:true,text:compLabel(),color:C_MKT,font:{size:10}}},
-     yUpload:{display:hasUpload,position:'right',ticks:{color:C_REAL,font:{size:10},callback:v=>(v/1000)+'k'},grid:{display:false},title:{display:true,text:'실제 트래픽',color:C_REAL,font:{size:10}}}}},
-  plugins:[pinPlugin,cpPlugin]});
- chart._pins=pins; chart._changePoints=chartChangePoints; chart.update();
+   // Horizontal hairlines and mono date ticks only. The y scales carry three
+   // different units (wiki views, competitor views, real traffic), so a
+   // printed number on the edge would invite comparing values that are not
+   // comparable — the levels live in the tooltip, the shape lives here.
+   scales:{
+     x:{ticks:{color:C_TICK,font:{family:MONO,size:9.5},maxTicksLimit:6,padding:6,
+         callback:(v,i)=>fmtMD(curDates[i])},
+        grid:{display:false},border:{display:false}},
+     y:Object.assign({ticks:{display:false},border:{display:false},
+        grid:{color:C_GRID,drawTicks:false}},ySpan),
+     yComp:Object.assign({position:'right',ticks:{display:false},
+        border:{display:false},grid:{display:false}},compSpan),
+     yUpload:Object.assign({display:hasUpload,position:'right',ticks:{display:false},
+        border:{display:false},grid:{display:false}},upSpan)}},
+  plugins:[pinPlugin]});
+ chart._pins=pins; chart.update();
 }
 
 
@@ -917,8 +935,11 @@ const AXIS_KO={demand:'수요',share:'점유',supply:'공급'};
 const AXIS_COLOR={demand:'#4fbf8f',share:'#5ac8dc',supply:'#e0904a'};
 // Chart palette. Chart.js takes plain strings, so the CSS custom properties
 // are mirrored here rather than referenced — one place to change either way.
-const C_SAM='#5ac8dc', C_MKT='#c8a050', C_REAL='#e66e5a',
-      C_DIM='#6f7580', C_TICK='#8b9099', C_GRID='rgba(140,150,165,0.13)';
+const MONO="'IBM Plex Mono',ui-monospace,monospace";
+const C_SAM='#4fcdcd', C_MKT='#ac8e4e', C_REAL='#e66e5a',
+      C_DIM='#5b646f', C_TICK='#5a5e62', C_GRID='#1f2225',
+      C_PANEL='#15171a',        // panel fill — pin discs punch a hole in the line
+      C_PINLINE='#454e58';      // the pin's dashed drop line
 const SUPPLY_KW=['인덱싱','크롤링','indexing','crawling','다운타임','downtime','장애','outage','core web vitals','사이트 속도','robots.txt','sitemap'];
 const OWN_KW=['samsung','galaxy','삼성','갤럭시'];
 // Named-rival mentions — the signal that a platform/AI/marketing-category
@@ -1132,10 +1153,8 @@ function renderAxisPanel(r,vd,numByDate){
  const axName=(ax)=>ax==='share'?shareName:AXIS_KO[ax];
 
  const basisEl=document.getElementById('axisBasis');
- if(basisEl) basisEl.textContent = basisGap
-   ? '(업로드한 실측 트래픽이 비교 기간을 덮지 않음)'
-   : isReal ? '(업로드한 실측 트래픽 기준)'
-            : '(위키 조회수로 추정한 트래픽 — 실측 트래픽 업로드 시 자동 전환)';
+ if(basisEl) basisEl.textContent = basisGap ? '실측 트래픽이 비교 기간을 덮지 않음'
+   : isReal ? '실측 트래픽 기준' : '위키 조회수 추정';
  renderCompactAxis(attr, vd, axName, fmtSigned);
  panel.style.display='block';
 }
@@ -1161,7 +1180,17 @@ function render(){
 
 
  const evAsc=r.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
- drawTrend(evAsc, numByDate);
+ // The chart comes from a CDN. If that script is blocked, drawTrend throws,
+ // and everything after it here — KPI cards, the event list, the detail pane —
+ // never runs, leaving a page that looks broken rather than one missing a
+ // chart. The rest of the dashboard does not depend on Chart.js, so let it
+ // render either way.
+ try{ drawTrend(evAsc, numByDate); }
+ catch(err){
+  console.error('trend chart failed',err);
+  const tn=document.getElementById('tnote');
+  if(tn) tn.textContent='추세 차트를 불러오지 못했습니다 (차트 라이브러리 로드 실패) · 아래 목록과 3축 진단은 정상입니다.';
+ }
  renderAxisPanel(r, vd, numByDate);
 
  // ---- KPI row ----------------------------------------------------------
@@ -1387,7 +1416,7 @@ trafficFile.onchange=e=>{
   const dates=parsed.raw.map(r=>r.date).sort();
   const days=new Set(dates).size;
   const from=dates[0], to=dates[dates.length-1];
-  document.getElementById('csvStatus').innerHTML=`<span style="color:#137a52">● 실제 트래픽 사용 중</span> · ${parsed.countries.size}개국 · ${from}~${to} (${days}일, 저장 안 됨)`;
+  document.getElementById('csvStatus').innerHTML=`<span style="color:var(--pos)">● 실측 트래픽 사용 중</span> · ${parsed.countries.size}개국 · ${from}~${to} (${days}일, 저장 안 됨)`;
   showAll=false; render();
  };
  reader.readAsText(f,'utf-8');
