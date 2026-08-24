@@ -81,22 +81,6 @@ jobs:
           CRUX_API_KEY: ${{ secrets.CRUX_API_KEY }}
         run: python scripts/collect_crux.py
 
-      # ---- Layer 3: IMF monthly macro stats (국가별 통계 탭, separate dashboard) ----
-      # Runs only on the 28th (collects the PREVIOUS month's data), or manual dispatch.
-      - name: Detect collection day (28th) + weekday
-        id: statday
-        run: |
-          if [ "$(date -u +%d)" = "28" ]; then
-            echo "run_stats=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "run_stats=false" >> "$GITHUB_OUTPUT"
-          fi
-          # 1=Monday .. 7=Sunday — gates the weekly LLM-agreement check below
-          echo "dow=$(date -u +%u)" >> "$GITHUB_OUTPUT"
-
-      - name: Layer 3 — IMF monthly indicators (28th → previous month)
-        if: ${{ steps.statday.outputs.run_stats == 'true' || github.event_name == 'workflow_dispatch' }}
-        run: python scripts/collect_imf.py
 
       # ---- Credibility layer: score the ledger's own predictions ----
       # Every stored event is a prediction (direction/strength/horizon) that
@@ -129,14 +113,14 @@ jobs:
           git config user.name  "github-actions"
           git config user.email "actions@github.com"
           # Add only the paths that exist. Several outputs are produced
-          # conditionally — llm_agreement.json on Mondays, imf_series.json on
-          # the 28th, crux_series.json only with a key — and `git add` aborts
+          # conditionally — llm_agreement.json on Mondays,
+          # crux_series.json only with a key — and `git add` aborts
           # the WHOLE command with exit 128 on the first missing pathspec,
           # staging nothing. That killed 2026-08-11..13: llm_agreement.json
           # does not exist Tue-Sun, so three days of collection were built but
           # never committed and Pages never redeployed.
           for f in data/events.json data/feed_state.json data/model_status.json \
-                   data/wiki_series.json data/gdelt_pool.json data/imf_series.json \
+                   data/wiki_series.json data/gdelt_pool.json \
                    data/crux_series.json data/query_performance.json \
                    data/feed_performance.json data/llm_usage.json \
                    data/prediction_scores.json data/event_pressure.json \
