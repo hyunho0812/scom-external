@@ -546,6 +546,7 @@ automotive security
 industrial control system security
 critical infrastructure security
 ai device
+earnings report
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

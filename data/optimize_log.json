@@ -1314,5 +1314,33 @@
    "ai search traffic"
   ],
   "rationale": "'samsung earnings report'의 낮은 kept 수를 개선하기 위해 'samsung earnings'로 축약하여 더 넓은 범위를 포괄하도록 했으며, 기존 키워드 목록은 한국어 필수어 포함으로 변경 없음."
+ },
+ {
+  "date": "2026-08-24",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "rationale": "실적 보고 관련 키워드 추가 및 낮은 keep_rate를 가진 'samsung earnings' 쿼리에 'report'를 추가하여 검색 정확도를 높였습니다."
  }
 ]
