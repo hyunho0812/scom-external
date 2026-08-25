@@ -222,6 +222,74 @@ def score_events(events, smap):
     return scored, skipped, unfinished
 
 
+def calibrate_strength(scored):
+    """What the 1-5 strength labels turned out to be worth.
+
+    The label is a prediction of HOW FAR traffic moves. Once a horizon has
+    elapsed the move is known, so each event has an observed counterpart to
+    the number the model guessed.
+
+    Two rules keep this honest:
+
+    * The observed value NEVER overwrites impact_strength. That field is the
+      prediction, and this whole file exists to check predictions against
+      outcomes — deriving the prediction from the outcome would make the check
+      circular and would erase what the model actually said.
+    * A move is only attributed to an event when every event sharing its
+      window agreed on direction. In a mixed window the same traffic swing is
+      the net of forces pushing both ways, so it cannot be read as any one
+      event's magnitude. Those are reported as unattributable, not as zero.
+
+    The observed scale is quantile-cut so it is directly comparable to the 1-5
+    the model uses: the biggest fifth of moves is a 5, the smallest fifth a 1.
+    """
+    by_win = {}
+    for r in scored:
+        by_win.setdefault((r["date"], r["horizon"]), []).append(r)
+    attributable = [r for r in scored
+                    if len({x["predicted"] for x in by_win[(r["date"], r["horizon"])]}) == 1]
+    if len(attributable) < 10:
+        return {"n": len(attributable), "note": "표본 부족 — 아직 교정할 수 없습니다."}
+
+    moves = sorted(abs(r["actual_pct"]) for r in attributable)
+    # 4 internal cuts -> 5 buckets of equal count
+    cuts = [moves[int(len(moves) * q)] for q in (0.2, 0.4, 0.6, 0.8)]
+
+    def bucket(pct):
+        a = abs(pct)
+        return 1 + sum(1 for c in cuts if a >= c)
+
+    per_event, table = {}, {}
+    for r in attributable:
+        obs = bucket(r["actual_pct"])
+        per_event[r["event_id"]] = {
+            "predicted": r["strength"], "observed": obs,
+            "actual_pct": r["actual_pct"], "hit": r["hit"],
+        }
+        table.setdefault(r["strength"], []).append(obs)
+
+    calib = {}
+    for pred in sorted(table):
+        obs = sorted(table[pred])
+        calib[str(pred)] = {
+            "n": len(obs),
+            "observed_median": obs[len(obs) // 2],
+            "observed_mean": round(sum(obs) / len(obs), 2),
+            # What this predicted value should be read as, given history.
+            "suggested": obs[len(obs) // 2],
+        }
+    return {
+        "n": len(attributable),
+        "unattributable": len(scored) - len(attributable),
+        "bucket_cuts_pct": [round(c, 2) for c in cuts],
+        "by_predicted": calib,
+        "per_event": per_event,
+        "note": ("관측 강도는 실제 트래픽 변화폭을 5분위로 자른 값이며, "
+                 "저장된 impact_strength를 덮어쓰지 않습니다 — 예측과 결과를 "
+                 "나란히 두어야 예측을 검증할 수 있기 때문입니다."),
+    }
+
+
 def summarise(scored):
     """Hit rate + calibration, overall and split by date provenance."""
     def block(rows):
@@ -439,6 +507,7 @@ def main():
         # than "the data is broken".
         "unfinished_horizon": unfinished,
         "summary": summarise(scored),
+        "strength_calibration": calibrate_strength(scored),
         "correlation": {
             "pressure_vs_forward_traffic_r": None if r_all is None else round(r_all, 4),
             "n_days": n_pairs, "forward_days": FWD_DAYS,
@@ -454,6 +523,7 @@ def main():
             "'수집일 추정' 날짜는 기사에서 날짜를 얻지 못해 수집한 날로 채운 값이라, 미리 알았다는 근거가 될 수 없습니다.",
             "위키피디아 조회수는 samsung.com 트래픽의 대리지표이며, 그 대리 관계 자체는 아직 검증되지 않았습니다.",
             "일별 관측은 자기상관이 강해 일반 유의성 검정은 과신합니다 — 순열검정 p값을 기준으로 삼아야 합니다.",
+            "관측 강도는 사후 결과일 뿐 예측이 아닙니다. 저장된 impact_strength는 그대로 두고 나란히 보여줍니다.",
         ],
     })
 

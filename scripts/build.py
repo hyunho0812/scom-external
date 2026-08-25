@@ -707,6 +707,21 @@ const DS_LABEL={url:'발행일 확인',llm:'기사 명시일',capture:'수집일
 const HORIZON_KO={immediate:'즉시 (며칠)',weeks:'수 주',months:'수 개월'};
 const CONF_KO={high:'높음',med:'보통',low:'낮음'};
 
+// Predicted strength beside what the move actually turned out to be. The
+// observed value is read from prediction_scores.json — never recomputed here,
+// and never written back over impact_strength: the stored label is the
+// prediction this dashboard exists to check.
+const CALIB=(SCORES.strength_calibration||{});
+function strengthTag(e){
+ const p=STRENGTH(e);
+ const o=(CALIB.per_event||{})[e.event_id];
+ if(!o) return `<span class="tag">영향강도 ${p}/5</span>`;
+ const d=o.observed-p;
+ const col=Math.abs(d)>=2?'var(--warn)':'var(--muted)';
+ return `<span class="tag" title="예측 ${p} · horizon 경과 후 실측 변화 ${o.actual_pct>=0?'+':''}${o.actual_pct}% (같은 창 5분위)">`
+  +`영향강도 ${p}/5 <span style="color:${col}">→ 실측 ${o.observed}</span></span>`;
+}
+
 function detailHtml(e, n){
  if(!e) return `<div class="dhead"><span class="k">선택한 요인</span></div>
    <div class="foot">왼쪽 목록에서 요인을 고르면 전체 내용이 여기 표시됩니다.</div>`;
@@ -715,7 +730,7 @@ function detailHtml(e, n){
  const dirCol=DIRC[e.impact_direction]||'var(--neu)';
  const url=String(e.raw_url||'');
  const tags=[`<span class="tag" style="border-color:${AXIS_COLOR[ax]}66;color:${AXIS_COLOR[ax]}">${AXIS_KO[ax]||'-'}</span>`,
-   `<span class="tag">영향강도 ${STRENGTH(e)}/5</span>`,
+   strengthTag(e),
    `<span class="tag">신뢰도 ${CONF_KO[e.confidence]||e.confidence||'-'}</span>`,
    `<span class="tag">${scopeLabelKo(e.scope)}</span>`].join('');
  const meta=[['영향 방향',`<span style="color:${dirCol}">${dirWord}</span>`],
