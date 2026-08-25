@@ -93,8 +93,16 @@ jobs:
       # ---- Weekly: how much do the three judges actually agree? ----
       # Label noise is a ceiling on everything downstream. Weekly (Mondays)
       # because it costs one batch request per provider.
-      - name: LLM label agreement (Mondays)
-        if: ${{ github.event_name == 'workflow_dispatch' || steps.statday.outputs.dow == '1' }}
+      # Runs every day. It was gated to Mondays on the assumption that three
+      # requests were worth rationing, but the ledger takes in ~16 events a
+      # day and one weekly sample of 10 articles accumulates evidence far too
+      # slowly to say anything about label reliability. Three requests a day
+      # sits inside every free tier we use.
+      #
+      # (The Monday gate never fired anyway: it read steps.statday.outputs.dow
+      # and no step declared that id, so the expression was always an empty
+      # string. That is why data/llm_agreement.json never existed.)
+      - name: LLM label agreement
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: gemini-2.5-flash
@@ -112,12 +120,11 @@ jobs:
           git config user.name  "github-actions"
           git config user.email "actions@github.com"
           # Add only the paths that exist. Several outputs are produced
-          # conditionally — llm_agreement.json on Mondays,
-          # crux_series.json only with a key — and `git add` aborts
+          # conditionally — crux_series.json only with a key — and `git add` aborts
           # the WHOLE command with exit 128 on the first missing pathspec,
-          # staging nothing. That killed 2026-08-11..13: llm_agreement.json
-          # does not exist Tue-Sun, so three days of collection were built but
-          # never committed and Pages never redeployed.
+          # staging nothing. That killed 2026-08-11..13: three days of
+          # collection were built but never committed and Pages never
+          # redeployed. The guard below is what keeps that from recurring.
           for f in data/events.json data/feed_state.json data/model_status.json \
                    data/wiki_series.json data/gdelt_pool.json \
                    data/crux_series.json data/query_performance.json \
