@@ -38,7 +38,7 @@ from datetime import datetime, timedelta, timezone
 
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
-from llm_common import (llm_filter_batch, diag_summary, INTERESTS, SCOPE_ALL,
+from llm_common import (PROMPT_VERSION, llm_filter_batch, diag_summary, INTERESTS, SCOPE_ALL,
                         EVENTS_FILE, GDELT_POOL_FILE, QUERY_PERF_FILE,
                         KW_NEWS_FILE, read_json, write_json,
                         load_queries, load_kw_file, clean_axis, clean_scope, clean_date_ex, BATCH,
@@ -142,6 +142,8 @@ def to_event(article, verdict, llm_used):
         # bucket; without it every new event defaults to "seed".
         "date_source":date_source,
         "captured_date":_today,
+        # Which prompt produced these labels — see llm_common.PROMPT_VERSION.
+        "prompt_version":PROMPT_VERSION,
         # clean_scope, not a bare join: the models answer this field with
         # "WW"/"worldwide" (and once with the instruction text itself), none of
         # which the dashboard filter can match.

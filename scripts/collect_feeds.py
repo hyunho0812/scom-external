@@ -28,7 +28,7 @@ from xml.etree import ElementTree as ET
 
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
-from llm_common import (llm_filter_batch, diag_summary, INTERESTS,
+from llm_common import (PROMPT_VERSION, llm_filter_batch, diag_summary, INTERESTS,
                         EVENTS_FILE, FEED_STATE_FILE, FEED_PERF_FILE,
                         FEEDS_FILE, KW_FEEDS_FILE, read_json, write_json,
                         load_kw_file, clean_axis, clean_scope, clean_date_ex, BATCH,
@@ -227,6 +227,8 @@ def main():
                 # See collect_news.to_event(); the scorer splits on this.
                 "date_source": date_source,
                 "captured_date": _today,
+                # See llm_common.PROMPT_VERSION.
+                "prompt_version": PROMPT_VERSION,
                 "scope": clean_scope(verdict.get("scope")),  # see collect_news
                 "divisions": ";".join(verdict.get("divisions", [])),
                 "kpi": ";".join(verdict.get("kpi", [])) or "Traffic",

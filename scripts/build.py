@@ -707,10 +707,10 @@ const DS_LABEL={url:'발행일 확인',llm:'기사 명시일',capture:'수집일
 const HORIZON_KO={immediate:'즉시 (며칠)',weeks:'수 주',months:'수 개월'};
 const CONF_KO={high:'높음',med:'보통',low:'낮음'};
 
-// Predicted strength beside what the move actually turned out to be. The
-// observed value is read from prediction_scores.json — never recomputed here,
-// and never written back over impact_strength: the stored label is the
-// prediction this dashboard exists to check.
+// The LLM's strength beside the 조정강도 — what the move it predicted turned
+// out to be worth, once the horizon elapsed. Read from prediction_scores.json,
+// never recomputed here and never written back over impact_strength: the
+// stored label is the prediction this dashboard exists to check.
 const CALIB=(SCORES.strength_calibration||{});
 function strengthTag(e){
  const p=STRENGTH(e);
@@ -718,8 +718,8 @@ function strengthTag(e){
  if(!o) return `<span class="tag">영향강도 ${p}/5</span>`;
  const d=o.observed-p;
  const col=Math.abs(d)>=2?'var(--warn)':'var(--muted)';
- return `<span class="tag" title="예측 ${p} · horizon 경과 후 실측 변화 ${o.actual_pct>=0?'+':''}${o.actual_pct}% (같은 창 5분위)">`
-  +`영향강도 ${p}/5 <span style="color:${col}">→ 실측 ${o.observed}</span></span>`;
+ return `<span class="tag" title="LLM 판단 ${p} · horizon 경과 후 트래픽 변화 ${o.actual_pct>=0?'+':''}${o.actual_pct}%를 같은 창 5분위로 환산">`
+  +`영향강도 ${p}/5 <span style="color:${col}">→ 조정강도 ${o.observed}</span></span>`;
 }
 
 function detailHtml(e, n){
@@ -1220,7 +1220,7 @@ function render(){
   ['수집 이벤트', r.length, '', 'var(--ink)'],
   ['트래픽 변화', trafVal, vd?('vs 비교 기간'):'기간 비교 필요', trafCol],
   ['방향 적중률', hit, (sc.n?'n='+sc.n:'')+fore, 'var(--warn)'],
-  ['압력 상관', (corr.pressure_vs_forward_traffic_r!=null?'r '+corr.pressure_vs_forward_traffic_r.toFixed(3):'—'),
+  ['누적 영향지수 상관', (corr.pressure_vs_forward_traffic_r!=null?'r '+corr.pressure_vs_forward_traffic_r.toFixed(3):'—'),
     (corr.n_days?'n='+corr.n_days+'일':''), 'var(--neu)'],
  ];
  document.getElementById('cards').innerHTML = kpi.map(([l,v,n,c])=>
@@ -1288,6 +1288,14 @@ const GLOSSARY=[
    def:'그 영향이 얼마나 큰지를 1~5로 매긴 값입니다. 5가 가장 큽니다.',
    eg:'갤럭시 신제품 공개 = 5 · 해외 소매점 세일 기사 = 2',
    myth:'매출 크기가 아니라 웹사이트 방문자에 주는 크기입니다.'},
+  {ko:'조정강도',en:'CALIBRATED STRENGTH',
+   def:'AI가 매긴 영향 강도가 실제로 얼마짜리였는지 나중에 되짚어 매긴 값입니다. '
+      +'그 요인이 예상한 기간이 다 지난 뒤 트래픽이 실제로 얼마나 움직였는지를 보고, '
+      +'같은 기준으로 1~5에 다시 놓습니다.',
+   eg:'"영향강도 4/5 → 조정강도 2" = AI는 크게 볼 일이라 했지만 실제 움직임은 작은 축이었다는 뜻입니다.',
+   myth:'AI가 매긴 영향 강도를 덮어쓰지 않고 나란히 둡니다. 예측을 결과로 고쳐 쓰면 '
+       +'그 예측이 맞았는지 더는 확인할 수 없기 때문입니다. 또 같은 시기에 반대 방향 '
+       +'요인이 섞여 있으면 움직임을 어느 하나의 몫으로 볼 수 없어 조정강도를 붙이지 않습니다.'},
   {ko:'신뢰도',en:'CONFIDENCE',
    def:'AI가 자기 판단에 대해 갖는 확신입니다. 높음·보통·낮음 셋 중 하나입니다.',
    eg:'"방향이 ▼인 게 거의 확실하다" → 높음',
@@ -1312,11 +1320,11 @@ const GLOSSARY=[
   {ko:'사전근거 한정',en:'FOREKNOWN',
    def:'날짜를 믿을 수 있는 사건만 골라 다시 잰 적중률입니다.',
    eg:'__FORE_EG__'},
-  {ko:'압력 지수',en:'PRESSURE',
+  {ko:'누적 영향지수',en:'CUMULATIVE INDEX',
    def:'그날 사건들이 얼마나 세게 몰렸는지를 하나의 점수로 만든 값입니다.',
    eg:'큰 사건 3개가 겹친 날 = 높음. 시간이 지나면 점수가 줄어듭니다.'},
-  {ko:'압력 상관',en:'r',
-   def:'압력이 센 날 다음에 실제로 트래픽이 움직였는지를 −1~+1로 나타낸 값입니다.',
+  {ko:'누적 영향지수 상관',en:'r',
+   def:'지수가 높은 날 다음에 실제로 트래픽이 움직였는지를 −1~+1로 나타낸 값입니다.',
    eg:'__CORR_EG__',
    myth:'0에 가까우면 관계가 없다는 뜻이고, 표본이 적으면 값 자체를 믿을 수 없습니다.'},
   {ko:'순열검정 p값',en:'p-VALUE',

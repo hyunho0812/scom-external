@@ -646,6 +646,16 @@ def load_kw_file(path):
         return [], []
     return keep, drop
 
+# Bumped whenever FILTER_SYSTEM changes in a way that could move the labels.
+# Stamped onto every event as `prompt_version`, because otherwise "did the new
+# wording help?" is unanswerable: the ledger mixes events judged under every
+# version of the prompt it has ever had, and averaging across them hides any
+# improvement inside the old ones.
+#   1 — everything up to 2026-08-24 (no stamp on those events; treated as 1)
+#   2 — 2026-08-25: anchored strength/confidence scales, calibration note
+PROMPT_VERSION = 2
+
+
 FILTER_SYSTEM = (
  "Judge if this news item could plausibly affect samsung.com web traffic or "
  "revenue (direct or indirect). Reject generic PR, gossip, stock noise, "
@@ -750,6 +760,81 @@ def _interest_note():
             + ", ".join(INTERESTS)) if INTERESTS else ""
 
 
+_calib_note_cache = {}
+
+
+def _calibration_note():
+    """Tell the model how its own past labels turned out.
+
+    Two separate pieces, with very different safety profiles:
+
+    * DISTRIBUTION — how the strength values it has already assigned are
+      spread. This reads only the ledger's own labels, never traffic, so
+      there is no way for it to smuggle an outcome into a prediction. It is
+      always included: the observed problem is that 58% of events land on 3
+      and "low" confidence has never once been used, which is a scale-usage
+      failure the model can fix without knowing anything about traffic.
+
+    * OUTCOMES — what the labels turned out to be worth (조정강도). Learning
+      from PAST outcomes to label FUTURE articles is ordinary calibration,
+      not circular: the traffic being predicted has not happened yet. But it
+      is only worth teaching if the mapping carries signal, and right now the
+      gap between predicted and observed strength (1.45) is WIDER than the
+      gap you would get by shuffling the labels (1.37). Feeding that back
+      would teach one kind of noise in place of another. So this half is
+      gated on convergence.informative and stays silent until the labels beat
+      chance — at which point it turns itself on.
+    """
+    if "note" in _calib_note_cache:
+        return _calib_note_cache["note"]
+    parts = []
+    try:
+        ev = read_json(EVENTS_FILE, []) or []
+        st = {}
+        conf = {}
+        for e in ev:
+            try:
+                k = max(1, min(5, int(e.get("impact_strength") or 0)))
+            except Exception:
+                continue
+            st[k] = st.get(k, 0) + 1
+            c = (e.get("confidence") or "").strip().lower()
+            if c:
+                conf[c] = conf.get(c, 0) + 1
+        n = sum(st.values())
+        if n >= 50:
+            spread = ", ".join(f"{k}:{st.get(k,0)*100//n}%" for k in range(1, 6))
+            cs = ", ".join(f"{k}:{v*100//max(1,sum(conf.values()))}%"
+                           for k, v in sorted(conf.items()))
+            parts.append(
+                f"\n\nCALIBRATION — how you have been using these scales so far "
+                f"({n} past items). impact_strength: {spread}. confidence: {cs}. "
+                f"A scale bunched on one value carries no information. Judge each "
+                f"item on its own merits, but do not round toward the middle: if an "
+                f"item is genuinely marginal say so with a low number and low "
+                f"confidence, and reserve the top of the range for the rare item "
+                f"that earns it.")
+    except Exception:
+        pass
+    try:
+        sc = read_json(PREDICTION_SCORES_FILE, {}) or {}
+        cal = sc.get("strength_calibration") or {}
+        conv = cal.get("convergence") or {}
+        by_pred = cal.get("by_predicted") or {}
+        if conv.get("informative") and by_pred:
+            rows = ", ".join(f"{k}->{v.get('observed_median')}" for k, v in sorted(by_pred.items()))
+            parts.append(
+                f"\n\nOUTCOMES — for past items whose effect window has closed, the "
+                f"strength you assigned versus what the traffic move actually came to "
+                f"on the same 1-5 scale: {rows}. Where those differ, your scale is "
+                f"off in that direction; correct for it.")
+    except Exception:
+        pass
+    note = "".join(parts)
+    _calib_note_cache["note"] = note
+    return note
+
+
 def _today_note():
     """The single most important line for date accuracy.
 
@@ -778,7 +863,7 @@ def _item_block(article):
 
 
 def _build_filter_prompt(article):
-    return (FILTER_SYSTEM + _interest_note() + _today_note()
+    return (FILTER_SYSTEM + _interest_note() + _calibration_note() + _today_note()
             + "\n\nITEM:\n" + _item_block(article))
 
 
@@ -796,7 +881,7 @@ BATCH = max(1, int(os.environ.get("LLM_BATCH", "5")))
 def _build_batch_prompt(articles):
     """Same instructions, N items, one JSON array back — index-aligned."""
     items = "\n\n".join(f"[{i+1}]\n{_item_block(a)}" for i, a in enumerate(articles))
-    return (FILTER_SYSTEM + _interest_note() + _today_note() +
+    return (FILTER_SYSTEM + _interest_note() + _calibration_note() + _today_note() +
             f"\n\nYou will judge {len(articles)} items, numbered [1]..[{len(articles)}]. "
             f"Apply the rules above to EACH item INDEPENDENTLY.\n"
             f'Respond with ONLY a JSON array of exactly {len(articles)} objects, in the '

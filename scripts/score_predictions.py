@@ -222,8 +222,8 @@ def score_events(events, smap):
     return scored, skipped, unfinished
 
 
-def calibrate_strength(scored):
-    """What the 1-5 strength labels turned out to be worth.
+def calibrate_strength(scored, ev_by_id):
+    """조정강도 — what the 1-5 strength labels turned out to be worth.
 
     The label is a prediction of HOW FAR traffic moves. Once a horizon has
     elapsed the move is known, so each event has an observed counterpart to
@@ -268,6 +268,21 @@ def calibrate_strength(scored):
         }
         table.setdefault(r["strength"], []).append(obs)
 
+    # Convergence: how far the LLM's strength sat from the 조정강도, and how far
+    # a shuffled label would have sat. Without the shuffled baseline a gap of
+    # 1.45 looks like "close enough" when it is in fact worse than guessing.
+    gaps = [abs(v["predicted"] - v["observed"]) for v in per_event.values()]
+    shuffled = sorted(v["observed"] for v in per_event.values())
+    preds = sorted(v["predicted"] for v in per_event.values())
+    # Expected |p-o| if the two were unrelated: average over all pairings.
+    rand_gap = sum(abs(p - o) for p in preds for o in shuffled) / (len(preds) * len(shuffled))
+    by_ver, by_month = {}, {}
+    for eid, v in per_event.items():
+        e = ev_by_id.get(eid, {})
+        g = abs(v["predicted"] - v["observed"])
+        by_ver.setdefault(str(e.get("prompt_version") or 1), []).append(g)
+        by_month.setdefault((e.get("date") or "")[:7], []).append(g)
+
     calib = {}
     for pred in sorted(table):
         obs = sorted(table[pred])
@@ -281,10 +296,21 @@ def calibrate_strength(scored):
     return {
         "n": len(attributable),
         "unattributable": len(scored) - len(attributable),
+        "convergence": {
+            "mean_gap": round(sum(gaps) / len(gaps), 3),
+            "random_gap": round(rand_gap, 3),
+            # Below 1.0 means the label carries information about magnitude.
+            "informative": (sum(gaps) / len(gaps)) < rand_gap,
+            "exact_match_rate": round(sum(1 for g in gaps if g == 0) / len(gaps), 3),
+            "by_prompt_version": {k: {"n": len(v), "mean_gap": round(sum(v) / len(v), 3)}
+                                  for k, v in sorted(by_ver.items())},
+            "by_month": {k: {"n": len(v), "mean_gap": round(sum(v) / len(v), 3)}
+                         for k, v in sorted(by_month.items()) if k and len(v) >= 3},
+        },
         "bucket_cuts_pct": [round(c, 2) for c in cuts],
         "by_predicted": calib,
         "per_event": per_event,
-        "note": ("관측 강도는 실제 트래픽 변화폭을 5분위로 자른 값이며, "
+        "note": ("조정강도는 horizon 경과 후 트래픽 변화폭을 5분위로 자른 값이며, "
                  "저장된 impact_strength를 덮어쓰지 않습니다 — 예측과 결과를 "
                  "나란히 두어야 예측을 검증할 수 있기 때문입니다."),
     }
@@ -507,7 +533,7 @@ def main():
         # than "the data is broken".
         "unfinished_horizon": unfinished,
         "summary": summarise(scored),
-        "strength_calibration": calibrate_strength(scored),
+        "strength_calibration": calibrate_strength(scored, {e.get("event_id"): e for e in events}),
         "correlation": {
             "pressure_vs_forward_traffic_r": None if r_all is None else round(r_all, 4),
             "n_days": n_pairs, "forward_days": FWD_DAYS,
@@ -523,7 +549,7 @@ def main():
             "'수집일 추정' 날짜는 기사에서 날짜를 얻지 못해 수집한 날로 채운 값이라, 미리 알았다는 근거가 될 수 없습니다.",
             "위키피디아 조회수는 samsung.com 트래픽의 대리지표이며, 그 대리 관계 자체는 아직 검증되지 않았습니다.",
             "일별 관측은 자기상관이 강해 일반 유의성 검정은 과신합니다 — 순열검정 p값을 기준으로 삼아야 합니다.",
-            "관측 강도는 사후 결과일 뿐 예측이 아닙니다. 저장된 impact_strength는 그대로 두고 나란히 보여줍니다.",
+            "조정강도는 사후 결과일 뿐 예측이 아닙니다. 저장된 impact_strength는 그대로 두고 나란히 보여줍니다.",
         ],
     })
 
@@ -532,14 +558,14 @@ def main():
           f"제외 {skipped}건 / horizon 진행중 {unfinished}건")
     print(f"  방향 적중률  전체 {s['all'].get('hit_rate')} (n={s['all'].get('n')})"
           f"  |  사전근거 {s['foreknown'].get('hit_rate')} (n={s['foreknown'].get('n')})")
-    print(f"  압력지수 vs 향후{FWD_DAYS}일 트래픽")
+    print(f"  누적 영향지수 vs 향후{FWD_DAYS}일 트래픽")
     print(f"    조밀구간({dense_start} ~) r = {r_all if r_all is None else round(r_all,4)} (n={n_pairs}일)  ← 대표값")
     print(f"    전체구간            r = {r_full if r_full is None else round(r_full,4)} (n={n_full}일)")
     pa = (perm or {}).get("all")
     if pa:
         print(f"    순열검정 p = {pa['p_value']} (귀무 |r| 95%={pa['null_p95_abs_r']}, "
               f"{pa['permutations']}회) → {'유의' if pa['significant'] else '유의하지 않음'}")
-    print("  축 검증 (해당 축 압력 vs 그 축이 대변해야 할 계열):")
+    print("  축 검증 (해당 축 지수 vs 그 축이 대변해야 할 계열):")
     for ax, c in axis_checks.items():
         pp = (perm or {}).get(ax) or {}
         verdict = "유의" if pp.get("significant") else "유의하지 않음"
