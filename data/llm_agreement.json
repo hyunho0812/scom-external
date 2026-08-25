@@ -1,0 +1,62 @@
+[
+ {
+  "checked": "2026-08-25 21:51 UTC",
+  "sample": 10,
+  "event_ids": [
+   "A8f68cda2",
+   "FP0cc3600b",
+   "FP1ccf93d9",
+   "Afb2978f6",
+   "A0fae939f",
+   "FPc46a808a",
+   "FP368339d2",
+   "A60a95b7e",
+   "FPbdae823b",
+   "A942496b6"
+  ],
+  "providers": [
+   "gemini",
+   "groq",
+   "mistral"
+  ],
+  "overall": {
+   "relevant": 0.667,
+   "direction": 0.375,
+   "axis": 0.625,
+   "strength": 0.25,
+   "strength_within_1": 0.875,
+   "confidence": 0.5,
+   "n_comparisons": 30
+  },
+  "pairwise": {
+   "gemini|groq": {
+    "relevant": 0.5,
+    "direction": 1.0,
+    "axis": 1.0,
+    "strength": 0.0,
+    "strength_within_1": 1.0,
+    "confidence": 0.0,
+    "n": 10
+   },
+   "gemini|mistral": {
+    "relevant": 0.8,
+    "direction": 0.25,
+    "axis": 0.25,
+    "strength": 0.25,
+    "strength_within_1": 1.0,
+    "confidence": 1.0,
+    "n": 10
+   },
+   "groq|mistral": {
+    "relevant": 0.7,
+    "direction": 0.333,
+    "axis": 1.0,
+    "strength": 0.333,
+    "strength_within_1": 0.667,
+    "confidence": 0.0,
+    "n": 10
+   }
+  },
+  "note": "Agreement is a ceiling on label trustworthiness: the chain uses whichever provider answers first, so disagreement here is noise already present in events.json."
+ }
+]

@@ -547,6 +547,13 @@ industrial control system security
 critical infrastructure security
 ai device
 earnings report
+consumer electronics
+new tech
+tech innovation
+product review
+market analysis
+competitive intelligence
+brand performance
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

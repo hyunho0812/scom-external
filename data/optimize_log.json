@@ -1342,5 +1342,33 @@
    "ai search traffic"
   ],
   "rationale": "실적 보고 관련 키워드 추가 및 낮은 keep_rate를 가진 'samsung earnings' 쿼리에 'report'를 추가하여 검색 정확도를 높였습니다."
+ },
+ {
+  "date": "2026-08-25",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "rationale": "현재 쿼리 성능이 양호하여 쿼리 워딩을 유지하고, 키워드 필터 중 'consumer electronics', 'new tech', 'tech innovation', 'product review', 'market analysis', 'competitive intelligence', 'brand performance' 등 삼성닷컴 트래픽 및 수익과 관련된 키워드를 추가하여 관련성을 높였습니다."
  }
 ]

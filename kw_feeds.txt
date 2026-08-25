@@ -576,7 +576,7 @@ r&d 투자
 규제 샌드박스
 파일럿 프로그램
 시범 프로젝트
-얼리 어답터
+얼리 아답터
 주류 채택
 대중 시장
 기술 확산
@@ -668,6 +668,13 @@ iot 보안
 중요 인프라 보안
 ai device
 earnings report
+소비자 가전
+신기술
+기술 혁신
+제품 리뷰
+시장 분석
+경쟁 정보
+브랜드 성과
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
