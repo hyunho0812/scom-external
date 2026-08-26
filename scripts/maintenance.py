@@ -53,7 +53,8 @@ from collections import Counter
 sys.path.insert(0, os.path.dirname(__file__))
 from llm_common import (EVENTS_FILE, PRUNED_FILE, DEDUP_WINDOW_DAYS, LEGACY_MARKETS,
                         SCOPE_ALL, DupIndex, clean_scope, clean_axis, parse_date,
-                        has_korean, read_json, write_json)
+                        has_korean, read_json, write_json, guess_axis, data_path,
+                        VALID_AXES)
 
 
 # ============================================================ dates
@@ -184,6 +185,19 @@ def cmd_dates(args):
     if not args.apply:
         print("\n(dry-run — 실제 저장하려면 --apply)")
         return
+
+    # Hand-seeded rows are skipped by repair(), which left them with no
+    # date_source at all. The scorer already treats a missing value as "seed",
+    # so nothing behaved wrongly — but an absent field and an implicit default
+    # are not the same thing to anyone reading the file, and the audit cannot
+    # tell a seed apart from a collector that quietly stopped stamping.
+    seeded = 0
+    for e in events:
+        if not e.get("date_source") and str(e.get("event_id", ""))[:1] not in ("A", "F"):
+            e["date_source"] = "seed"
+            seeded += 1
+    if seeded:
+        print(f"시드 {seeded}건에 date_source='seed' 명시")
 
     for e, _old, new, why in changes:
         e["date"] = new
@@ -547,6 +561,121 @@ def cmd_split(args):
     print(f"\n저장 완료: {len(changes)}건 분리 (원본은 raw_description에 보존)")
 
 # ============================================================ dispatch
+def cmd_axis(args):
+    """Fill in the axis for events that never got one.
+
+    Everything hand-seeded and everything collected before the field existed
+    carries no axis, and the dashboard has been guessing for them on every
+    page load. Storing the guess means the ledger says what the dashboard
+    shows, and `axis_source` keeps the guess distinguishable from the model's
+    own call — so a later pass can revisit the heuristic ones without touching
+    a judgement that was actually made.
+    """
+    events = read_json(EVENTS_FILE, [])
+    todo = [e for e in events if e.get("axis") not in VALID_AXES]
+    counts = {}
+    for e in todo:
+        ax = guess_axis(e)
+        counts[ax] = counts.get(ax, 0) + 1
+        if args.apply:
+            e["axis"] = ax
+            e["axis_source"] = "heuristic"
+    for e in events:
+        if args.apply and e.get("axis") in VALID_AXES and not e.get("axis_source"):
+            e["axis_source"] = "llm"
+    print(f"축 없는 이벤트 {len(todo)}건 → {counts}")
+    for e in todo[:8]:
+        print(f"  {e.get('event_id')} [{e.get('category')}] → {guess_axis(e)}  {(e.get('title') or '')[:40]}")
+    if args.apply:
+        write_json(EVENTS_FILE, events)
+        print("적용됨:", EVENTS_FILE)
+    else:
+        print("(dry-run — --apply 로 저장)")
+
+
+def cmd_audit(args):
+    """One pass over data/ that reports what is missing or inconsistent.
+
+    Read-only. The daily pipeline keeps appending to these files and nothing
+    re-checks their shape, so this is the sweep that catches a field that
+    silently stopped being written or a cross-file reference that no longer
+    resolves.
+    """
+    problems = []
+    def bad(msg):
+        problems.append(msg)
+        print("  ✗", msg)
+    def ok(msg):
+        print("  ✓", msg)
+
+    events = read_json(EVENTS_FILE, [])
+    print(f"\n[events.json] {len(events)}건")
+    ids = [e.get("event_id") for e in events]
+    if len(ids) != len(set(ids)):
+        bad(f"event_id 중복 {len(ids)-len(set(ids))}건")
+    else:
+        ok("event_id 고유")
+    if events != sorted(events, key=lambda e: e.get("date") or ""):
+        bad("date 정렬 깨짐")
+    else:
+        ok("date 정렬")
+    checks = [
+        ("axis", lambda e: e.get("axis") in VALID_AXES),
+        ("impact_direction", lambda e: e.get("impact_direction") in ("+", "-", "neutral", "unknown")),
+        ("impact_horizon", lambda e: e.get("impact_horizon") in ("immediate", "weeks", "months")),
+        ("confidence", lambda e: (e.get("confidence") or "").lower() in ("high", "med", "low")),
+        ("impact_strength", lambda e: isinstance(e.get("impact_strength"), int) and 1 <= e["impact_strength"] <= 5),
+        ("scope", lambda e: bool(e.get("scope"))),
+        ("date_source", lambda e: bool(e.get("date_source"))),
+        ("description", lambda e: bool(e.get("description"))),
+        ("impact", lambda e: bool(e.get("impact"))),
+    ]
+    for name, pred in checks:
+        miss = [e for e in events if not pred(e)]
+        if miss:
+            bad(f"{name} 결측/이상 {len(miss)}건 (예 {miss[0].get('event_id')})")
+        else:
+            ok(f"{name} 전건 정상")
+
+    print("\n[wiki_series.json]")
+    ser = (read_json(data_path("wiki_series.json"), {}) or {}).get("series", {})
+    before = len(problems)
+    for brand, pts in sorted(ser.items()):
+        ds = sorted(p.get("date") for p in pts if p.get("date"))
+        if not ds:
+            bad(f"{brand} 시계열 비어있음"); continue
+        span = (parse_date(ds[-1]) - parse_date(ds[0])).days + 1
+        gaps, dups = span - len(ds), len(ds) - len(set(ds))
+        if gaps or dups:
+            bad(f"{brand} 결측 {gaps}일 / 중복 {dups}건")
+    if len(problems) == before:
+        ok(f"{len(ser)}개 브랜드 전부 연속·중복 없음")
+
+    print("\n[파일 간 참조]")
+    ps = read_json(data_path("prediction_scores.json"), {}) or {}
+    pe = (ps.get("strength_calibration") or {}).get("per_event") or {}
+    orphan = [k for k in pe if k not in set(ids)]
+    if orphan:
+        bad(f"prediction_scores가 없는 이벤트 {len(orphan)}건을 참조")
+    else:
+        ok(f"prediction_scores.per_event {len(pe)}건 모두 events에 존재")
+    pruned = read_json(PRUNED_FILE, []) or []
+    back = [r for r in pruned if ((r.get("event") or {}).get("event_id")) in set(ids)]
+    if back:
+        bad(f"제거했던 중복 {len(back)}건이 events에 다시 있음")
+    else:
+        ok(f"pruned_duplicates {len(pruned)}건, 되살아난 것 없음")
+
+    print("\n[신선도]")
+    for name in ("feed_health.json", "model_status.json", "crux_series.json"):
+        d = read_json(data_path(name), {}) or {}
+        stamp = d.get("checked") or d.get("last_checked") or d.get("updated")
+        print(f"  {name:22s} {stamp}")
+
+    print(f"\n총 {len(problems)}건의 문제" if problems else "\n문제 없음")
+    return problems
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -575,6 +704,13 @@ def main():
     p = sub.add_parser("split", help="split old description into 요약 / LLM 추론")
     p.add_argument("--apply", action="store_true", help="write the split file")
     p.set_defaults(func=cmd_split)
+
+    p = sub.add_parser("axis", help="fill in a missing axis from the shared heuristic")
+    p.add_argument("--apply", action="store_true", help="write the filled file")
+    p.set_defaults(func=cmd_axis)
+
+    p = sub.add_parser("audit", help="consistency sweep over data/ (read-only)")
+    p.set_defaults(func=cmd_audit)
 
     p = sub.add_parser("translation", help="report untranslated feed events")
     p.add_argument("file", nargs="?", default=EVENTS_FILE)

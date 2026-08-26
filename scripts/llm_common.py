@@ -172,6 +172,37 @@ def clean_axis(v):
     v = (v or "").strip().lower()
     return v if v in VALID_AXES else ""
 
+# The fallback used when an event carries no axis of its own — events collected
+# before the field existed, and anything the model left blank. build.py has the
+# same rules in JS for its own fallback; this is the Python side, and the two
+# must agree or the dashboard will show one axis while the stored ledger says
+# another.
+SUPPLY_KW = ["인덱싱", "크롤링", "indexing", "crawling", "다운타임", "downtime",
+             "장애", "outage", "core web vitals", "사이트 속도", "robots.txt", "sitemap"]
+OWN_KW = ["samsung", "galaxy", "삼성", "갤럭시"]
+# A named rival is what makes a platform/AI/marketing event a SHARE event —
+# traffic moving between Samsung and that rival — rather than a market-wide
+# shift that moves everyone's traffic together (DEMAND).
+COMPETITOR_KW = ["apple", "xiaomi", "vivo", "oppo", "lg", "tcl", "hisense",
+                 "whirlpool", "bosch", "아이폰", "애플", "샤오미", "비보", "오포",
+                 "엘지", "보쉬"]
+
+
+def guess_axis(event):
+    """Heuristic axis for an event the model did not classify."""
+    t = " ".join(str(event.get(f) or "") for f in
+                 ("title", "impact", "description")).lower()
+    if any(k in t for k in SUPPLY_KW):
+        return "supply"
+    c = event.get("category")
+    if c in ("platform", "AI", "marketing"):
+        return "share" if any(k in t for k in COMPETITOR_KW) else "demand"
+    # company: Samsung's own moves grow the market; a rival's contest share.
+    if c == "company":
+        return "demand" if any(k in t for k in OWN_KW) else "share"
+    return "demand"   # economy, holiday, culture, geopolitics, regulation
+
+
 
 # --- scope (impact countries) --------------------------------------------
 # Scope is written the way the article reads, not as a fixed market list.
