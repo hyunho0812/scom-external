@@ -1,5 +1,5 @@
 {
- "checked": "2026-08-25 21:28 UTC",
+ "checked": "2026-08-26 08:13 UTC",
  "feeds": {
   "OpenAI news": {
    "status": "ok",
@@ -42,8 +42,8 @@
    "detail": "10 items"
   },
   "Pew Research Internet & Tech": {
-   "status": "ok",
-   "detail": "100 items"
+   "status": "error",
+   "detail": "HTTP 403"
   },
   "Search Engine Journal": {
    "status": "ok",
