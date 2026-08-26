@@ -225,6 +225,7 @@ def main():
                              anchor=art.get("date") or None)
         if hit:
             bump(q, "dup_near")
+            dup_index.note_coverage(hit[0])
             print(f"  - dup ({hit[1]} {hit[2]}) of: {hit[0].get('title','')[:50]}")
             continue
         if not keyword_verdict(art["title"] + " " + art["desc"]):
@@ -253,6 +254,7 @@ def main():
             hit = dup_index.find(ko_title=ev["title"], anchor=ev["date"])
             if hit:
                 bump(q, "dup_near")
+                dup_index.note_coverage(hit[0])
                 print(f"  - dup ({hit[1]} {hit[2]}) of: {hit[0].get('title','')[:50]}")
                 continue
             dup_index.add(ev)

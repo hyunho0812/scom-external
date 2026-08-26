@@ -707,10 +707,12 @@ const DS_LABEL={url:'발행일 확인',llm:'기사 명시일',capture:'수집일
 const HORIZON_KO={immediate:'즉시 (며칠)',weeks:'수 주',months:'수 개월'};
 const CONF_KO={high:'높음',med:'보통',low:'낮음'};
 
-// The LLM's strength beside the 조정강도 — what the move it predicted turned
-// out to be worth, once the horizon elapsed. Read from prediction_scores.json,
-// never recomputed here and never written back over impact_strength: the
-// stored label is the prediction this dashboard exists to check.
+// The LLM's strength beside the 조정강도 — where the traffic move around this
+// event ranked once the horizon elapsed. It is NOT this event's own effect:
+// dozens of events are in flight at any moment and one traffic series cannot
+// be divided among them, so the count of opposite-direction events live in the
+// same window rides along and says so. Read from prediction_scores.json, never
+// recomputed here and never written back over impact_strength.
 const CALIB=(SCORES.strength_calibration||{});
 function strengthTag(e){
  const p=STRENGTH(e);
@@ -718,8 +720,13 @@ function strengthTag(e){
  if(!o) return `<span class="tag">영향강도 ${p}/5</span>`;
  const d=o.observed-p;
  const col=Math.abs(d)>=2?'var(--warn)':'var(--muted)';
- return `<span class="tag" title="LLM 판단 ${p} · horizon 경과 후 트래픽 변화 ${o.actual_pct>=0?'+':''}${o.actual_pct}%를 같은 창 5분위로 환산">`
-  +`영향강도 ${p}/5 <span style="color:${col}">→ 조정강도 ${o.observed}</span></span>`;
+ const opp=o.opposing_overlap||0;
+ const why=`LLM 판단 ${p} · horizon 경과 후 트래픽 변화 ${o.actual_pct>=0?'+':''}${o.actual_pct}%를 전체 5분위로 환산`
+  +(opp?` · 같은 구간에 반대 방향 ${opp}건이 함께 있었으므로 이 사건 하나의 효과는 아닙니다`
+       :` · 같은 구간에 반대 방향 이벤트 없음`);
+ return `<span class="tag" title="${why}">`
+  +`영향강도 ${p}/5 <span style="color:${col}">→ 조정강도 ${o.observed}</span></span>`
+  +(opp?`<span class="tag" title="${why}" style="border-color:var(--warn)66;color:var(--warn)">반대 방향 ${opp}건 동시</span>`:'');
 }
 
 function detailHtml(e, n){
@@ -1289,13 +1296,14 @@ const GLOSSARY=[
    eg:'갤럭시 신제품 공개 = 5 · 해외 소매점 세일 기사 = 2',
    myth:'매출 크기가 아니라 웹사이트 방문자에 주는 크기입니다.'},
   {ko:'조정강도',en:'CALIBRATED STRENGTH',
-   def:'AI가 매긴 영향 강도가 실제로 얼마짜리였는지 나중에 되짚어 매긴 값입니다. '
-      +'그 요인이 예상한 기간이 다 지난 뒤 트래픽이 실제로 얼마나 움직였는지를 보고, '
-      +'같은 기준으로 1~5에 다시 놓습니다.',
-   eg:'"영향강도 4/5 → 조정강도 2" = AI는 크게 볼 일이라 했지만 실제 움직임은 작은 축이었다는 뜻입니다.',
-   myth:'AI가 매긴 영향 강도를 덮어쓰지 않고 나란히 둡니다. 예측을 결과로 고쳐 쓰면 '
-       +'그 예측이 맞았는지 더는 확인할 수 없기 때문입니다. 또 같은 시기에 반대 방향 '
-       +'요인이 섞여 있으면 움직임을 어느 하나의 몫으로 볼 수 없어 조정강도를 붙이지 않습니다.'},
+   def:'그 요인이 예상한 기간이 다 지난 뒤, 그 무렵 트래픽이 실제로 얼마나 움직였는지를 '
+      +'전체 요인과 견줘 1~5로 매긴 값입니다. 등수라서, 뒤에 새 요인이 쌓이면 같은 요인의 '
+      +'등급이 한 칸 오르내릴 수 있습니다.',
+   eg:'"영향강도 4/5 → 조정강도 2" = AI는 크게 볼 일이라 했지만, 그 무렵 움직임은 작은 축이었다는 뜻입니다.',
+   myth:'그 요인 하나가 낸 효과가 아닙니다. 같은 기간에 반대로 미는 요인이 늘 수십 건 함께 '
+       +'있어서, 트래픽 하나를 요인별 몫으로 나눌 수 없습니다. 그래서 옆에 "반대 방향 N건 동시"를 '
+       +'같이 적습니다. AI가 매긴 영향 강도를 덮어쓰지도 않습니다 — 예측을 결과로 고쳐 쓰면 '
+       +'그 예측이 맞았는지 더는 확인할 수 없기 때문입니다.'},
   {ko:'신뢰도',en:'CONFIDENCE',
    def:'AI가 자기 판단에 대해 갖는 확신입니다. 높음·보통·낮음 셋 중 하나입니다.',
    eg:'"방향이 ▼인 게 거의 확실하다" → 높음',

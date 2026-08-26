@@ -525,6 +525,24 @@ class DupIndex:
             "event": event,
         })
 
+    @staticmethod
+    def note_coverage(matched):
+        """Record that one more source told the story `matched` already holds.
+
+        How many outlets picked a story up is a size signal, and it is the only
+        one available that does not come from traffic — so unlike anything
+        derived from the move itself, it can be fed to a judge or a fit without
+        making the result circular. The count was being thrown away: the
+        collectors tallied suppressed duplicates per query/feed, which says
+        which QUERY is redundant, but nothing about which EVENT was widely
+        reported.
+
+        Starts at 1 (the source that got there first), so the number reads as
+        "how many sources covered this", not "how many were discarded".
+        """
+        if isinstance(matched, dict):
+            matched["coverage_count"] = int(matched.get("coverage_count") or 1) + 1
+
     def _in_window(self, row, anchor):
         if anchor is None:
             # A candidate with no publish date was still fetched today, and

@@ -182,6 +182,7 @@ def main():
                                  anchor=it.get("published") or None)
             if hit:
                 bump(label, "dup_near")
+                dup_index.note_coverage(hit[0])
                 print(f"  - dup ({hit[1]} {hit[2]}) of: {hit[0].get('title','')[:50]}")
                 continue
             bump(label, "kw_pass")
@@ -218,6 +219,7 @@ def main():
             hit = dup_index.find(ko_title=title_ko, anchor=event_date)
             if hit:
                 bump(label, "dup_near")
+                dup_index.note_coverage(hit[0])
                 print(f"  - dup ({hit[1]} {hit[2]}) of: {hit[0].get('title','')[:50]}")
                 continue
             events.append({
