@@ -112,6 +112,15 @@ jobs:
         continue-on-error: true   # 측정용 — 실패해도 파이프라인은 계속
         run: python scripts/check_llm_agreement.py
 
+      # Read-only sweep over data/. Nothing else re-checks these files once the
+      # pipeline has been appending to them for months, so a field that
+      # quietly stops being written would otherwise surface as a blank panel
+      # rather than as an error. continue-on-error: it reports, it never
+      # blocks a run.
+      - name: Data consistency audit
+        continue-on-error: true
+        run: python scripts/maintenance.py audit
+
       - name: Rebuild dashboard
         run: python scripts/build.py
 
