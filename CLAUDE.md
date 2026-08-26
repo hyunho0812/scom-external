@@ -44,6 +44,9 @@ scripts/
                         merge       수기 이벤트 배치를 events.json에 병합(스키마 검증)
                         split       옛 description을 요약/추론으로 분리 (원칙 4)
                         translation 피드 이벤트 번역 실패 점검
+                        axis        축이 없는 이벤트에 공용 휴리스틱으로 배정
+                                    (llm_common.guess_axis, axis_source에 출처 기록)
+                        audit       data/ 전체 정합성 점검 (읽기 전용, 워크플로도 매일 실행)
   build.py             모든 data/*.json → index.html 재빌드 (대시보드 JS 전부 여기 있음)
 
 data/                 자동 생성/갱신되는 JSON들 (스키마는 각 스크립트 상단 docstring 참고)
@@ -136,6 +139,10 @@ URL을 넣지 말고, feeds.txt에 "확인했지만 없음" 주석으로 남길 
   경쟁사** 간 재분배, supply=samsung.com 자체 사이트 이슈. 값이 비어있으면(이 필드
   추가 이전 수집분) `build.py`의 `axisOf()`가 카테고리/키워드 휴리스틱으로 대체 추정함
   — 즉 값이 있으면 LLM 판단을 신뢰하고, 없으면만 휴리스틱으로 폴백.
+  **2026-08-26: 축이 없던 94건을 `maintenance.py axis`로 채웠다.** 휴리스틱 자체는
+  `llm_common.guess_axis()`가 정본이고 build.py의 JS `axisOf()`와 규칙이 같아야 한다.
+  `axis_source`가 `llm`(341건)과 `heuristic`(94건)을 구분하므로, 나중에 휴리스틱 건만
+  다시 판정할 수 있다 — 실제로 내려진 판단은 건드리지 않고.
 
 ### 4. 본문은 사실과 추론을 분리한다 (2026-08-18 개편)
 예전엔 `description` 한 문단이 **1문장=사실, 2문장=samsung.com 영향**으로 섞여 있었다.
