@@ -99,5 +99,46 @@
    }
   },
   "note": "Agreement is a ceiling on label trustworthiness: the chain uses whichever provider answers first, so disagreement here is noise already present in events.json."
+ },
+ {
+  "checked": "2026-08-27 00:49 UTC",
+  "sample": 10,
+  "event_ids": [
+   "Ade98b7aa",
+   "A88549cda",
+   "A8eec1604",
+   "Aa119d9ea",
+   "Ad6a92c15",
+   "A77441b3d",
+   "FP5069468c",
+   "A866c3783",
+   "Aa6a5d80f",
+   "A91bf6a57"
+  ],
+  "providers": [
+   "groq",
+   "mistral"
+  ],
+  "overall": {
+   "relevant": 0.5,
+   "direction": 0.5,
+   "axis": 0.5,
+   "strength": 0.5,
+   "strength_within_1": 1.0,
+   "confidence": 0.5,
+   "n_comparisons": 10
+  },
+  "pairwise": {
+   "groq|mistral": {
+    "relevant": 0.5,
+    "direction": 0.5,
+    "axis": 0.5,
+    "strength": 0.5,
+    "strength_within_1": 1.0,
+    "confidence": 0.5,
+    "n": 10
+   }
+  },
+  "note": "Agreement is a ceiling on label trustworthiness: the chain uses whichever provider answers first, so disagreement here is noise already present in events.json."
  }
 ]

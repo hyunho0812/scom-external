@@ -1,27 +1,5 @@
 [
  {
-  "date": "2026-07-25",
-  "total_raw": 15,
-  "total_kept": 4,
-  "per_feed": {
-   "OpenAI news": {
-    "raw": 10,
-    "kw_pass": 8,
-    "kept": 0
-   },
-   "Samsung newsroom (KR)": {
-    "raw": 1,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Search Engine Journal": {
-    "raw": 4,
-    "kw_pass": 4,
-    "kept": 4
-   }
-  }
- },
- {
   "date": "2026-07-26",
   "total_raw": 13,
   "total_kept": 2,
@@ -1466,6 +1444,68 @@
     "dup_near": 0,
     "kw_pass": 1,
     "kept": 1
+   }
+  }
+ },
+ {
+  "date": "2026-08-27",
+  "total_raw": 32,
+  "total_dup_near": 0,
+  "total_kept": 1,
+  "per_feed": {
+   "OpenAI news": {
+    "raw": 10,
+    "dup_near": 0,
+    "kw_pass": 9,
+    "kept": 0
+   },
+   "Gemini (Google)": {
+    "raw": 3,
+    "dup_near": 0,
+    "kw_pass": 3,
+    "kept": 0
+   },
+   "Pew Research Internet & Tech": {
+    "raw": 2,
+    "dup_near": 0,
+    "kw_pass": 2,
+    "kept": 0
+   },
+   "Search Engine Journal": {
+    "raw": 6,
+    "dup_near": 0,
+    "kw_pass": 6,
+    "kept": 1
+   },
+   "Retail Dive": {
+    "raw": 6,
+    "dup_near": 0,
+    "kw_pass": 6,
+    "kept": 0
+   },
+   "Practical Ecommerce": {
+    "raw": 1,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Semrush": {
+    "raw": 2,
+    "dup_near": 0,
+    "kw_pass": 2,
+    "kept": 0
+   },
+   "HubSpot Marketing": {
+    "raw": 1,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Neil Patel": {
+    "raw": 1,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
    }
   }
  }

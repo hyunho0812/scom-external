@@ -1398,5 +1398,33 @@
    "ai search traffic"
   ],
   "rationale": "중복 수집 및 낮은 kept 비율을 개선하기 위해 'samsung earnings report' 쿼리를 'samsung earnings'로 줄여 더 많은 관련 기사를 수집하도록 변경했습니다. 나머지 쿼리는 기존 성능과 길이 제한을 고려하여 유지했습니다. 키워드 목록은 관련성이 낮은 키워드를 제거하고 기존 한글 키워드를 보존하여 정확도를 높였습니다."
+ },
+ {
+  "date": "2026-08-27",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "rationale": "쿼리 성능이 양호하여 기존 쿼리를 유지하고, 중복 및 관련 없는 키워드 일부를 삭제했습니다."
  }
 ]

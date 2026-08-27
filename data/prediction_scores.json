@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-26",
+ "updated": "2026-08-27",
  "window": {
   "from": "2024-10-28",
   "to": "2026-08-25",
@@ -7,8 +7,8 @@
  },
  "proxy": "wikipedia_samsung_pageviews",
  "scored": 227,
- "skipped": 66,
- "unfinished_horizon": 164,
+ "skipped": 68,
+ "unfinished_horizon": 174,
  "summary": {
   "all": {
    "n": 227,
@@ -1959,7 +1959,7 @@
     "halflife_days": 2,
     "share_pct": 21.0,
     "signed_effect": 0.08951,
-    "n_events": 151
+    "n_events": 156
    },
    "수요↓": {
     "coefficient": -0.00178,
@@ -1980,14 +1980,14 @@
     "halflife_days": 2,
     "share_pct": 9.0,
     "signed_effect": -0.03842,
-    "n_events": 53
+    "n_events": 57
    },
    "공급": {
     "coefficient": 0.02305,
     "halflife_days": 10,
     "share_pct": 24.0,
     "signed_effect": 0.10224,
-    "n_events": 9
+    "n_events": 10
    }
   },
   "note": "그룹 계수와 반감기는 트래픽 곡선에 맞춘 값입니다. r2_in은 맞춘 구간이라 항상 높게 나오므로, 판단 기준은 주 단위 전주 대비 변화를 롤링 오리진으로 검정한 r2_out입니다."
@@ -1996,29 +1996,29 @@
   "all": {
    "permutations": 1000,
    "observed_r": 0.1749,
-   "null_p95_abs_r": 0.5262,
-   "p_value": 0.92,
+   "null_p95_abs_r": 0.5211,
+   "p_value": 0.918,
    "significant": false
   },
   "demand": {
    "permutations": 1000,
    "observed_r": 0.2142,
-   "null_p95_abs_r": 0.3203,
-   "p_value": 0.186,
+   "null_p95_abs_r": 0.3319,
+   "p_value": 0.196,
    "significant": false
   },
   "share": {
    "permutations": 1000,
    "observed_r": 0.214,
-   "null_p95_abs_r": 0.5362,
-   "p_value": 0.678,
+   "null_p95_abs_r": 0.5475,
+   "p_value": 0.737,
    "significant": false
   },
   "supply": {
    "permutations": 1000,
    "observed_r": 0.0905,
-   "null_p95_abs_r": 0.4924,
-   "p_value": 0.693,
+   "null_p95_abs_r": 0.4643,
+   "p_value": 0.676,
    "significant": false
   }
  },

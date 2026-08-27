@@ -7,7 +7,7 @@
 # 1 query that literally contains the category's own name as a word.
 
 samsung | samsung product launch
-samsung | samsung earnings
+samsung | samsung earnings report
 galaxy | galaxy phone launch
 smartphone | smartphone market share
 ecommerce | ecommerce trends

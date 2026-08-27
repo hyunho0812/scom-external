@@ -1,38 +1,5 @@
 [
  {
-  "date": "2026-07-25",
-  "total_raw": 15,
-  "total_dup": 0,
-  "total_kept": 3,
-  "per_query": {
-   "samsung electronics product launch impact": {
-    "raw": 2,
-    "dup": 0,
-    "kept": 2
-   },
-   "samsung electronics quarterly earnings report": {
-    "raw": 1,
-    "dup": 0,
-    "kept": 0
-   },
-   "retail channel innovation report": {
-    "raw": 2,
-    "dup": 0,
-    "kept": 0
-   },
-   "apple intelligence strategy": {
-    "raw": 6,
-    "dup": 0,
-    "kept": 1
-   },
-   "semiconductor memory market trend": {
-    "raw": 4,
-    "dup": 0,
-    "kept": 0
-   }
-  }
- },
- {
   "date": "2026-07-26",
   "total_raw": 16,
   "total_dup": 1,
@@ -1861,6 +1828,58 @@
     "dup_near": 0,
     "kw_pass": 4,
     "kept": 2
+   }
+  }
+ },
+ {
+  "date": "2026-08-27",
+  "total_raw": 52,
+  "total_dup": 4,
+  "total_dup_near": 1,
+  "total_kw_pass": 43,
+  "total_kept": 11,
+  "per_query": {
+   "samsung product launch": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 9,
+    "kept": 7
+   },
+   "samsung earnings report": {
+    "raw": 7,
+    "dup": 1,
+    "dup_near": 0,
+    "kw_pass": 6,
+    "kept": 1
+   },
+   "galaxy phone launch": {
+    "raw": 8,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 8,
+    "kept": 0
+   },
+   "smartphone market share": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 8,
+    "kept": 2
+   },
+   "apple intelligence": {
+    "raw": 7,
+    "dup": 0,
+    "dup_near": 1,
+    "kw_pass": 5,
+    "kept": 1
+   },
+   "semiconductor market": {
+    "raw": 10,
+    "dup": 3,
+    "dup_near": 0,
+    "kw_pass": 7,
+    "kept": 0
    }
   }
  }
