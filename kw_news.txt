@@ -554,6 +554,7 @@ product review
 market analysis
 competitive intelligence
 brand performance
+foldable phone survey
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -573,3 +574,4 @@ tv show
 game review
 court ruling
 sports
+mac studio

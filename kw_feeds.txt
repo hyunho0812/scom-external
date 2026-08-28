@@ -675,6 +675,7 @@ earnings report
 시장 분석
 경쟁 정보
 브랜드 성과
+폴더블폰
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

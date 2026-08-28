@@ -2022,5 +2022,155 @@
    }
   },
   "total_attempts": 3
+ },
+ {
+  "date": "2026-08-28",
+  "at": "2026-08-28 05:23 UTC",
+  "stage": "collect_news",
+  "providers": {
+   "gemini": {
+    "attempt": 8,
+    "ok": 7,
+    "ko_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "batch_no_index": 0,
+    "batch_reordered": 0,
+    "http_429": 1,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 8
+   },
+   "groq": {
+    "attempt": 3,
+    "ok": 0,
+    "ko_reject": 2,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "batch_no_index": 0,
+    "batch_reordered": 0,
+    "http_429": 1,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 6
+   },
+   "mistral": {
+    "attempt": 7,
+    "ok": 7,
+    "ko_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "batch_no_index": 0,
+    "batch_reordered": 0,
+    "http_429": 0,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 0
+   }
+  },
+  "total_attempts": 18
+ },
+ {
+  "date": "2026-08-28",
+  "at": "2026-08-28 05:25 UTC",
+  "stage": "collect_feeds",
+  "providers": {
+   "gemini": {
+    "attempt": 10,
+    "ok": 10,
+    "ko_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "batch_no_index": 0,
+    "batch_reordered": 0,
+    "http_429": 0,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 0
+   },
+   "groq": {
+    "attempt": 0,
+    "ok": 0,
+    "ko_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "batch_no_index": 0,
+    "batch_reordered": 0,
+    "http_429": 0,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 0
+   },
+   "mistral": {
+    "attempt": 0,
+    "ok": 0,
+    "ko_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "batch_no_index": 0,
+    "batch_reordered": 0,
+    "http_429": 0,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 0
+   }
+  },
+  "total_attempts": 10
+ },
+ {
+  "date": "2026-08-28",
+  "at": "2026-08-28 05:26 UTC",
+  "stage": "check_llm_agreement",
+  "providers": {
+   "gemini": {
+    "attempt": 1,
+    "ok": 1,
+    "ko_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "batch_no_index": 0,
+    "batch_reordered": 0,
+    "http_429": 0,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 0
+   },
+   "groq": {
+    "attempt": 1,
+    "ok": 1,
+    "ko_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "batch_no_index": 0,
+    "batch_reordered": 0,
+    "http_429": 0,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 0
+   },
+   "mistral": {
+    "attempt": 1,
+    "ok": 1,
+    "ko_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "batch_no_index": 0,
+    "batch_reordered": 0,
+    "http_429": 0,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 0
+   }
+  },
+  "total_attempts": 3
  }
 ]

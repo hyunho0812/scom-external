@@ -1426,5 +1426,33 @@
    "ai search traffic"
   ],
   "rationale": "쿼리 성능이 양호하여 기존 쿼리를 유지하고, 중복 및 관련 없는 키워드 일부를 삭제했습니다."
+ },
+ {
+  "date": "2026-08-28",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "rationale": "기존 쿼리는 성능이 양호하여 유지했습니다. 중복 항목 제거를 위해 'mac studio'를 뉴스 드롭 키워드에 추가하고, 관련성이 높은 'foldable phone survey', '폴더블폰'을 뉴스/피드 키워드에 추가했습니다. 전반적으로 쿼리의 길이와 범용성을 유지하여 다양한 관련 외부 요소를 포착할 수 있도록 했습니다."
  }
 ]
