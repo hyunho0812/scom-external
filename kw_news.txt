@@ -558,6 +558,7 @@ foldable phone survey
 apple foldable
 iphone foldable
 folding iphone
+one ui
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
