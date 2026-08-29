@@ -1,29 +1,29 @@
 {
- "updated": "2026-08-28",
+ "updated": "2026-08-29",
  "window": {
   "from": "2024-10-28",
-  "to": "2026-08-27",
-  "days": 669
+  "to": "2026-08-28",
+  "days": 670
  },
  "proxy": "wikipedia_samsung_pageviews",
- "scored": 244,
- "skipped": 69,
- "unfinished_horizon": 181,
+ "scored": 246,
+ "skipped": 73,
+ "unfinished_horizon": 188,
  "summary": {
   "all": {
-   "n": 244,
+   "n": 246,
    "hit_rate": 0.512,
-   "mean_abs_move_pct": 7.27,
+   "mean_abs_move_pct": 7.26,
    "by_strength": {
     "2": {
-     "n": 25,
-     "hit_rate": 0.52,
-     "mean_abs_move_pct": 8.17
+     "n": 26,
+     "hit_rate": 0.5,
+     "mean_abs_move_pct": 8.08
     },
     "3": {
-     "n": 138,
-     "hit_rate": 0.543,
-     "mean_abs_move_pct": 7.45
+     "n": 139,
+     "hit_rate": 0.547,
+     "mean_abs_move_pct": 7.44
     },
     "4": {
      "n": 64,
@@ -42,25 +42,25 @@
      "hit_rate": 0.464
     },
     "med": {
-     "n": 93,
-     "hit_rate": 0.591
+     "n": 95,
+     "hit_rate": 0.589
     }
    }
   },
   "foreknown": {
-   "n": 112,
-   "hit_rate": 0.589,
-   "mean_abs_move_pct": 8.12,
+   "n": 114,
+   "hit_rate": 0.588,
+   "mean_abs_move_pct": 8.07,
    "by_strength": {
     "2": {
-     "n": 12,
-     "hit_rate": 0.583,
-     "mean_abs_move_pct": 7.91
+     "n": 13,
+     "hit_rate": 0.538,
+     "mean_abs_move_pct": 7.72
     },
     "3": {
-     "n": 60,
-     "hit_rate": 0.617,
-     "mean_abs_move_pct": 8.55
+     "n": 61,
+     "hit_rate": 0.623,
+     "mean_abs_move_pct": 8.5
     },
     "4": {
      "n": 27,
@@ -79,8 +79,8 @@
      "hit_rate": 0.571
     },
     "med": {
-     "n": 35,
-     "hit_rate": 0.629
+     "n": 37,
+     "hit_rate": 0.622
     }
    }
   },
@@ -92,7 +92,7 @@
     "2": {
      "n": 13,
      "hit_rate": 0.462,
-     "mean_abs_move_pct": 8.42
+     "mean_abs_move_pct": 8.44
     },
     "3": {
      "n": 78,
@@ -102,7 +102,7 @@
     "4": {
      "n": 37,
      "hit_rate": 0.405,
-     "mean_abs_move_pct": 6.04
+     "mean_abs_move_pct": 6.05
     },
     "5": {
      "n": 4,
@@ -123,19 +123,19 @@
   },
   "by_axis": {
    "demand": {
-    "n": 204,
+    "n": 206,
     "hit_rate": 0.495,
-    "mean_abs_move_pct": 7.37,
+    "mean_abs_move_pct": 7.35,
     "by_strength": {
      "2": {
-      "n": 16,
-      "hit_rate": 0.438,
-      "mean_abs_move_pct": 7.65
+      "n": 17,
+      "hit_rate": 0.412,
+      "mean_abs_move_pct": 7.53
      },
      "3": {
-      "n": 116,
-      "hit_rate": 0.517,
-      "mean_abs_move_pct": 7.57
+      "n": 117,
+      "hit_rate": 0.521,
+      "mean_abs_move_pct": 7.56
      },
      "4": {
       "n": 55,
@@ -154,8 +154,8 @@
       "hit_rate": 0.465
      },
      "med": {
-      "n": 77,
-      "hit_rate": 0.545
+      "n": 79,
+      "hit_rate": 0.544
      }
     }
    },
@@ -194,7 +194,7 @@
    "supply": {
     "n": 5,
     "hit_rate": 0.4,
-    "mean_abs_move_pct": 7.34,
+    "mean_abs_move_pct": 7.36,
     "by_strength": {
      "2": {
       "n": 3,
@@ -204,7 +204,7 @@
      "3": {
       "n": 1,
       "hit_rate": 1.0,
-      "mean_abs_move_pct": 5.12
+      "mean_abs_move_pct": 5.22
      },
      "4": {
       "n": 1,
@@ -226,21 +226,21 @@
   }
  },
  "strength_calibration": {
-  "n": 244,
+  "n": 246,
   "overlap": {
-   "median": 52,
-   "max": 95,
+   "median": 55,
+   "max": 96,
    "isolated": 0
   },
   "convergence": {
-   "mean_gap": 1.406,
-   "random_gap": 1.312,
+   "mean_gap": 1.402,
+   "random_gap": 1.309,
    "informative": false,
-   "exact_match_rate": 0.189,
+   "exact_match_rate": 0.191,
    "by_prompt_version": {
     "1": {
-     "n": 242,
-     "mean_gap": 1.405
+     "n": 244,
+     "mean_gap": 1.402
     },
     "2": {
      "n": 2,
@@ -262,7 +262,7 @@
     },
     "2025-09": {
      "n": 6,
-     "mean_gap": 1.833
+     "mean_gap": 2.0
     },
     "2025-10": {
      "n": 3,
@@ -293,8 +293,8 @@
      "mean_gap": 1.336
     },
     "2026-08": {
-     "n": 74,
-     "mean_gap": 1.338
+     "n": 76,
+     "mean_gap": 1.316
     }
    }
   },
@@ -302,19 +302,19 @@
    3.57,
    4.51,
    7.68,
-   11.67
+   11.56
   ],
   "by_predicted": {
    "2": {
-    "n": 25,
+    "n": 26,
     "observed_median": 4,
-    "observed_mean": 3.56,
+    "observed_mean": 3.54,
     "suggested": 4
    },
    "3": {
-    "n": 138,
+    "n": 139,
     "observed_median": 3,
-    "observed_mean": 3.17,
+    "observed_mean": 3.18,
     "suggested": 3
    },
    "4": {
@@ -508,7 +508,7 @@
    },
    "E128": {
     "predicted": 3,
-    "observed": 4,
+    "observed": 5,
     "actual_pct": -11.56,
     "hit": true,
     "opposing_overlap": 4
@@ -777,84 +777,84 @@
     "observed": 5,
     "actual_pct": 11.67,
     "hit": true,
-    "opposing_overlap": 61
+    "opposing_overlap": 62
    },
    "Ac09cc5db": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": 7.68,
     "hit": true,
-    "opposing_overlap": 62
+    "opposing_overlap": 63
    },
    "FPa7d3a3d9": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": 7.68,
     "hit": false,
-    "opposing_overlap": 72
+    "opposing_overlap": 73
    },
    "FPb0d854b8": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": 7.68,
     "hit": false,
-    "opposing_overlap": 72
+    "opposing_overlap": 73
    },
    "A67d63187": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": 7.68,
     "hit": false,
-    "opposing_overlap": 72
+    "opposing_overlap": 73
    },
    "FP0b3e8117": {
     "predicted": 2,
     "observed": 4,
     "actual_pct": 7.68,
     "hit": true,
-    "opposing_overlap": 62
+    "opposing_overlap": 63
    },
    "A373d9964": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": 7.68,
     "hit": false,
-    "opposing_overlap": 72
+    "opposing_overlap": 73
    },
    "FPfd8f823f": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": 7.68,
     "hit": true,
-    "opposing_overlap": 62
+    "opposing_overlap": 63
    },
    "FPaab63eaf": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": 7.68,
     "hit": true,
-    "opposing_overlap": 62
+    "opposing_overlap": 63
    },
    "FP50d351e2": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": 7.68,
     "hit": true,
-    "opposing_overlap": 62
+    "opposing_overlap": 63
    },
    "FPfcd7eb0c": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": 7.68,
     "hit": false,
-    "opposing_overlap": 72
+    "opposing_overlap": 73
    },
    "FP8f810d4a": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": 7.68,
     "hit": false,
-    "opposing_overlap": 72
+    "opposing_overlap": 73
    },
    "A874049e2": {
     "predicted": 4,
@@ -868,7 +868,7 @@
     "observed": 4,
     "actual_pct": 7.68,
     "hit": false,
-    "opposing_overlap": 72
+    "opposing_overlap": 73
    },
    "FP0f4397e1": {
     "predicted": 3,
@@ -889,7 +889,7 @@
     "observed": 4,
     "actual_pct": 7.68,
     "hit": false,
-    "opposing_overlap": 72
+    "opposing_overlap": 73
    },
    "Ab9ee0170": {
     "predicted": 4,
@@ -903,14 +903,14 @@
     "observed": 4,
     "actual_pct": 7.68,
     "hit": false,
-    "opposing_overlap": 72
+    "opposing_overlap": 73
    },
    "FP1f9ab345": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": 7.68,
     "hit": true,
-    "opposing_overlap": 62
+    "opposing_overlap": 63
    },
    "FPdbbd799d": {
     "predicted": 2,
@@ -924,14 +924,14 @@
     "observed": 4,
     "actual_pct": -9.57,
     "hit": true,
-    "opposing_overlap": 88
+    "opposing_overlap": 89
    },
    "FP37485bde": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": -9.57,
     "hit": true,
-    "opposing_overlap": 88
+    "opposing_overlap": 89
    },
    "FPa358e3f3": {
     "predicted": 4,
@@ -945,21 +945,21 @@
     "observed": 4,
     "actual_pct": -9.57,
     "hit": true,
-    "opposing_overlap": 88
+    "opposing_overlap": 89
    },
    "A01e714d0": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": -9.57,
     "hit": false,
-    "opposing_overlap": 71
+    "opposing_overlap": 72
    },
    "A82a29636": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": -9.57,
     "hit": false,
-    "opposing_overlap": 71
+    "opposing_overlap": 72
    },
    "FPba3313c6": {
     "predicted": 4,
@@ -973,112 +973,112 @@
     "observed": 4,
     "actual_pct": -10.57,
     "hit": true,
-    "opposing_overlap": 88
+    "opposing_overlap": 89
    },
    "FP309a9ad4": {
     "predicted": 3,
     "observed": 5,
     "actual_pct": -11.98,
     "hit": false,
-    "opposing_overlap": 71
+    "opposing_overlap": 72
    },
    "A7d0f20a8": {
     "predicted": 3,
     "observed": 5,
     "actual_pct": -11.98,
     "hit": true,
-    "opposing_overlap": 88
+    "opposing_overlap": 89
    },
    "FPa99da120": {
     "predicted": 3,
     "observed": 5,
     "actual_pct": -11.98,
     "hit": true,
-    "opposing_overlap": 88
+    "opposing_overlap": 89
    },
    "FP2bc74ad0": {
     "predicted": 3,
     "observed": 5,
     "actual_pct": -11.98,
     "hit": true,
-    "opposing_overlap": 88
+    "opposing_overlap": 89
    },
    "FPb2c7772a": {
     "predicted": 2,
     "observed": 5,
     "actual_pct": -13.66,
     "hit": true,
-    "opposing_overlap": 91
+    "opposing_overlap": 92
    },
    "A4c40c961": {
     "predicted": 3,
     "observed": 5,
     "actual_pct": -13.66,
     "hit": true,
-    "opposing_overlap": 91
+    "opposing_overlap": 92
    },
    "Ad783a7a1": {
     "predicted": 3,
     "observed": 5,
     "actual_pct": -14.36,
     "hit": true,
-    "opposing_overlap": 94
+    "opposing_overlap": 95
    },
    "FP54ee7bd8": {
     "predicted": 2,
     "observed": 5,
     "actual_pct": -14.36,
     "hit": false,
-    "opposing_overlap": 82
+    "opposing_overlap": 83
    },
    "FP87c38775": {
     "predicted": 3,
     "observed": 5,
     "actual_pct": -14.36,
     "hit": true,
-    "opposing_overlap": 94
+    "opposing_overlap": 95
    },
    "Ac9bca166": {
     "predicted": 2,
     "observed": 5,
     "actual_pct": -14.12,
     "hit": true,
-    "opposing_overlap": 94
+    "opposing_overlap": 95
    },
    "A413fee25": {
     "predicted": 2,
     "observed": 5,
     "actual_pct": -14.17,
     "hit": true,
-    "opposing_overlap": 94
+    "opposing_overlap": 95
    },
    "Adb9f32b9": {
     "predicted": 3,
     "observed": 5,
     "actual_pct": -14.17,
     "hit": true,
-    "opposing_overlap": 94
+    "opposing_overlap": 95
    },
    "FP515589d7": {
     "predicted": 3,
     "observed": 5,
     "actual_pct": -14.17,
     "hit": true,
-    "opposing_overlap": 94
+    "opposing_overlap": 95
    },
    "Af5f3a10b": {
     "predicted": 2,
     "observed": 5,
     "actual_pct": -13.38,
     "hit": false,
-    "opposing_overlap": 87
+    "opposing_overlap": 88
    },
    "FP45cc5ed8": {
     "predicted": 3,
     "observed": 5,
     "actual_pct": -13.38,
     "hit": true,
-    "opposing_overlap": 95
+    "opposing_overlap": 96
    },
    "FP9e496f79": {
     "predicted": 4,
@@ -1099,7 +1099,7 @@
     "observed": 4,
     "actual_pct": -10.16,
     "hit": true,
-    "opposing_overlap": 94
+    "opposing_overlap": 95
    },
    "A057c267e": {
     "predicted": 4,
@@ -1113,7 +1113,7 @@
     "observed": 4,
     "actual_pct": -10.16,
     "hit": false,
-    "opposing_overlap": 87
+    "opposing_overlap": 88
    },
    "FP11ff86e9": {
     "predicted": 4,
@@ -1169,21 +1169,21 @@
     "observed": 4,
     "actual_pct": -8.73,
     "hit": true,
-    "opposing_overlap": 94
+    "opposing_overlap": 95
    },
    "A2daa4a58": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": -8.73,
     "hit": false,
-    "opposing_overlap": 87
+    "opposing_overlap": 88
    },
    "FP20fe4ae0": {
     "predicted": 2,
     "observed": 4,
     "actual_pct": -8.73,
     "hit": true,
-    "opposing_overlap": 94
+    "opposing_overlap": 95
    },
    "FP94e6fc23": {
     "predicted": 3,
@@ -1197,14 +1197,14 @@
     "observed": 3,
     "actual_pct": -7.36,
     "hit": false,
-    "opposing_overlap": 87
+    "opposing_overlap": 88
    },
    "FP212fb4f5": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -7.36,
     "hit": true,
-    "opposing_overlap": 94
+    "opposing_overlap": 95
    },
    "A0468e9ef": {
     "predicted": 5,
@@ -1218,7 +1218,7 @@
     "observed": 3,
     "actual_pct": -5.03,
     "hit": true,
-    "opposing_overlap": 94
+    "opposing_overlap": 95
    },
    "FPd045167e": {
     "predicted": 3,
@@ -1239,883 +1239,897 @@
     "observed": 2,
     "actual_pct": -3.96,
     "hit": true,
-    "opposing_overlap": 94
+    "opposing_overlap": 95
    },
    "FPca3cfd93": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": 2.94,
     "hit": false,
-    "opposing_overlap": 55
+    "opposing_overlap": 56
    },
    "FPdee09008": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": 2.94,
     "hit": true,
-    "opposing_overlap": 57
+    "opposing_overlap": 58
    },
    "FPed21a328": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.45,
     "hit": true,
-    "opposing_overlap": 94
+    "opposing_overlap": 95
    },
    "FP28cebd9e": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.45,
     "hit": false,
-    "opposing_overlap": 87
+    "opposing_overlap": 88
    },
    "FP165ce871": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.45,
     "hit": true,
-    "opposing_overlap": 94
+    "opposing_overlap": 95
    },
    "Ae952bbdf": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.21,
     "hit": false,
-    "opposing_overlap": 84
+    "opposing_overlap": 85
    },
    "Ae8a2e64c": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.21,
     "hit": false,
-    "opposing_overlap": 84
+    "opposing_overlap": 85
    },
    "FP18a5f7e9": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": 1.75,
     "hit": false,
-    "opposing_overlap": 62
+    "opposing_overlap": 63
    },
    "FPfea25efb": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": 1.75,
     "hit": true,
-    "opposing_overlap": 58
+    "opposing_overlap": 59
    },
    "FP9b4d5f4f": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.21,
     "hit": false,
-    "opposing_overlap": 84
+    "opposing_overlap": 85
    },
    "FPa72e1ce7": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": 1.75,
     "hit": true,
-    "opposing_overlap": 58
+    "opposing_overlap": 59
    },
    "FPf517f008": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": 1.75,
     "hit": false,
-    "opposing_overlap": 62
+    "opposing_overlap": 63
    },
    "FPb9afd42a": {
     "predicted": 2,
     "observed": 2,
     "actual_pct": -4.47,
     "hit": false,
-    "opposing_overlap": 81
+    "opposing_overlap": 82
    },
    "A0c58aa40": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": 1.06,
     "hit": true,
-    "opposing_overlap": 58
+    "opposing_overlap": 59
    },
    "FP824fdc6d": {
     "predicted": 2,
     "observed": 1,
     "actual_pct": 1.06,
     "hit": true,
-    "opposing_overlap": 58
+    "opposing_overlap": 59
    },
    "FPebe3767e": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": 1.06,
     "hit": false,
-    "opposing_overlap": 57
+    "opposing_overlap": 58
    },
    "FPa6b47615": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -5.11,
     "hit": true,
-    "opposing_overlap": 83
+    "opposing_overlap": 84
    },
    "A88eefa18": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -5.11,
     "hit": true,
-    "opposing_overlap": 83
+    "opposing_overlap": 84
    },
    "FP1d6ee3ca": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -5.11,
     "hit": true,
-    "opposing_overlap": 83
+    "opposing_overlap": 84
    },
    "FP6111f0a7": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -5.11,
     "hit": true,
-    "opposing_overlap": 83
+    "opposing_overlap": 84
    },
    "A53af14ef": {
     "predicted": 2,
     "observed": 3,
     "actual_pct": -5.11,
     "hit": false,
-    "opposing_overlap": 80
+    "opposing_overlap": 81
    },
    "A9cb5ad89": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -5.11,
     "hit": true,
-    "opposing_overlap": 83
+    "opposing_overlap": 84
    },
    "A1a18c2c2": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -5.11,
     "hit": false,
-    "opposing_overlap": 80
+    "opposing_overlap": 81
    },
    "A7b0876a6": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": -3.0,
     "hit": false,
-    "opposing_overlap": 61
+    "opposing_overlap": 62
    },
    "Ac6700630": {
     "predicted": 3,
     "observed": 3,
-    "actual_pct": -5.12,
+    "actual_pct": -5.22,
     "hit": false,
-    "opposing_overlap": 80
+    "opposing_overlap": 81
    },
    "Ab51943ea": {
     "predicted": 3,
     "observed": 3,
-    "actual_pct": -5.12,
+    "actual_pct": -5.22,
     "hit": false,
-    "opposing_overlap": 80
+    "opposing_overlap": 81
    },
    "A16d8ca60": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": -3.0,
     "hit": true,
-    "opposing_overlap": 60
+    "opposing_overlap": 61
    },
    "FPe9ee340b": {
     "predicted": 3,
     "observed": 3,
-    "actual_pct": -5.12,
+    "actual_pct": -5.22,
     "hit": true,
-    "opposing_overlap": 82
+    "opposing_overlap": 83
    },
    "Aedb43155": {
     "predicted": 4,
     "observed": 3,
-    "actual_pct": -5.12,
+    "actual_pct": -5.22,
     "hit": false,
-    "opposing_overlap": 80
+    "opposing_overlap": 81
    },
    "FP63673af2": {
     "predicted": 2,
     "observed": 3,
-    "actual_pct": -5.12,
+    "actual_pct": -5.22,
     "hit": false,
-    "opposing_overlap": 80
+    "opposing_overlap": 81
    },
    "Aa72e1385": {
     "predicted": 4,
     "observed": 3,
-    "actual_pct": -5.12,
+    "actual_pct": -5.22,
     "hit": false,
-    "opposing_overlap": 80
+    "opposing_overlap": 81
    },
    "Adce7e7ca": {
     "predicted": 3,
     "observed": 3,
-    "actual_pct": -5.12,
+    "actual_pct": -5.22,
     "hit": false,
-    "opposing_overlap": 80
+    "opposing_overlap": 81
    },
    "A4fc70f8c": {
     "predicted": 2,
     "observed": 3,
-    "actual_pct": -5.12,
+    "actual_pct": -5.22,
     "hit": false,
-    "opposing_overlap": 80
+    "opposing_overlap": 81
    },
    "FP132729c0": {
     "predicted": 3,
     "observed": 3,
-    "actual_pct": -5.12,
+    "actual_pct": -5.22,
     "hit": false,
-    "opposing_overlap": 80
+    "opposing_overlap": 81
    },
    "A46f00c67": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": -3.0,
     "hit": false,
-    "opposing_overlap": 61
+    "opposing_overlap": 62
    },
    "A7f0d65f0": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": -3.0,
     "hit": false,
-    "opposing_overlap": 61
+    "opposing_overlap": 62
    },
    "A0905165a": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": -3.0,
     "hit": false,
-    "opposing_overlap": 61
+    "opposing_overlap": 62
    },
    "FP17dbccf1": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": -3.0,
     "hit": false,
-    "opposing_overlap": 61
+    "opposing_overlap": 62
    },
    "A186adfc7": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": -3.0,
     "hit": true,
-    "opposing_overlap": 60
+    "opposing_overlap": 61
    },
    "A1c27253e": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": -3.0,
     "hit": true,
-    "opposing_overlap": 60
+    "opposing_overlap": 61
+   },
+   "FP494ad556": {
+    "predicted": 2,
+    "observed": 3,
+    "actual_pct": -5.45,
+    "hit": false,
+    "opposing_overlap": 79
    },
    "Ac0382ce7": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.09,
     "hit": false,
-    "opposing_overlap": 60
+    "opposing_overlap": 61
    },
    "A1380a475": {
     "predicted": 4,
     "observed": 2,
     "actual_pct": -4.09,
     "hit": true,
-    "opposing_overlap": 64
+    "opposing_overlap": 65
    },
    "FP998703c9": {
     "predicted": 4,
     "observed": 2,
     "actual_pct": -4.09,
     "hit": true,
-    "opposing_overlap": 64
+    "opposing_overlap": 65
+   },
+   "A54ad2514": {
+    "predicted": 3,
+    "observed": 3,
+    "actual_pct": -5.45,
+    "hit": true,
+    "opposing_overlap": 83
    },
    "A3400e3b8": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.09,
     "hit": false,
-    "opposing_overlap": 60
+    "opposing_overlap": 61
    },
    "A3a570bf1": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.09,
     "hit": false,
-    "opposing_overlap": 60
+    "opposing_overlap": 61
    },
    "A0bb42168": {
     "predicted": 4,
     "observed": 3,
     "actual_pct": -5.88,
     "hit": true,
-    "opposing_overlap": 67
+    "opposing_overlap": 68
    },
    "Ae5c5bde3": {
     "predicted": 5,
     "observed": 3,
     "actual_pct": -5.88,
     "hit": false,
-    "opposing_overlap": 59
+    "opposing_overlap": 60
    },
    "Aa814e06e": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -5.88,
     "hit": true,
-    "opposing_overlap": 67
+    "opposing_overlap": 68
    },
    "A892740d1": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 60
+    "opposing_overlap": 61
    },
    "A4b7c1fd3": {
     "predicted": 4,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 60
+    "opposing_overlap": 61
    },
    "FP5c024aae": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 60
+    "opposing_overlap": 61
    },
    "A76b96011": {
     "predicted": 4,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 60
+    "opposing_overlap": 61
    },
    "A5038853a": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 60
+    "opposing_overlap": 61
    },
    "FP6ef141a5": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 60
+    "opposing_overlap": 61
    },
    "A132492da": {
     "predicted": 4,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 60
+    "opposing_overlap": 61
    },
    "Abc96bc5e": {
     "predicted": 2,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": true,
-    "opposing_overlap": 68
+    "opposing_overlap": 69
    },
    "A79e0f3a1": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": true,
-    "opposing_overlap": 68
+    "opposing_overlap": 69
    },
    "FPf656773d": {
     "predicted": 4,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": true,
-    "opposing_overlap": 63
+    "opposing_overlap": 64
    },
    "A4670b4ef": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 50
+    "opposing_overlap": 51
    },
    "A51844c2c": {
     "predicted": 4,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": true,
-    "opposing_overlap": 63
+    "opposing_overlap": 64
    },
    "Acba0db58": {
     "predicted": 5,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 50
+    "opposing_overlap": 51
    },
    "FPa5ec0445": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": true,
-    "opposing_overlap": 63
+    "opposing_overlap": 64
    },
    "FPc46a808a": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 50
+    "opposing_overlap": 51
    },
    "Acc0cd672": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 50
+    "opposing_overlap": 51
    },
    "Ae64b9945": {
     "predicted": 4,
     "observed": 3,
     "actual_pct": -4.51,
     "hit": false,
-    "opposing_overlap": 49
+    "opposing_overlap": 50
    },
    "Ac9bbdb8b": {
     "predicted": 4,
     "observed": 3,
     "actual_pct": -4.51,
     "hit": true,
-    "opposing_overlap": 61
+    "opposing_overlap": 62
    },
    "FP3571cb02": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -4.51,
     "hit": true,
-    "opposing_overlap": 61
+    "opposing_overlap": 62
    },
    "Ae70eaa98": {
     "predicted": 4,
     "observed": 3,
     "actual_pct": -4.51,
     "hit": false,
-    "opposing_overlap": 49
+    "opposing_overlap": 50
    },
    "FPca6d4d7d": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -4.51,
     "hit": false,
-    "opposing_overlap": 49
+    "opposing_overlap": 50
    },
    "FPc624cae8": {
     "predicted": 4,
     "observed": 3,
     "actual_pct": -4.51,
     "hit": false,
-    "opposing_overlap": 49
+    "opposing_overlap": 50
    },
    "A1fd16521": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -4.51,
     "hit": false,
-    "opposing_overlap": 49
+    "opposing_overlap": 50
    },
    "A49381f23": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": -2.76,
     "hit": true,
-    "opposing_overlap": 61
+    "opposing_overlap": 62
    },
    "A065966d9": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": -2.76,
     "hit": true,
-    "opposing_overlap": 61
+    "opposing_overlap": 62
    },
    "Ade83c5c1": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": -1.54,
     "hit": false,
-    "opposing_overlap": 50
+    "opposing_overlap": 51
    },
    "Af9cc7fe1": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": -1.54,
     "hit": false,
-    "opposing_overlap": 50
+    "opposing_overlap": 51
    },
    "A03bb1b32": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": -1.54,
     "hit": false,
-    "opposing_overlap": 50
+    "opposing_overlap": 51
    },
    "Ad6a92c15": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": -1.54,
     "hit": true,
-    "opposing_overlap": 59
+    "opposing_overlap": 60
    },
    "A88549cda": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": -1.54,
     "hit": false,
-    "opposing_overlap": 50
+    "opposing_overlap": 51
    },
    "A8f68cda2": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": -1.64,
     "hit": false,
-    "opposing_overlap": 55
+    "opposing_overlap": 56
    },
    "A12f9b712": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": -1.64,
     "hit": false,
-    "opposing_overlap": 55
+    "opposing_overlap": 56
    },
    "A75a5a99f": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": -1.64,
     "hit": false,
-    "opposing_overlap": 55
+    "opposing_overlap": 56
    },
    "A4eb7b719": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": -1.64,
     "hit": false,
-    "opposing_overlap": 55
+    "opposing_overlap": 56
    },
    "A735928f9": {
     "predicted": 5,
     "observed": 1,
     "actual_pct": -1.32,
     "hit": false,
-    "opposing_overlap": 55
+    "opposing_overlap": 56
    },
    "A9bbd4c6d": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": -1.32,
     "hit": true,
-    "opposing_overlap": 58
+    "opposing_overlap": 59
    },
    "Af6a0f1f2": {
     "predicted": 5,
     "observed": 1,
     "actual_pct": -1.32,
     "hit": false,
-    "opposing_overlap": 55
+    "opposing_overlap": 56
    },
    "FPbdae823b": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.47,
     "hit": true,
-    "opposing_overlap": 51
+    "opposing_overlap": 52
    },
    "A3c1637c8": {
     "predicted": 5,
     "observed": 2,
     "actual_pct": -4.47,
     "hit": false,
-    "opposing_overlap": 54
+    "opposing_overlap": 55
    },
    "A2f37b50b": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.47,
     "hit": false,
-    "opposing_overlap": 54
+    "opposing_overlap": 55
    },
    "Aa119d9ea": {
     "predicted": 4,
     "observed": 2,
     "actual_pct": -4.47,
     "hit": false,
-    "opposing_overlap": 54
+    "opposing_overlap": 55
    },
    "Aca9b34a9": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": -7.92,
     "hit": false,
-    "opposing_overlap": 42
+    "opposing_overlap": 43
    },
    "A61a49061": {
     "predicted": 2,
     "observed": 4,
     "actual_pct": -7.92,
     "hit": false,
-    "opposing_overlap": 42
+    "opposing_overlap": 43
    },
    "A8c782590": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": -7.92,
     "hit": true,
-    "opposing_overlap": 42
+    "opposing_overlap": 43
    },
    "A0f182c8d": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": -7.92,
     "hit": true,
-    "opposing_overlap": 42
+    "opposing_overlap": 43
    },
    "A462cda24": {
     "predicted": 2,
     "observed": 4,
     "actual_pct": -7.92,
     "hit": false,
-    "opposing_overlap": 42
+    "opposing_overlap": 43
    },
    "A09b32846": {
     "predicted": 2,
     "observed": 4,
     "actual_pct": -7.92,
     "hit": true,
-    "opposing_overlap": 42
+    "opposing_overlap": 43
    },
    "A24e15321": {
     "predicted": 4,
     "observed": 4,
     "actual_pct": -7.92,
     "hit": true,
-    "opposing_overlap": 42
+    "opposing_overlap": 43
    },
    "A536af333": {
     "predicted": 4,
     "observed": 3,
     "actual_pct": -7.53,
     "hit": false,
-    "opposing_overlap": 39
+    "opposing_overlap": 40
    },
    "A793de52a": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -7.53,
     "hit": true,
-    "opposing_overlap": 38
+    "opposing_overlap": 39
    },
    "Aca06f050": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -7.53,
     "hit": true,
-    "opposing_overlap": 38
+    "opposing_overlap": 39
    },
    "A9a46c922": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -7.53,
     "hit": true,
-    "opposing_overlap": 38
+    "opposing_overlap": 39
    },
    "A1d54bd4a": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -7.53,
     "hit": true,
-    "opposing_overlap": 38
+    "opposing_overlap": 39
    },
    "A3f17c80b": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -7.53,
     "hit": false,
-    "opposing_overlap": 39
+    "opposing_overlap": 40
    },
    "Ab0ab90e7": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -7.53,
     "hit": true,
-    "opposing_overlap": 38
+    "opposing_overlap": 39
    },
    "FP3c141728": {
     "predicted": 4,
     "observed": 3,
     "actual_pct": -7.53,
     "hit": true,
-    "opposing_overlap": 38
+    "opposing_overlap": 39
    },
    "A66a81e8d": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -7.53,
     "hit": false,
-    "opposing_overlap": 39
+    "opposing_overlap": 40
    },
    "FP8f42fc22": {
     "predicted": 4,
     "observed": 3,
     "actual_pct": -7.53,
     "hit": true,
-    "opposing_overlap": 38
+    "opposing_overlap": 39
    },
    "Ae263bdf8": {
     "predicted": 2,
     "observed": 3,
     "actual_pct": -7.09,
     "hit": true,
-    "opposing_overlap": 33
+    "opposing_overlap": 34
    },
    "A67f5c3bb": {
     "predicted": 2,
     "observed": 3,
     "actual_pct": -7.09,
     "hit": true,
-    "opposing_overlap": 33
+    "opposing_overlap": 34
    },
    "Af5c0ac06": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -4.74,
     "hit": true,
-    "opposing_overlap": 31
+    "opposing_overlap": 32
    },
    "A866c3783": {
     "predicted": 2,
     "observed": 2,
     "actual_pct": -3.57,
     "hit": true,
-    "opposing_overlap": 28
+    "opposing_overlap": 29
    },
    "Ae8436b53": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -3.57,
     "hit": false,
-    "opposing_overlap": 31
+    "opposing_overlap": 32
    },
    "A738c6a2a": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -3.57,
     "hit": true,
-    "opposing_overlap": 28
+    "opposing_overlap": 29
    },
    "Af963c9df": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -3.57,
     "hit": false,
-    "opposing_overlap": 31
+    "opposing_overlap": 32
    },
    "FP811938bd": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -3.57,
     "hit": false,
-    "opposing_overlap": 31
+    "opposing_overlap": 32
    }
   },
   "note": "조정강도는 horizon 경과 후 트래픽 변화폭을 5분위로 자른 값입니다. 그 사건 하나의 효과가 아니라 '그 무렵 트래픽이 이만큼 움직였다'는 뜻이며, 같은 구간에 반대 방향 이벤트가 몇 건 살아 있었는지는 opposing_overlap에 있습니다. 저장된 impact_strength는 덮어쓰지 않습니다 — 예측과 결과를 나란히 두어야 예측을 검증할 수 있습니다."
  },
  "correlation": {
-  "pressure_vs_forward_traffic_r": 0.1443,
-  "n_days": 57,
+  "pressure_vs_forward_traffic_r": 0.1515,
+  "n_days": 58,
   "forward_days": 7,
   "dense_window_from": "2026-07-01",
-  "full_window_r": 0.0586,
-  "full_window_n_days": 668
+  "full_window_r": 0.0608,
+  "full_window_n_days": 669
  },
  "axis_validation": {
   "demand": {
-   "r": 0.181,
-   "n": 57,
+   "r": 0.1807,
+   "n": 58,
    "target": "market_total"
   },
   "share": {
-   "r": 0.221,
-   "n": 57,
+   "r": 0.2131,
+   "n": 58,
    "target": "samsung_share"
   },
   "supply": {
-   "r": 0.0996,
-   "n": 57,
+   "r": 0.0891,
+   "n": 58,
    "target": "samsung"
   }
  },
  "group_attribution": {
   "window": {
    "from": "2026-07-01",
-   "to": "2026-08-27",
-   "days": 58
+   "to": "2026-08-28",
+   "days": 59
   },
-  "r2_in": 0.2655,
+  "r2_in": 0.2722,
   "out_of_sample": {
    "test_weeks": 75,
    "ridge_lambda": 10.0,
-   "r2_out": -0.1497
+   "r2_out": -0.166
   },
   "usable": false,
   "verdict": "학습에 쓰지 않은 주에서 설명력이 0 이하입니다 — 이 배분은 아직 쓰지 않습니다.",
   "groups": {
    "수요↑": {
-    "coefficient": 0.00453,
+    "coefficient": 0.00414,
     "halflife_days": 10,
-    "share_pct": 45.3,
-    "signed_effect": 0.33317,
-    "n_events": 170
+    "share_pct": 44.5,
+    "signed_effect": 0.30754,
+    "n_events": 172
    },
    "수요↓": {
-    "coefficient": -0.00318,
-    "halflife_days": 21,
-    "share_pct": 39.7,
-    "signed_effect": -0.29217,
-    "n_events": 163
+    "coefficient": -0.00244,
+    "halflife_days": 30,
+    "share_pct": 37.7,
+    "signed_effect": -0.26075,
+    "n_events": 165
    },
    "점유↑": {
-    "coefficient": -0.01336,
+    "coefficient": -0.01471,
     "halflife_days": 2,
-    "share_pct": 5.9,
-    "signed_effect": -0.04357,
-    "n_events": 25
+    "share_pct": 7.4,
+    "signed_effect": -0.05082,
+    "n_events": 28
    },
    "점유↓": {
-    "coefficient": -0.00652,
+    "coefficient": -0.00668,
     "halflife_days": 2,
-    "share_pct": 5.5,
-    "signed_effect": -0.04022,
+    "share_pct": 6.0,
+    "signed_effect": -0.04176,
     "n_events": 58
    },
    "공급": {
-    "coefficient": 0.01947,
+    "coefficient": 0.02078,
     "halflife_days": 2,
-    "share_pct": 3.6,
-    "signed_effect": 0.02638,
-    "n_events": 11
+    "share_pct": 4.4,
+    "signed_effect": 0.03037,
+    "n_events": 13
    }
   },
   "note": "그룹 계수와 반감기는 트래픽 곡선에 맞춘 값입니다. r2_in은 맞춘 구간이라 항상 높게 나오므로, 판단 기준은 주 단위 전주 대비 변화를 롤링 오리진으로 검정한 r2_out입니다."
@@ -2123,30 +2137,30 @@
  "permutation": {
   "all": {
    "permutations": 1000,
-   "observed_r": 0.1443,
-   "null_p95_abs_r": 0.4619,
-   "p_value": 0.839,
+   "observed_r": 0.1515,
+   "null_p95_abs_r": 0.4661,
+   "p_value": 0.835,
    "significant": false
   },
   "demand": {
    "permutations": 1000,
-   "observed_r": 0.181,
-   "null_p95_abs_r": 0.4139,
-   "p_value": 0.502,
+   "observed_r": 0.1807,
+   "null_p95_abs_r": 0.3674,
+   "p_value": 0.453,
    "significant": false
   },
   "share": {
    "permutations": 1000,
-   "observed_r": 0.221,
-   "null_p95_abs_r": 0.5644,
-   "p_value": 0.711,
+   "observed_r": 0.2131,
+   "null_p95_abs_r": 0.5169,
+   "p_value": 0.669,
    "significant": false
   },
   "supply": {
    "permutations": 1000,
-   "observed_r": 0.0996,
-   "null_p95_abs_r": 0.4676,
-   "p_value": 0.687,
+   "observed_r": 0.0891,
+   "null_p95_abs_r": 0.4773,
+   "p_value": 0.703,
    "significant": false
   }
  },

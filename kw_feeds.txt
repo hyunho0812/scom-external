@@ -676,6 +676,11 @@ earnings report
 경쟁 정보
 브랜드 성과
 폴더블폰
+apple foldable
+iphone foldable
+folding iphone
+samsung p-series
+one ui
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -703,3 +708,10 @@ tv show
 게임 리뷰
 법원 판결
 스포츠
+pixel
+m6
+m5 ultra
+mac mini
+mac studio
+nvidia groq
+bank of korea

@@ -1,52 +1,5 @@
 [
  {
-  "date": "2026-07-27",
-  "total_raw": 36,
-  "total_kept": 3,
-  "per_feed": {
-   "OpenAI news": {
-    "raw": 10,
-    "kw_pass": 7,
-    "kept": 0
-   },
-   "Samsung newsroom (KR)": {
-    "raw": 4,
-    "kw_pass": 4,
-    "kept": 1
-   },
-   "TrendForce Semiconductors": {
-    "raw": 1,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Pew Research Internet & Tech": {
-    "raw": 1,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Search Engine Journal": {
-    "raw": 6,
-    "kw_pass": 6,
-    "kept": 2
-   },
-   "Retail Dive": {
-    "raw": 8,
-    "kw_pass": 7,
-    "kept": 0
-   },
-   "Practical Ecommerce": {
-    "raw": 1,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Digiday": {
-    "raw": 5,
-    "kw_pass": 4,
-    "kept": 0
-   }
-  }
- },
- {
   "date": "2026-07-28",
   "total_raw": 41,
   "total_kept": 7,
@@ -1561,6 +1514,74 @@
     "kept": 1
    },
    "Moz": {
+    "raw": 1,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 1
+   }
+  }
+ },
+ {
+  "date": "2026-08-29",
+  "total_raw": 29,
+  "total_dup_near": 0,
+  "total_kept": 8,
+  "per_feed": {
+   "OpenAI news": {
+    "raw": 10,
+    "dup_near": 0,
+    "kw_pass": 9,
+    "kept": 0
+   },
+   "Google Search Central Blog": {
+    "raw": 1,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 1
+   },
+   "TrendForce Semiconductors": {
+    "raw": 1,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Pew Research Internet & Tech": {
+    "raw": 3,
+    "dup_near": 0,
+    "kw_pass": 2,
+    "kept": 0
+   },
+   "Search Engine Journal": {
+    "raw": 6,
+    "dup_near": 0,
+    "kw_pass": 6,
+    "kept": 5
+   },
+   "Retail Dive": {
+    "raw": 4,
+    "dup_near": 0,
+    "kw_pass": 4,
+    "kept": 0
+   },
+   "Practical Ecommerce": {
+    "raw": 1,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Semrush": {
+    "raw": 1,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 1
+   },
+   "Ahrefs": {
+    "raw": 1,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "HubSpot Marketing": {
     "raw": 1,
     "dup_near": 0,
     "kw_pass": 1,

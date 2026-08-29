@@ -555,6 +555,9 @@ market analysis
 competitive intelligence
 brand performance
 foldable phone survey
+apple foldable
+iphone foldable
+folding iphone
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -574,4 +577,8 @@ tv show
 game review
 court ruling
 sports
+mac mini
 mac studio
+pixel
+nvidia groq
+bank of korea

@@ -200,5 +200,65 @@
    }
   },
   "note": "Agreement is a ceiling on label trustworthiness: the chain uses whichever provider answers first, so disagreement here is noise already present in events.json."
+ },
+ {
+  "checked": "2026-08-29 03:22 UTC",
+  "sample": 10,
+  "event_ids": [
+   "FP59a12d30",
+   "FPc691d9e0",
+   "Aab8958f6",
+   "A9b203ad4",
+   "FPa20bb545",
+   "FPdb7887ae",
+   "Aac60c3e4",
+   "A1f60a897",
+   "A08acb004",
+   "Ab0ab90e7"
+  ],
+  "providers": [
+   "gemini",
+   "groq",
+   "mistral"
+  ],
+  "overall": {
+   "relevant": 0.533,
+   "direction": 1.0,
+   "axis": 0.333,
+   "strength": 0.333,
+   "strength_within_1": 1.0,
+   "confidence": 1.0,
+   "n_comparisons": 30
+  },
+  "pairwise": {
+   "gemini|groq": {
+    "relevant": 0.3,
+    "direction": 1.0,
+    "axis": 1.0,
+    "strength": 0.0,
+    "strength_within_1": 1.0,
+    "confidence": 1.0,
+    "n": 10
+   },
+   "gemini|mistral": {
+    "relevant": 0.3,
+    "direction": 1.0,
+    "axis": 0.0,
+    "strength": 1.0,
+    "strength_within_1": 1.0,
+    "confidence": 1.0,
+    "n": 10
+   },
+   "groq|mistral": {
+    "relevant": 1.0,
+    "direction": 1.0,
+    "axis": 0.0,
+    "strength": 0.0,
+    "strength_within_1": 1.0,
+    "confidence": 1.0,
+    "n": 10
+   }
+  },
+  "note": "Agreement is a ceiling on label trustworthiness: the chain uses whichever provider answers first, so disagreement here is noise already present in events.json."
  }
 ]

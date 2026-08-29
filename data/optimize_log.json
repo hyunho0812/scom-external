@@ -1454,5 +1454,33 @@
    "ai search traffic"
   ],
   "rationale": "기존 쿼리는 성능이 양호하여 유지했습니다. 중복 항목 제거를 위해 'mac studio'를 뉴스 드롭 키워드에 추가하고, 관련성이 높은 'foldable phone survey', '폴더블폰'을 뉴스/피드 키워드에 추가했습니다. 전반적으로 쿼리의 길이와 범용성을 유지하여 다양한 관련 외부 요소를 포착할 수 있도록 했습니다."
+ },
+ {
+  "date": "2026-08-29",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings report",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping trends",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "rationale": "쿼리 단어 수를 줄이고, 실적 부진 쿼리는 핵심어 유지하면서 짧게 변경했으며, KW_NEWS 및 KW_FEEDS에 현재 수집되는 기사 제목에서 중복 및 불필요한 노이즈를 유발하는 키워드를 DROP에 추가하고, 관련성이 높으나 현재 누락된 키워드를 KEEP에 추가했습니다. 'samsung earnings report'를 'samsung earnings'로 줄여 더 넓은 결과를 포괄합니다. 'ai shopping trends'를 'ai shopping'으로 변경하여 길이를 줄이고 더 일반적인 용어로 확장했습니다. 'apple intelligence' 쿼리는 양호한 성능을 보여 유지합니다. 'google ai search' 및 'ai search traffic' 쿼리는 양호한 성능을 보여 유지합니다. KW_NEWS DROP에 'mac mini', 'mac studio', 'pixel', 'nvidia groq', 'bank of korea'와 같이 삼성과 관련성이 적은 기기나 회사 및 기관명을 추가하여 중복 및 노이즈를 줄였습니다. KW_NEWS KEEP에 'apple foldable', 'iphone foldable', 'folding iphone'을 추가하여 관련성 높은 폴더블 아이폰 관련 정보를 놓치지 않도록 했습니다. KW_FEEDS DROP에도 동일한 키워드 ('pixel', 'm6', 'm5 ultra', 'mac mini', 'mac studio', 'nvidia groq', 'bank of korea')를 추가했습니다. KW_FEEDS KEEP에는 삼성 자체 뉴스룸에서 자주 언급되는 'samsung p-series', 'one ui'를 추가하여 자사 제품 관련 키워드를 강화했습니다."
  }
 ]
