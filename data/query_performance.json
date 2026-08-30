@@ -1,48 +1,5 @@
 [
  {
-  "date": "2026-07-29",
-  "total_raw": 48,
-  "total_dup": 4,
-  "total_kept": 1,
-  "per_query": {
-   "samsung product launch impact analysis": {
-    "raw": 1,
-    "dup": 0,
-    "kept": 0
-   },
-   "samsung electronics quarterly earnings report": {
-    "raw": 13,
-    "dup": 2,
-    "kept": 0
-   },
-   "foldable smartphone market share growth": {
-    "raw": 2,
-    "dup": 0,
-    "kept": 1
-   },
-   "consumer electronics product discovery trends": {
-    "raw": 1,
-    "dup": 1,
-    "kept": 0
-   },
-   "apple intelligence market strategy consumer impact": {
-    "raw": 6,
-    "dup": 0,
-    "kept": 0
-   },
-   "apple intelligence strategy": {
-    "raw": 10,
-    "dup": 1,
-    "kept": 0
-   },
-   "semiconductor memory market trend": {
-    "raw": 15,
-    "dup": 0,
-    "kept": 0
-   }
-  }
- },
- {
   "date": "2026-07-30",
   "total_raw": 46,
   "total_dup": 11,
@@ -2010,6 +1967,79 @@
     "dup_near": 1,
     "kw_pass": 7,
     "kept": 2
+   }
+  }
+ },
+ {
+  "date": "2026-08-30",
+  "total_raw": 78,
+  "total_dup": 4,
+  "total_dup_near": 3,
+  "total_kw_pass": 61,
+  "total_kept": 7,
+  "per_query": {
+   "samsung product launch": {
+    "raw": 5,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 4,
+    "kept": 0
+   },
+   "samsung earnings": {
+    "raw": 5,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 4,
+    "kept": 0
+   },
+   "galaxy phone launch": {
+    "raw": 12,
+    "dup": 1,
+    "dup_near": 0,
+    "kw_pass": 9,
+    "kept": 4
+   },
+   "smartphone market share": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 7,
+    "kept": 1
+   },
+   "ai shopping": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 9,
+    "kept": 1
+   },
+   "apple intelligence": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 1,
+    "kw_pass": 8,
+    "kept": 1
+   },
+   "semiconductor market": {
+    "raw": 10,
+    "dup": 1,
+    "dup_near": 0,
+    "kw_pass": 9,
+    "kept": 0
+   },
+   "google ai search": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 2,
+    "kw_pass": 7,
+    "kept": 0
+   },
+   "ai search traffic": {
+    "raw": 6,
+    "dup": 2,
+    "dup_near": 0,
+    "kw_pass": 4,
+    "kept": 0
    }
   }
  }

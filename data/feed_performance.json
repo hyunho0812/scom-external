@@ -1,52 +1,5 @@
 [
  {
-  "date": "2026-07-29",
-  "total_raw": 31,
-  "total_kept": 11,
-  "per_feed": {
-   "OpenAI news": {
-    "raw": 10,
-    "kw_pass": 7,
-    "kept": 2
-   },
-   "Gemini (Google)": {
-    "raw": 1,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Google Search Central Blog": {
-    "raw": 1,
-    "kw_pass": 1,
-    "kept": 1
-   },
-   "Pew Research Internet & Tech": {
-    "raw": 2,
-    "kw_pass": 1,
-    "kept": 1
-   },
-   "Search Engine Journal": {
-    "raw": 10,
-    "kw_pass": 10,
-    "kept": 6
-   },
-   "Retail Dive": {
-    "raw": 4,
-    "kw_pass": 3,
-    "kept": 1
-   },
-   "Practical Ecommerce": {
-    "raw": 1,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Digiday": {
-    "raw": 2,
-    "kw_pass": 2,
-    "kept": 0
-   }
-  }
- },
- {
   "date": "2026-07-30",
   "total_raw": 40,
   "total_kept": 3,
@@ -1544,6 +1497,38 @@
     "dup_near": 0,
     "kw_pass": 1,
     "kept": 1
+   }
+  }
+ },
+ {
+  "date": "2026-08-30",
+  "total_raw": 14,
+  "total_dup_near": 1,
+  "total_kept": 2,
+  "per_feed": {
+   "OpenAI news": {
+    "raw": 10,
+    "dup_near": 1,
+    "kw_pass": 8,
+    "kept": 0
+   },
+   "Samsung newsroom (KR)": {
+    "raw": 1,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 1
+   },
+   "Search Engine Journal": {
+    "raw": 2,
+    "dup_near": 0,
+    "kw_pass": 2,
+    "kept": 1
+   },
+   "Practical Ecommerce": {
+    "raw": 1,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
    }
   }
  }
