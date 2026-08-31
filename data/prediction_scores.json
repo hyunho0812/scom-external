@@ -2083,27 +2083,27 @@
   "note": "조정강도는 horizon 경과 후 트래픽 변화폭을 5분위로 자른 값입니다. 그 사건 하나의 효과가 아니라 '그 무렵 트래픽이 이만큼 움직였다'는 뜻이며, 같은 구간에 반대 방향 이벤트가 몇 건 살아 있었는지는 opposing_overlap에 있습니다. 저장된 impact_strength는 덮어쓰지 않습니다 — 예측과 결과를 나란히 두어야 예측을 검증할 수 있습니다."
  },
  "correlation": {
-  "pressure_vs_forward_traffic_r": 0.1305,
-  "n_days": 59,
+  "pressure_vs_forward_traffic_r": 0.1773,
+  "n_days": 53,
   "forward_days": 7,
   "dense_window_from": "2026-07-01",
-  "full_window_r": 0.0651,
-  "full_window_n_days": 670
+  "full_window_r": 0.068,
+  "full_window_n_days": 664
  },
  "axis_validation": {
   "demand": {
-   "r": 0.1247,
-   "n": 59,
+   "r": 0.2712,
+   "n": 53,
    "target": "market_total"
   },
   "share": {
-   "r": 0.2372,
-   "n": 59,
+   "r": 0.1833,
+   "n": 53,
    "target": "samsung_share"
   },
   "supply": {
-   "r": 0.0797,
-   "n": 59,
+   "r": 0.0888,
+   "n": 53,
    "target": "samsung"
   }
  },
@@ -2165,30 +2165,30 @@
  "permutation": {
   "all": {
    "permutations": 1000,
-   "observed_r": 0.1305,
-   "null_p95_abs_r": 0.5069,
-   "p_value": 0.96,
+   "observed_r": 0.1773,
+   "null_p95_abs_r": 0.5126,
+   "p_value": 0.823,
    "significant": false
   },
   "demand": {
    "permutations": 1000,
-   "observed_r": 0.1247,
-   "null_p95_abs_r": 0.32,
-   "p_value": 0.476,
+   "observed_r": 0.2712,
+   "null_p95_abs_r": 0.3455,
+   "p_value": 0.123,
    "significant": false
   },
   "share": {
    "permutations": 1000,
-   "observed_r": 0.2372,
-   "null_p95_abs_r": 0.4862,
-   "p_value": 0.447,
+   "observed_r": 0.1833,
+   "null_p95_abs_r": 0.5011,
+   "p_value": 0.548,
    "significant": false
   },
   "supply": {
    "permutations": 1000,
-   "observed_r": 0.0797,
-   "null_p95_abs_r": 0.4581,
-   "p_value": 0.719,
+   "observed_r": 0.0888,
+   "null_p95_abs_r": 0.4888,
+   "p_value": 0.722,
    "significant": false
   }
  },
