@@ -53,17 +53,10 @@ from datetime import date, timedelta
 
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
-from llm_common import parse_date, EVENTS_FILE, EVENT_PRESSURE_FILE, PREDICTION_SCORES_FILE, WIKI_FILE, read_json, write_json
+from llm_common import (parse_date, EVENTS_FILE, EVENT_PRESSURE_FILE,
+                        PREDICTION_SCORES_FILE, WIKI_FILE, read_json, write_json,
+                        HORIZON, DEFAULT_HORIZON, CONF_W, DIR_SIGN, DECAY_CUTOFF)
 
-# exponential decay, and the window its prediction is scored over.
-HORIZON = {
-    "immediate": {"halflife": 3,  "window": 7},
-    "weeks":     {"halflife": 14, "window": 28},
-    "months":    {"halflife": 60, "window": 90},
-}
-DEFAULT_HORIZON = "weeks"
-CONF_W = {"high": 1.0, "med": 0.66, "low": 0.33}
-DIR_SIGN = {"+": 1.0, "-": -1.0}
 AXES = ("demand", "share", "supply")
 
 BASELINE_DAYS = 14      # window before an event, for its "before" level
@@ -71,7 +64,6 @@ BASELINE_DAYS = 14      # window before an event, for its "before" level
 # the traffic series. Not 1.0: the wikipedia feed occasionally drops a day, and
 # one missing day should not disqualify a finished 90-day horizon.
 MIN_WINDOW_COVERAGE = 0.95
-DECAY_CUTOFF = 4        # stop applying an event after this many half-lives
 FWD_DAYS = 7            # forward window for the pressure/traffic correlation
 PERMUTATIONS = 1000
 # Competitors that make up the "market" series (Samsung excluded — it is the
@@ -685,8 +677,18 @@ def rolling_origin(events, smap, days, halflives, lam=RIDGE_LAMBDA):
     m = sum(acts) / len(acts)
     sse = sum((a - p) ** 2 for a, p in zip(acts, preds))
     sst = sum((a - m) ** 2 for a in acts)
+    # The events-free control: predict no week-over-week change at all, scored
+    # on the same test weeks. Without it a negative r2_out reads as "not enough
+    # data yet", when the question that actually matters is whether the events
+    # beat using no events — and on 2026-08-28 they did not, at any grouping or
+    # any ridge strength. Same reason convergence reports random_gap beside
+    # mean_gap and the agreement check reports chance beside the raw rate: a
+    # score with no baseline next to it cannot be read.
+    zero_sse = sum(a * a for a in acts)
     return {"test_weeks": len(acts), "ridge_lambda": lam,
-            "r2_out": round(1 - sse / sst, 4) if sst else None}
+            "r2_out": round(1 - sse / sst, 4) if sst else None,
+            "baseline_r2_out": round(1 - zero_sse / sst, 4) if sst else None,
+            "beats_baseline": bool(sst and sse < zero_sse)}
 
 
 def group_attribution(events, smap, days, all_days=None):
@@ -729,7 +731,10 @@ def group_attribution(events, smap, days, all_days=None):
         "groups": shares,
         "note": ("그룹 계수와 반감기는 트래픽 곡선에 맞춘 값입니다. r2_in은 맞춘 "
                  "구간이라 항상 높게 나오므로, 판단 기준은 주 단위 전주 대비 변화를 "
-                 "롤링 오리진으로 검정한 r2_out입니다."),
+                 "롤링 오리진으로 검정한 r2_out입니다. baseline_r2_out은 이벤트를 "
+                 "하나도 쓰지 않고 '변화 없음'을 예측했을 때의 같은 점수이며, "
+                 "r2_out이 이보다 낮으면 이벤트가 예측을 돕는 게 아니라 해치고 "
+                 "있다는 뜻입니다."),
     }
 
 

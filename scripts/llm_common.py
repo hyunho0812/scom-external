@@ -167,6 +167,46 @@ def has_korean(s):
 # falls back to its own keyword heuristic for any event with axis=="" (this
 # is also what makes it a safe upgrade for the 90+ events collected before
 # this field existed).
+# The axis definitions the model is given. Held here rather than inline in
+# FILTER_SYSTEM because two callers need the same words: the collectors, via
+# FILTER_SYSTEM, and `maintenance.py axis --rejudge`, which re-asks this one
+# field for events labelled before it existed. Two copies would drift, and a
+# re-judgement made against different wording is not comparable to the
+# original judgement.
+AXIS_SPEC = (
+ 'demand|share|supply \u2014 WHICH of 3 causal buckets this event mainly '
+ 'acts through. demand = a MARKET-WIDE shift in overall interest/search '
+ 'volume/traffic pool that affects everyone in the category roughly equally, '
+ 'not specific to samsung.com vs one named rival (e.g. AI Overviews cutting '
+ 'click-through industry-wide, a memory-price macro shock, a holiday '
+ 'shopping surge, a broad social-commerce trend). share = REDISTRIBUTES '
+ 'visibility/traffic specifically BETWEEN samsung.com and a NAMED competitor '
+ '(e.g. a competitor product launch/price move, an algorithm change that '
+ 'favors a named rival over Samsung). supply = about samsung.com\'s OWN site '
+ '(indexing, crawling, outage, performance/Core Web Vitals) \u2014 never about a '
+ 'third party. When torn between demand and share, pick demand UNLESS a '
+ 'specific competitor is named as directly gaining at Samsung\'s expense.'
+)
+
+# --- event exposure weighting ------------------------------------------------
+# How much of an event is still "in flight" on a given day:
+#     strength x CONF_W[confidence] x 0.5 ** (age / halflife)
+# score_predictions.py builds the cumulative impact index and the group fit on
+# this, and build.py's per-event allocation divides an observed traffic move by
+# the same quantity. Those two must agree exactly — an allocation weighted
+# differently from the index it sits beside would put two contradictory
+# readings of the same events on one screen — so the numbers live here and both
+# sides import them rather than each keeping a copy.
+HORIZON = {
+    "immediate": {"halflife": 3,  "window": 7},
+    "weeks":     {"halflife": 14, "window": 28},
+    "months":    {"halflife": 60, "window": 90},
+}
+DEFAULT_HORIZON = "weeks"
+CONF_W = {"high": 1.0, "med": 0.66, "low": 0.33}
+DIR_SIGN = {"+": 1.0, "-": -1.0}
+DECAY_CUTOFF = 4        # stop applying an event after this many half-lives
+
 VALID_AXES = {"demand", "share", "supply"}
 def clean_axis(v):
     v = (v or "").strip().lower()
@@ -788,18 +828,7 @@ FILTER_SYSTEM = (
  'confidence high. Use low regularly; never using it means you are reporting '
  'size, not certainty.",'
  '"metric":"traffic|revenue|both",'
- '"axis":"demand|share|supply — WHICH of 3 causal buckets this event mainly '
- 'acts through. demand = a MARKET-WIDE shift in overall interest/search '
- 'volume/traffic pool that affects everyone in the category roughly equally, '
- 'not specific to samsung.com vs one named rival (e.g. AI Overviews cutting '
- 'click-through industry-wide, a memory-price macro shock, a holiday '
- 'shopping surge, a broad social-commerce trend). share = REDISTRIBUTES '
- 'visibility/traffic specifically BETWEEN samsung.com and a NAMED competitor '
- '(e.g. a competitor product launch/price move, an algorithm change that '
- 'favors a named rival over Samsung). supply = about samsung.com\'s OWN site '
- '(indexing, crawling, outage, performance/Core Web Vitals) — never about a '
- 'third party. When torn between demand and share, pick demand UNLESS a '
- 'specific competitor is named as directly gaining at Samsung\'s expense."}\n'
+ '"axis":"' + AXIS_SPEC + '"}\n'
  'title/impact/description IN KOREAN (한국어), with plain 다/했다/이다 endings (NOT polite 요/습니다) and SIMPLE everyday words — explaining to a colleague, not writing a report. description is the summary and impact is your inference: do not repeat one inside the other. If not relevant: {"relevant":false}.'
 )
 

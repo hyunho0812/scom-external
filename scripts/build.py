@@ -12,7 +12,15 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # about where files live or which countries a region holds.
 from llm_common import (SCOPE_REGIONS, EVENTS_FILE, WIKI_FILE, CRUX_FILE,
                         MODEL_STATUS_FILE, PREDICTION_SCORES_FILE,
-                        LLM_AGREEMENT_FILE, FEED_HEALTH_FILE, INDEX_HTML, read_json)
+                        LLM_AGREEMENT_FILE, FEED_HEALTH_FILE, INDEX_HTML, read_json,
+                        HORIZON, DEFAULT_HORIZON, CONF_W, DIR_SIGN, DECAY_CUTOFF)
+
+# The page allocates an observed traffic move across events using the exact
+# weighting score_predictions builds the cumulative impact index from. Passed
+# through rather than restated in JS so the two can never drift apart.
+EXPOSURE = {"halflife": {k: v["halflife"] for k, v in HORIZON.items()},
+            "default": DEFAULT_HORIZON, "conf": CONF_W, "sign": DIR_SIGN,
+            "cutoff": DECAY_CUTOFF}
 
 events=read_json(EVENTS_FILE, [])
 updated=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
@@ -138,6 +146,7 @@ input[type=date]{color-scheme:dark}
 .card .lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:oklch(0.57 0.008 250);margin-bottom:7px}
 .card .val{font-family:var(--mono);font-size:24px;font-weight:500;letter-spacing:-0.02em}
 .card .vnote{font-family:var(--mono);font-size:10px;color:oklch(0.58 0.008 250);margin-left:8px}
+.alloc{font-family:var(--mono);font-size:11.5px;font-weight:600;margin-top:3px;letter-spacing:-0.01em}
 
 /* ---- event list (master) ---- */
 .evlist{border:1px solid var(--line);border-radius:3px;overflow:hidden;display:flex;flex-direction:column;gap:1px;background:var(--line)}
@@ -303,6 +312,7 @@ input[type=date]{color-scheme:dark}
     <div class="phead" style="margin-bottom:10px">
       <div class="ptitle">외부 요인<span class="psub" id="evcount"></span></div>
     </div>
+    <div class="note" id="allocNote" style="margin:0 0 10px"></div>
     <div class="split">
       <div class="evlist">
         <div class="evstrip">
@@ -350,6 +360,7 @@ const WIKI_FILE=__WIKI__;
 const CRUX=__CRUX__;
 const SCORES=__SCORES__;
 const AGREE=__AGREE__;
+const EXPO=__EXPOSURE__;
 // Built from the countries the stored events actually name (see build.py
 // country_tables()), not a fixed list: an event scoped to CN or JP used to be
 // unreachable because the filter had no such option. The twelve tracked
@@ -686,6 +697,39 @@ function scrollToCard(n){
 // room for. Clicking a row selects it; the pane follows.
 let FDIR='ALL', FAXIS='ALL', FSORT='date', SEL=null;
 
+function renderAllocNote(vd){
+ const el=document.getElementById('allocNote'); if(!el) return;
+ if(!ALLOC){
+  el.innerHTML = vd ? '기여 비중은 기간 비교가 가능할 때 계산됩니다.'
+    : '기여 비중을 계산하려면 현재·비교 기간을 모두 선택해야 합니다.';
+  return;
+ }
+ const t=ALLOC.totalPct, sgn=v=>(v>=0?'+':'')+v.toFixed(1);
+ const col=v=>v<0?'var(--neg)':'var(--pos)';
+ const src=trafficSourceLabel();
+ el.innerHTML =
+  `<b>이 기간 트래픽 ${sgn(t)}%</b>(${src})를 요인 ${ALLOC.n}건에 나눈 값입니다 · `
+  // Coloured by the sign of the contribution, not by the event's own
+  // direction: during a decline the increase events contribute a NEGATIVE
+  // share, and painting that green would say the opposite of the number.
+  + `<span style="color:${col(ALLOC.posPct)}">증가 요인 합 ${sgn(ALLOC.posPct)}%</span> · `
+  + `<span style="color:${col(ALLOC.negPct)}">감소 요인 합 ${sgn(ALLOC.negPct)}%</span> · 계 100%`
+  + (ALLOC.silent?` · 방향 미상 ${ALLOC.silent}건은 배분에서 빠집니다`:'')
+  + (ALLOC.netRatio!=null && ALLOC.netRatio<0.3
+     ? `<br><span style="color:var(--warn)">증가·감소 요인이 서로 상쇄되어 순합이 총합의 `
+       + `${(ALLOC.netRatio*100).toFixed(0)}%뿐입니다 — 개별 비중이 약 `
+       + `${(1/ALLOC.netRatio).toFixed(1)}배로 부풀어 100%를 훌쩍 넘습니다.</span>`
+     : '')
+  + (ALLOC.conflict
+     ? `<br><span style="color:var(--warn)">요인 구성은 ${ALLOC.net>0?'상승':'하락'}을 가리키는데 `
+       + `트래픽은 반대로 움직였습니다 — 부호가 뒤집혀 읽히니 주의하십시오.</span>`
+     : '')
+  + `<br>나누는 규칙은 <b>영향강도 × 신뢰도 × 시간 감쇠</b>이고, 이 비율은 `
+  + `트래픽이 아니라 AI가 매긴 라벨에서 나옵니다. <b>각 요인이 실제로 그만큼 만들었다는 `
+  + `뜻이 아닙니다</b> — 영향 구간이 겹치는 요인이 늘 수십 건이라 트래픽 한 계열을 `
+  + `사건별 몫으로 쪼갤 실측 근거는 없습니다.`;
+}
+
 function evRowHtml(e, n){
  const cls=DIRCLS[e.impact_direction]||'';
  const on=(SEL===e.event_id)?' on':'';
@@ -697,8 +741,20 @@ function evRowHtml(e, n){
    <span class="dir">${arrow}</span>
    <div><div class="ttl">${e.title||''}</div><div class="sum">${summary}</div></div>
    <div class="rt"><div class="date">${e.date||''}</div>
-     <div class="meta">${AXIS_KO[ax]||''} · ${STRENGTH(e)}/5</div></div>
+     <div class="meta">${AXIS_KO[ax]||''} · ${STRENGTH(e)}/5</div>
+     ${allocBadge(e)}</div>
  </div>`;
+}
+
+// The row's share of the period's move. Blank when the event claims no
+// direction, or when no period comparison is set — never 0%, which would read
+// as "this event did nothing" rather than "this is not being allocated".
+function allocBadge(e){
+ const v=ALLOC && ALLOC.share[e.event_id];
+ if(v==null) return '';
+ const col=v<0?'var(--neg)':'var(--pos)';
+ return `<div class="alloc" style="color:${col}" title="이 기간 변화를 영향강도로 나눈 몫입니다">`
+      + `${v>=0?'+':''}${v.toFixed(1)}%</div>`;
 }
 
 // Source/filter markers were once written into description; strip them so the
@@ -746,7 +802,11 @@ function detailHtml(e, n){
    strengthTag(e),
    `<span class="tag">신뢰도 ${CONF_KO[e.confidence]||e.confidence||'-'}</span>`,
    `<span class="tag">${scopeLabelKo(e.scope)}</span>`].join('');
+ const alloc=ALLOC&&ALLOC.share[e.event_id];
  const meta=[['영향 방향',`<span style="color:${dirCol}">${dirWord}</span>`],
+   ...(alloc!=null?[['기간 기여 비중',
+     `<span style="color:${alloc<0?'var(--neg)':'var(--pos)'}">${alloc>=0?'+':''}${alloc.toFixed(1)}%</span>`
+     + `<span style="color:var(--muted)"> · 규칙에 따른 배분입니다</span>`]]:[]),
    ['지속 기간',HORIZON_KO[e.impact_horizon]||e.impact_horizon||'-'],
    ['날짜 근거',DS_LABEL[e.date_source||'seed']||'-'],
    ['영향 사업부',divLabel(e.divisions)],
@@ -1051,6 +1111,66 @@ function seasonalBaseline(ser, curFrom, curTo, cmpFrom, cmpTo, maxBack=10){
  const mad=median(ratios.map(r=>Math.abs(r-m)));
  return {expectedLog:m, sigma:(mad*1.4826)||null, n:ratios.length};
 }
+// ---- per-event allocation -------------------------------------------------
+// Splits the observed traffic move across the events in the period. This is a
+// DEFINITION, not a measurement: the total comes from the traffic series, but
+// how it divides between events comes entirely from the LLM's strength and
+// confidence labels. Feeding real traffic in (the CSV upload) changes the
+// total; it does not change the ordering, because no traffic series can
+// separate events whose windows overlap — and here the median event shares its
+// window with 45 others. So the shares answer "how does this rule divide the
+// move", never "how much did this event cause".
+//
+// The evidence on the ordering is negative and already on this page: predicted
+// strength 4 lands at observed quintile 2, predicted 2 at quintile 4, and
+// strength 5 has the worst hit rate of any band. Hence the note under the list.
+function eventWeight(e, from, to){
+ const d0=new Date(e.date+'T00:00:00'); if(isNaN(d0)) return 0;
+ const hl=EXPO.halflife[e.impact_horizon]||EXPO.halflife[EXPO.default];
+ const w=(STRENGTH(e))*(EXPO.conf[(e.confidence||'').toLowerCase()]!=null
+   ? EXPO.conf[(e.confidence||'').toLowerCase()] : EXPO.conf.low);
+ const a=new Date(from+'T00:00:00'), b=new Date(to+'T00:00:00');
+ let sum=0;
+ for(let t=new Date(a); t<=b; t.setDate(t.getDate()+1)){
+  const age=Math.round((t-d0)/86400000);
+  if(age>=0 && age<=hl*EXPO.cutoff) sum+=w*Math.pow(0.5, age/hl);
+ }
+ return sum;
+}
+
+// Computed over EVERY event in the period, never the filtered list — the
+// shares are a decomposition of one total, so a list filter that changed them
+// would make the percentages stop adding up (same rule as the 3-axis split).
+function allocate(rows, from, to, totalPct){
+ if(!rows.length || totalPct==null || !from || !to) return null;
+ const w={}; let pos=0, neg=0;
+ rows.forEach(e=>{
+  const sign=EXPO.sign[e.impact_direction];
+  if(!sign) return;                    // unknown/neutral direction claims nothing
+  const v=sign*eventWeight(e, from, to);
+  if(!v) return;
+  w[e.event_id]=v;
+  if(v>0) pos+=v; else neg+=v;
+ });
+ const net=pos+neg, gross=pos-neg;
+ if(!net) return null;
+ const share={};
+ for(const k in w) share[k]=w[k]/net*100;
+ return {share, posPct:pos/net*100, negPct:neg/net*100, net,
+         // Increase and decrease events largely cancel, so the net the shares
+         // divide by can be a small remainder of a large gross — and then
+         // every share is that remainder's reciprocal times bigger. At 15% the
+         // figures are ~7x amplified and a single event can read 60%. The
+         // ratio is reported rather than the percentages quietly capped: the
+         // amplification is a property of the period, not an error.
+         netRatio: gross ? Math.abs(net)/gross : null,
+         // Events pointing one way while traffic went the other: the split
+         // still sums to 100% but reads backwards, so it is said out loud.
+         conflict:(net>0)!==(totalPct>0), n:Object.keys(w).length,
+         silent:rows.length-Object.keys(w).length, totalPct};
+}
+let ALLOC=null;
+
 // ---- label agreement: the ceiling over every other number on this page ----
 // Every figure above is computed from labels one LLM wrote, and the chain uses
 // whichever provider answers first — so the same article gets Gemini's verdict
@@ -1268,6 +1388,10 @@ function render(){
  document.getElementById('cards').innerHTML = kpi.map(([l,v,n,c,t])=>
    `<div class="card"${t?` title="${t}"`:''}><div class="lbl">${l}</div><div><span class="val" style="color:${c}">${v}</span>${n?`<span class="vnote">${n}</span>`:''}</div></div>`).join('');
 
+ // ---- per-event allocation (whole period, before any list filter) -------
+ ALLOC = (vd && sd.value && ed.value) ? allocate(r, sd.value, ed.value, vd.pct) : null;
+ renderAllocNote(vd);
+
  // ---- event list (direction / axis / sort apply here only, never to the
  // axis decomposition, which needs every event in the period) -------------
  let lr=r.slice();
@@ -1370,6 +1494,13 @@ const GLOSSARY=[
    def:'지수가 높은 날 다음에 실제로 트래픽이 움직였는지를 −1~+1로 나타낸 값입니다.',
    eg:'__CORR_EG__',
    myth:'0에 가까우면 관계가 없다는 뜻이고, 표본이 적으면 값 자체를 믿을 수 없습니다.'},
+  {ko:'기간 기여 비중',en:'ALLOCATION',
+   def:'고른 기간의 트래픽 변화를 그 기간 요인들에게 나눈 몫입니다. 전체를 더하면 100%가 되고, '
+      +'변화와 반대로 작용한 요인은 음수로 상쇄합니다.',
+   eg:'트래픽이 −4% 움직였다면 감소 요인들이 +100%를 넘게 가져가고, 증가 요인들이 음수로 깎습니다.',
+   myth:'그 요인이 실제로 그만큼 만들었다는 뜻이 아닙니다. 나누는 비율은 트래픽이 아니라 '
+      +'AI가 매긴 영향강도·신뢰도에서 나오고, 영향 구간이 겹치는 요인이 늘 수십 건이라 '
+      +'트래픽 한 계열을 사건별 몫으로 쪼갤 실측 근거는 없습니다.'},
   {ko:'라벨 일치도',en:'KAPPA',
    def:'같은 기사를 AI 3개에게 따로 판정시켰을 때 서로 얼마나 같은 답을 내는지입니다. '
       +'κ는 "우연히 겹친 몫"을 빼고 남은 값이라, 0이면 우연과 다를 바 없다는 뜻입니다.',
@@ -1549,6 +1680,7 @@ HTML=(HTML.replace("__DATA__",json.dumps(events,ensure_ascii=False))
           .replace("__CRUX__",json.dumps(crux,ensure_ascii=False))
           .replace("__SCORES__",json.dumps(scores,ensure_ascii=False))
           .replace("__AGREE__",json.dumps(agreement,ensure_ascii=False))
+          .replace("__EXPOSURE__",json.dumps(EXPOSURE,ensure_ascii=False))
           .replace("__MBADGES__",mbadges_html)
           .replace("__DEF_CMP_FROM__",DEF_CMP_FROM)
           .replace("__DEF_CMP_TO__",DEF_CMP_TO)
