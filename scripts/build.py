@@ -38,7 +38,13 @@ def _mstat_of(name):
 crux=read_json(CRUX_FILE, {"metrics":{}})
 scores=read_json(PREDICTION_SCORES_FILE, {})
 _ag=read_json(LLM_AGREEMENT_FILE, {})
-agreement=(_ag[-1] if isinstance(_ag,list) and _ag else (_ag if isinstance(_ag,dict) else {}))
+_agrun=(_ag[-1] if isinstance(_ag,list) and _ag else (_ag if isinstance(_ag,dict) else {}))
+# The newest run carries `pooled`, the figure accumulated over every run that
+# stored raw labels — one 10-article run cannot support a kappa on its own.
+# The raw labels and event_ids behind it stay in the JSON (they are what lets
+# pooled be recomputed and a disagreement re-read later) but are not shipped
+# to the page, which only needs the numbers.
+agreement={k:v for k,v in _agrun.items() if k not in ("labels","event_ids")}
 
 HTML=r"""<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -125,7 +131,7 @@ input[type=date]{color-scheme:dark}
   white-space:normal;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .legend{display:flex;gap:11px;font-family:var(--mono);font-size:9.5px;color:oklch(0.62 0.008 250)}
 .note{font-size:10.5px;color:oklch(0.53 0.008 250);margin-top:10px;line-height:1.55}
-.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);
+.cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);
   border:1px solid var(--line);border-radius:3px;overflow:hidden}
 @media (max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .card{background:var(--card);padding:14px 18px}
@@ -1045,6 +1051,34 @@ function seasonalBaseline(ser, curFrom, curTo, cmpFrom, cmpTo, maxBack=10){
  const mad=median(ratios.map(r=>Math.abs(r-m)));
  return {expectedLog:m, sigma:(mad*1.4826)||null, n:ratios.length};
 }
+// ---- label agreement: the ceiling over every other number on this page ----
+// Every figure above is computed from labels one LLM wrote, and the chain uses
+// whichever provider answers first — so the same article gets Gemini's verdict
+// today and Mistral's tomorrow. How often those two would have disagreed caps
+// how much any of it can mean.
+//
+// The card shows kappa, not the raw agreement rate, because the raw rate
+// flatters itself badly here: two judges drawing labels independently out of
+// the ledger's own mix would agree 0.86 of the time on strength-within-1 and
+// 0.68 on axis, purely by luck. kappa is that luck subtracted out — 0 means
+// the judges agree no more than chance. `direction` is the headline because
+// the axis split and the cumulative impact index are both built on top of it.
+const AGFIELD={relevant:'수집 여부',direction:'영향 방향',axis:'축',
+  strength:'강도 정확',strength_within_1:'강도 ±1',confidence:'신뢰도'};
+function agreeCard(){
+ const ag=(AGREE&&AGREE.pooled&&AGREE.pooled.runs)?AGREE.pooled:null;
+ const kd=(ag&&ag.kappa)?ag.kappa.direction:null;
+ if(kd==null) return ['라벨 일치도','—','측정 없음','var(--neu)',''];
+ // Below 0.2 the labels are essentially noise; 0.4 is the usual line for
+ // "carries real shared signal". Colour says which side of that we are on.
+ const col=kd<0.2?'var(--neg)':(kd<0.4?'var(--warn)':'var(--pos)');
+ const tip=Object.keys(AGFIELD).map(f=>{
+   const r=ag.rate[f], c=ag.chance[f], k=ag.kappa[f];
+   return `${AGFIELD[f]} — 관측 ${r==null?'—':r.toFixed(2)} / 우연 ${c==null?'—':c.toFixed(2)} / κ ${k==null?'—':k.toFixed(2)}`;
+ }).join('&#10;')+`&#10;&#10;누적 ${ag.runs}회 · 비교쌍 ${ag.n_comparisons}건`;
+ return ['라벨 일치도','κ '+kd.toFixed(2),`방향 · n=${ag.n_comparisons}`,col,tip];
+}
+
 // ---- axis panel (the 420px column) ----------------------------------------
 // The whole three-axis read-out lives here, beside the chart: three sentences
 // saying what moved, the three single-axis effects, and how the move splits
@@ -1229,9 +1263,10 @@ function render(){
   ['방향 적중률', hit, (sc.n?'n='+sc.n:'')+fore, 'var(--warn)'],
   ['누적 영향지수 상관', (corr.pressure_vs_forward_traffic_r!=null?'r '+corr.pressure_vs_forward_traffic_r.toFixed(3):'—'),
     (corr.n_days?'n='+corr.n_days+'일':''), 'var(--neu)'],
+  agreeCard(),
  ];
- document.getElementById('cards').innerHTML = kpi.map(([l,v,n,c])=>
-   `<div class="card"><div class="lbl">${l}</div><div><span class="val" style="color:${c}">${v}</span>${n?`<span class="vnote">${n}</span>`:''}</div></div>`).join('');
+ document.getElementById('cards').innerHTML = kpi.map(([l,v,n,c,t])=>
+   `<div class="card"${t?` title="${t}"`:''}><div class="lbl">${l}</div><div><span class="val" style="color:${c}">${v}</span>${n?`<span class="vnote">${n}</span>`:''}</div></div>`).join('');
 
  // ---- event list (direction / axis / sort apply here only, never to the
  // axis decomposition, which needs every event in the period) -------------
@@ -1335,6 +1370,12 @@ const GLOSSARY=[
    def:'지수가 높은 날 다음에 실제로 트래픽이 움직였는지를 −1~+1로 나타낸 값입니다.',
    eg:'__CORR_EG__',
    myth:'0에 가까우면 관계가 없다는 뜻이고, 표본이 적으면 값 자체를 믿을 수 없습니다.'},
+  {ko:'라벨 일치도',en:'KAPPA',
+   def:'같은 기사를 AI 3개에게 따로 판정시켰을 때 서로 얼마나 같은 답을 내는지입니다. '
+      +'κ는 "우연히 겹친 몫"을 빼고 남은 값이라, 0이면 우연과 다를 바 없다는 뜻입니다.',
+   eg:'__AGREE_EG__',
+   myth:'이 값은 이 화면의 다른 모든 숫자의 상한입니다. 판정이 서로 엇갈리면, '
+      +'그 판정으로 만든 적중률과 축 비중도 그만큼 흔들립니다.'},
   {ko:'순열검정 p값',en:'p-VALUE',
    def:'날짜를 마구 섞은 가짜 데이터로 1000번 계산해, 그중 몇 번이나 지금 결과만큼 그럴듯했는지입니다.',
    eg:'__P_EG__',
@@ -1365,11 +1406,18 @@ function renderGlossary(){
  const box=document.getElementById('glossary'); if(!box) return;
  const sc=(SCORES.summary&&SCORES.summary.all)||{}, fk=(SCORES.summary&&SCORES.summary.foreknown)||{};
  const co=SCORES.correlation||{}, pm=(SCORES.permutation&&SCORES.permutation.all)||{};
+ const ag=(AGREE&&AGREE.pooled&&AGREE.pooled.runs)?AGREE.pooled:null;
  const fill={
   __HIT_EG__: sc.hit_rate!=null?`${sc.n}번 채점해 ${Math.round(sc.hit_rate*sc.n)}번 맞았습니다 → ${(sc.hit_rate*100).toFixed(1)}%. 동전던지기가 50%입니다.`:'아직 채점된 예측이 없습니다.',
   __FORE_EG__: fk.hit_rate!=null?`${fk.n}건 한정 ${(fk.hit_rate*100).toFixed(1)}% — 전체 ${sc.hit_rate!=null?(sc.hit_rate*100).toFixed(1)+'%':'—'}와 비교해 보십시오.`:'아직 해당 건이 없습니다.',
   __CORR_EG__: co.pressure_vs_forward_traffic_r!=null?`지금은 r ${co.pressure_vs_forward_traffic_r.toFixed(3)} (${co.n_days}일치 기준)입니다.`:'아직 계산되지 않았습니다.',
   __P_EG__: pm.p_value!=null?`p=${pm.p_value} → 가짜 데이터도 ${Math.round(pm.p_value*100)}%가 이만큼 나왔다는 뜻입니다.`:'아직 계산되지 않았습니다.',
+  // Spelling out the chance level next to the observed rate is the whole
+  // point: 관측 0.50 sounds like a coin flip until you see that luck alone
+  // already delivers 0.38 on this label mix.
+  __AGREE_EG__: (ag&&ag.kappa&&ag.kappa.direction!=null)
+    ?`영향 방향은 관측 ${ag.rate.direction.toFixed(2)}인데 우연히 겹치는 몫이 ${ag.chance.direction.toFixed(2)}이라 κ ${ag.kappa.direction.toFixed(2)}입니다 (누적 ${ag.runs}회, 비교쌍 ${ag.n_comparisons}건).`
+    :'아직 누적된 측정이 없습니다. 라벨을 함께 저장하기 시작한 뒤의 실행분만 합산합니다.',
  };
  const sub=t=>Object.keys(fill).reduce((x,k)=>x.split(k).join(fill[k]),t);
  box.innerHTML=`
