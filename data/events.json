@@ -21,7 +21,7 @@
   "raw_description": "구글 검색 결과에 AI 요약이 본격적으로 확대되면서 사용자가 웹사이트 방문 없이 정보를 소비하는 비율이 증가했다. 브랜드 공식 사이트로 유입되는 검색 트래픽이 줄어드는 구조다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E102",
@@ -45,7 +45,7 @@
   "raw_description": "퍼플렉시티가 검색 답변 안에서 바로 구매하는 'Buy with Pro'를 유료 사용자에게 출시했다. AI가 제품을 추천하고 결제까지 처리하면, 사용자가 브랜드 사이트를 방문하지 않고 구매하는 흐름이 생긴다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E103",
@@ -69,7 +69,7 @@
   "raw_description": "삼성이 1월 22일 미국 새너제이 갤럭시 언팩에서 S25·S25+·S25 Ultra를 공개하고 같은 날 사전예약을 시작했다. 플래그십 공개 시점에 제품 페이지 방문과 사전예약이 집중된다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E104",
@@ -93,7 +93,7 @@
   "raw_description": "갤럭시 S25 3종이 2월 7일 정식 출시되며 판매가 시작됐다. 사전예약 물량 배송과 신규 구매가 맞물려 매출이 집중된다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E105",
@@ -116,8 +116,8 @@
   "raw_scope": "DE;FR;ES;PT",
   "raw_description": "EU가 DMA를 통해 애플 생태계 개방을 요구했다. 사용자는 다양한 기기 간 선택 폭이 넓어지며 브랜드 비교 검색이 증가한다.",
   "date_source": "seed",
-  "axis": "demand",
-  "axis_source": "heuristic"
+  "axis": "share",
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E106",
@@ -141,7 +141,7 @@
   "raw_description": "네이버가 초개인화 쇼핑 트렌드에 맞춰 2025년 상반기 AI 기반 쇼핑앱 출시를 발표했다. 한국 검색 1위 사업자가 AI 쇼핑을 강화하면, 제품 발견·비교가 네이버 생태계 안에서 더 완결된다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E107",
@@ -165,7 +165,7 @@
   "raw_description": "베스트바이(31%)와 아마존(27%)이 미국 전자제품 판매의 절반 이상을 차지한다는 조사가 나왔다. 대형 리테일러가 전자제품 구매 경로를 지배하는 구조가 확인된다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E108",
@@ -189,7 +189,7 @@
   "raw_description": "2025년 1분기 스마트폰 시장은 성장했지만 미중 갈등과 관세 불확실성으로 수요 둔화 우려가 커졌다. 소비자는 구매를 미루는 경향을 보인다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E109",
@@ -213,7 +213,7 @@
   "raw_description": "조사에서 소비자 59%가 브랜드 사이트에서 제품을 조사하길 선호하고 55%는 제조사 직접 구매를 선호한다고 나타났다. samsung.com이 정보탐색과 구매 두 역할을 함께 갖되, 조사 비중이 큰 경향을 시사한다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E110",
@@ -237,7 +237,7 @@
   "raw_description": "유럽에서 에너지 가격이 다시 상승하면서 가계 부담이 증가했다. 높은 공공요금은 가전제품과 같은 비필수 소비를 줄이게 만든다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E111",
@@ -260,8 +260,8 @@
   "raw_scope": "DE;FR;ES;PT;GB",
   "raw_description": "EU가 애플에 반경쟁 행위로 벌금을 부과하고 앱 외 결제 유도를 의무화했다. 사용자와 개발자의 선택권이 확대되며 경쟁 플랫폼 유입이 증가한다.",
   "date_source": "seed",
-  "axis": "demand",
-  "axis_source": "heuristic"
+  "axis": "share",
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E112",
@@ -284,8 +284,8 @@
   "raw_scope": "US",
   "raw_description": "미국 법원이 4월 30일 애플의 앱 외부결제 차단(반스티어링)이 반독점법 위반이라 판결했다. 앱 생태계 개방으로 경쟁 플랫폼·기기 비교 탐색이 늘어날 수 있다.",
   "date_source": "seed",
-  "axis": "demand",
-  "axis_source": "heuristic"
+  "axis": "share",
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E113",
@@ -309,7 +309,7 @@
   "raw_description": "삼성이 5월 13일 언팩에서 역대 가장 얇은 갤럭시 S25 Edge를 공개했다. 신규 폼팩터에 대한 관심으로 제품 탐색이 증가한다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E114",
@@ -332,8 +332,8 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR",
   "raw_description": "애플이 AI 기능을 중심으로 제품 메시지를 강화하면서 스마트폰 비교 검색이 증가했다. 소비자들이 기능 차이를 확인하기 위해 다양한 브랜드를 탐색한다.",
   "date_source": "seed",
-  "axis": "demand",
-  "axis_source": "heuristic"
+  "axis": "share",
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E115",
@@ -357,7 +357,7 @@
   "raw_description": "쿠팡(약 40% 점유)과 네이버가 한국 온라인 쇼핑의 약 65%를 차지한다는 분석이 나왔다. 한국 소비자가 삼성 제품도 이 두 플랫폼에서 구매하는 경향이 강해, 자사몰 구매 비중에 압박이 된다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E116",
@@ -381,7 +381,7 @@
   "raw_description": "갤럭시 S25 Edge가 5월 30일 정식 출시됐다. 초슬림 폼팩터 신제품의 출하로 구매 전환이 발생한다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E117",
@@ -405,7 +405,7 @@
   "raw_description": "애플이 WWDC에서 이미지 분석·실시간 번역 등 AI 기능을 공개했다. AI 기능 경쟁이 심화되며 소비자의 제품 탐색 행동이 증가한다.",
   "date_source": "seed",
   "axis": "share",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E118",
@@ -429,7 +429,7 @@
   "raw_description": "삼성이 7월 9일 브루클린 언팩에서 역대 가장 얇고 가벼운 Z Fold7과 Z Flip7을 공개하고 사전예약을 시작했다. 폴더블 신제품 공개로 제품 페이지 방문과 예약이 급증한다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E119",
@@ -453,7 +453,7 @@
   "raw_description": "글로벌 경기 불확실성과 인플레이션으로 저가 스마트폰 수요가 감소했다. 제조사들은 가격을 높이며 판매량이 제한되고 있다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E120",
@@ -477,7 +477,7 @@
   "raw_description": "갤럭시 Z Fold7과 Z Flip7이 7월 25일 정식 출하되며 사전예약 물량 배송이 시작됐다. 출하 시점에 구매 전환과 매출이 집중된다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E121",
@@ -501,7 +501,7 @@
   "raw_description": "후티 반군이 선박 공격을 재개하며 공급망 불안이 다시 심화됐다. 운임 상승과 배송 지연이 전자제품 가격에 반영된다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E122",
@@ -525,7 +525,7 @@
   "raw_description": "조사에서 소비자 82%가 소셜로 제품을 조사하며 그중 유튜브가 52%로 1위, 인스타그램·틱톡이 뒤를 이었다. 제품 발견·조사가 소셜 영상으로 이동하면서 검색·브랜드 사이트의 초기 발견 역할이 약해진다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E123",
@@ -549,7 +549,7 @@
   "raw_description": "삼성이 9월 4일 보급형 플래그십 갤럭시 S25 FE를 공개했다. 합리적 가격대 모델에 대한 관심으로 제품 탐색이 증가한다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E124",
@@ -572,8 +572,8 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR",
   "raw_description": "애플 신제품 발표로 스마트폰 시장 전체 관심이 증가했다. 경쟁 제품 비교를 위한 검색과 방문이 늘어난다.",
   "date_source": "seed",
-  "axis": "demand",
-  "axis_source": "heuristic"
+  "axis": "share",
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E125",
@@ -597,7 +597,7 @@
   "raw_description": "검색이 AI 답변 중심으로 바뀌며 기존 SEO를 넘어 GEO(생성형 엔진 최적화)가 디지털 마케팅 화두로 떠올랐다. AI 답변에 인용되는지가 브랜드 노출을 좌우하게 된다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E126",
@@ -621,7 +621,7 @@
   "raw_description": "Bizrate Insights 9월 조사에서 18~34세의 3분의 1이 소셜미디어에서 구매한 적이 있고, Gen Z의 73%는 소셜이 주된 제품 발견 채널이라 나타났다. 젊은 층의 발견·구매가 소셜로 이동한다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E127",
@@ -645,7 +645,7 @@
   "raw_description": "갤럭시 S25 FE가 9월 19일 정식 출시됐다. 보급형 플래그십 출하로 가격 민감 수요의 구매 전환이 발생한다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E128",
@@ -669,7 +669,7 @@
   "raw_description": "UN이 2025년 해상 물동량 증가율이 크게 둔화될 것이라 발표했다. 물류 비용 상승은 소비재 가격 상승으로 이어진다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E129",
@@ -693,7 +693,7 @@
   "raw_description": "오픈AI가 챗GPT 안에서 바로 결제하는 Instant Checkout을 Etsy·Shopify와 함께 출시했다. 주 7억명 사용자가 채팅에서 제품을 발견·구매하게 되면서, 검색·브랜드 사이트를 거치는 기존 구매 여정이 흔들린다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E130",
@@ -717,7 +717,7 @@
   "raw_description": "이스라엘-하마스 휴전이 체결되며 홍해 항로 안정 기대가 커졌다. 물류 지연 완화와 운임 안정은 전자제품 공급과 가격 안정에 긍정적으로 작용한다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E131",
@@ -741,7 +741,7 @@
   "raw_description": "오픈AI가 월마트, 페이팔, 세일즈포스 등과 제휴해 챗GPT 내 구매 가능 범위를 빠르게 넓혔다. AI 쇼핑 생태계가 커질수록 브랜드 자사몰의 발견 경로 비중이 줄어든다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E132",
@@ -765,7 +765,7 @@
   "raw_description": "인플레이션 완화와 금리 안정으로 일부 국가에서 소비 심리가 회복되었다. 전자제품 교체 수요가 점진적으로 증가한다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E133",
@@ -789,7 +789,7 @@
   "raw_description": "퍼플렉시티가 블랙프라이데이를 앞두고 에이전트 쇼핑을 전체 사용자에게 무료 개방하고 페이팔과 5천여 가맹점을 연결했다. AI 쇼핑의 대중화로 구매 여정에서 AI 비중이 커진다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E134",
@@ -813,7 +813,7 @@
   "raw_description": "구글이 홀리데이 시즌을 앞두고 AI 모드 내 대화형 쇼핑과 에이전트 결제를 도입했다. 검색 1위 사업자가 AI 쇼핑에 본격 진입하며 브랜드 사이트 유입 구조가 바뀐다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E135",
@@ -837,7 +837,7 @@
   "raw_description": "오픈AI가 제품을 심층 비교·추천하는 Shopping Research를 출시했다. 특히 전자제품·가전이 주요 대상 카테고리로, 사용자가 AI 안에서 비교를 끝내면 브랜드 사이트 탐색이 줄어든다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E136",
@@ -861,7 +861,7 @@
   "raw_description": "틱톡샵이 2025년 블랙프라이데이·사이버먼데이 4일간 5억 달러 이상 매출을 기록하며 구매자가 전년비 약 50% 늘었다. 소셜 안에서 발견·구매가 완결되는 흐름이 커진다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E137",
@@ -885,7 +885,7 @@
   "raw_description": "eMarketer가 2025년 미국 소셜커머스 매출이 870억 달러로 전년비 21.5% 증가했다고 발표했다(12월 9일). 소셜 안에서 구매가 늘면서 브랜드 사이트를 경유하지 않는 구매 비중이 커진다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E139",
@@ -909,7 +909,7 @@
   "raw_description": "2026년 1월 일부 안드로이드 제조사 라인업에서 10~20% 가격 인상이 관측됐다. 저가·중급 모델 가격이 오르며 가격 민감 수요가 위축된다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E141",
@@ -933,7 +933,7 @@
   "raw_description": "틱톡·인스타 릴스·유튜브 쇼츠 등 숏폼이 제품 발견·추천 엔진으로 자리잡았다. 한 편의 영상이 수백만에 제품을 노출시키며, 발견이 검색에서 영상으로 옮겨간다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E142",
@@ -957,7 +957,7 @@
   "raw_description": "2026년 초 구글 AI 오버뷰가 검색 쿼리의 약 60%에 노출되며 2025년 5월 28%에서 두 배 이상으로 늘었다. AI 요약 확대로 클릭 없이 끝나는 검색(zero-click)이 더 늘어난다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E143",
@@ -981,7 +981,7 @@
   "raw_description": "네이버 쇼핑라이브 등 한국 플랫폼이 제품 발견·구매를 영상·라이브 중심으로 옮기고 있다. 영상 기반 쇼핑이 커지며 텍스트 검색·브랜드 사이트의 초기 발견 역할이 약해진다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E145",
@@ -1005,7 +1005,7 @@
   "raw_description": "2025년 집계에서 틱톡샵이 미국 소셜커머스의 18.2%(매출 158억 달러)를 차지하며 전년비 두 배 이상 성장했다. 발견·구매를 한 앱에서 끝내는 흐름이 빠르게 커진다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E148",
@@ -1029,7 +1029,7 @@
   "raw_description": "유럽 주요 국가의 성장률 둔화 신호가 나오며 소비 위축 우려가 커졌다. 고가 제품 구매가 지연된다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E149",
@@ -1053,7 +1053,7 @@
   "raw_description": "중동 갈등 심화로 에너지 가격 상승 우려가 확대됐다. 물가 상승은 소비 여력을 줄여 전자제품 구매에 부정적이다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E150",
@@ -1077,7 +1077,7 @@
   "raw_description": "아마존이 9월 기준 베스트바이를 제치고 미국 전자제품 판매 1위에 올랐다. 전자제품 구매가 아마존으로 더 집중되면서, 소비자가 삼성 제품을 아마존에서 사는 경향이 강해진다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E151",
@@ -1101,7 +1101,7 @@
   "raw_description": "AI 챗봇이 제품 추천을 대신하면서 전통 검색 기반 방문이 일부 감소했다. 직접 유입 트래픽 감소 구조가 나타난다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E152",
@@ -1125,7 +1125,7 @@
   "raw_description": "삼성이 3월 11일 차세대 플래그십 갤럭시 S26 시리즈를 출시했다. 신형 플래그십 공개로 제품 탐색과 사전예약·구매가 집중된다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E154",
@@ -1149,7 +1149,7 @@
   "raw_description": "글로벌 조사에서 지정학 리스크 증가로 기업들의 경제 낙관론이 급락했다. 이는 투자와 고용 감소를 통해 소비 위축으로 이어진다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP0bb6d193",
@@ -1226,7 +1226,7 @@
   "raw_description": "에너지 효율 제품에 대한 소비자 관심이 증가했다. 친환경 가전 브랜드 비교 탐색과 구매가 늘어난다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E156",
@@ -1250,7 +1250,7 @@
   "raw_description": "IMF가 중동 전쟁과 인플레이션 영향으로 글로벌 성장률을 하향 조정했다. 불확실성 증가는 소비 지출을 줄인다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "E157",
@@ -1274,7 +1274,7 @@
   "raw_description": "2026년 집계에서 미국 소셜 구매자가 약 1억 800만명(소셜 사용자의 약 48%)에 달했다. 소셜이 일상적 구매 채널로 자리잡으며 구매 여정 전반이 재편된다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "A5f2f1baa",
@@ -1326,8 +1326,8 @@
   "date_source": "url",
   "raw_scope": "EU",
   "raw_description": "EU에서 디지털 시장법(DMA)으로 인해 iOS 27과 iPadOS 27에 Siri AI가 늦게 출시되었다. 이 때문에 EU 사용자들이 검색이나 음성비서를 덜 사용하게 되어 Samsung.com을 찾는 사람들이 늘어날 수 있다.",
-  "axis": "demand",
-  "axis_source": "heuristic"
+  "axis": "share",
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP72b485bb",
@@ -1353,8 +1353,8 @@
   "date_source": "url",
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "애플이 아이폰에 자녀 안전 기능을 추가한다고 발표했다. 이 기능 때문에 사람들이 아이폰과 갤럭시의 차이를 검색하면서 삼성닷컴으로 오는 트래픽이 줄어들 수 있다.",
-  "axis": "demand",
-  "axis_source": "heuristic"
+  "axis": "share",
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FPd852f14f",
@@ -1380,8 +1380,8 @@
   "date_source": "url",
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "애플이 2027년 소프트웨어 업데이트에서 서비스 기능을 대폭 강화한다고 발표했다. 이 발표로 사람들이 애플 제품이나 서비스에 더 관심을 갖게 되어 삼성닷컴으로 오는 트래픽이 줄어들 가능성이 있다.",
-  "axis": "demand",
-  "axis_source": "heuristic"
+  "axis": "share",
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP7526542d",
@@ -1407,8 +1407,8 @@
   "date_source": "url",
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "애플이 AI 기반 개발 도구와 Xcode 기능을 대폭 늘렸다. 이 때문에 개발자들이 애플 플랫폼에 더 관심을 갖게 되어 애플 관련 사이트 방문과 검색이 많아졌다.",
-  "axis": "demand",
-  "axis_source": "heuristic"
+  "axis": "share",
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP5431f074",
@@ -1435,7 +1435,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "애플이 새로운 AI 기능과 Siri 업그레이드를 발표했다. 삼성닷컴은 애플 AI 관련 검색이나 비교 방문으로 간접적 트래픽 변화가 있을 수 있다.",
   "axis": "share",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FPb5ccbedb",
@@ -1462,7 +1462,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "애플이 아이폰에 AI 기능을 추가했다고 발표했다. 사람들이 아이폰을 검색하거나 비교할 때 삼성닷컴으로 유입될 수도 있다.",
   "axis": "share",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "A64254fe2",
@@ -1651,7 +1651,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "2026년 3분기부터 DDR2 DRAM 가격이 오르면서 제조사들이 신제품 출시를 늦추고 있다. 이 때문에 삼성닷컴에서 신제품 정보나 구매 페이지로 들어오는 방문자 수가 줄어들 가능성이 크다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "Adf7125d8",
@@ -1840,7 +1840,7 @@
   "raw_scope": "US;GB;DE;FR;ES;BR;MX_C;AU;IN;KR",
   "raw_description": "AI 기반 광고 시장이 2025년부터 2030년까지 급격히 커진다. 이 때문에 Samsung.com에 오는 AI 광고 노출이나 검색 결과가 많아질 수 있다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "Ac09cc5db",
@@ -1866,8 +1866,8 @@
   "date_source": "capture",
   "raw_scope": "US;CN",
   "raw_description": "미국이 애플의 중국산 RAM 공급을 금지했다. 삼성닷컴으로 사람들이 애플 대체재를 찾으러 올 수 있다. 애플 제품이 구하기 어려워지면서 삼성닷컴 검색량이 늘고 사이트 방문도 많아질 수 있다.",
-  "axis": "demand",
-  "axis_source": "heuristic"
+  "axis": "share",
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP9c321523",
@@ -1894,7 +1894,7 @@
   "raw_scope": "US;KR;CN;TW;JP",
   "raw_description": "AI 반도체 수요가 늘면서 TSMC가 CoPoS와 FOPLP 기술을 빠르게 개발하고 있다. 이 기술이 삼성전자 AI 제품의 생산과 성능에 영향을 주면서 삼성닷컴으로 오는 AI 관련 제품 문의와 구매가 늘어날 수 있다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FPa7d3a3d9",
@@ -1921,7 +1921,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "마이크로소프트가 AI가 직접 일을 처리하는 'Copilot Tasks'를 시작했다. 사람들이 쇼핑도 AI가 대신하게 되면 삼성닷컴에 직접 들어오지 않고도 제품을 살 수 있다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FPb0d854b8",
@@ -1948,7 +1948,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "AI 에이전트가 검색 결과를 요약해 보여서 사람들이 사이트를 직접 방문하지 않는다. 사람들이 삼성닷컴에 직접 들어오지 않고 AI 검색 결과에서 정보를 얻는다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "A67d63187",
@@ -1975,7 +1975,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "삼성이 AI 칩 부족으로 폴더블폰 가격을 올렸다. 이 때문에 사람들이 삼성닷컴에서 폴더블폰을 검색하거나 구경하는 횟수가 줄어들 것이다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP0b3e8117",
@@ -2002,7 +2002,7 @@
   "raw_scope": "WW",
   "raw_description": "OpenAI가 코딩, 과학, 사이버 보안 능력이 강화된 차세대 AI 모델 GPT-5.6 Sol을 미리 공개했다. 이로 인해 AI 기술에 대한 대중의 관심과 검색이 늘어나 삼성닷컴의 AI 관련 콘텐츠나 제품 페이지로의 유입 기회가 증가할 수 있다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP39cab86c",
@@ -2029,7 +2029,7 @@
   "raw_scope": "WW",
   "raw_description": "새로운 OpenAI 연구 논문은 AI 에이전트가 업무를 변화시키고 생산성을 높인다고 보여주었다. 이는 사용자들이 정보를 찾고 제품을 탐색하는 방식에 변화를 가져와 samsung.com으로의 직접 방문이나 검색 유입 트래픽에 영향을 줄 수 있다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP70d7ce96",
@@ -2056,7 +2056,7 @@
   "raw_scope": "WW",
   "raw_description": "OpenAI가 Appia 재단을 통해 AI 평가 프레임워크, 안전 관행 및 글로벌 협력을 지원하며 AI 표준화에 기여했다. 이는 AI 기술에 대한 전반적인 신뢰도를 높여 삼성닷컴의 AI 관련 제품 및 서비스 페이지로의 유입을 증가시킬 수 있다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP252c23d7",
@@ -2082,8 +2082,8 @@
   "date_source": "capture",
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "구글 서치 콘솔에 AI 개요와 AI 모드에서 삼성닷컴 페이지 노출 데이터를 제공하기 시작했다. 이 데이터가 공개되면서 삼성닷컴 사이트로 오는 검색 트래픽이 어떻게 변할지 지켜봐야 한다.",
-  "axis": "demand",
-  "axis_source": "heuristic"
+  "axis": "supply",
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "A373d9964",
@@ -2110,7 +2110,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "소형 언어 모델이 AI 에이전트에서 실시간으로 제품 정보를 제공하는 데 쓰이고 있다. 이 에이전트가 쇼핑 플랫폼이나 검색 결과에서 사용자 질문에 바로 답을 주면 사람들이 Samsung.com을 직접 방문하지 않을 수도 있다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FPf6fa1f35",
@@ -2137,7 +2137,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "구글이 검색 콘솔에 인스타그램, 틱톡, X, 유튜브 등 플랫폼을 추가했다. 사람들이 검색할 때 이런 플랫폼의 콘텐츠가 더 잘 노출된다. 이 때문에 사람들이 삼성닷컴을 직접 방문하지 않고도 제품 정보를 접할 수 있게 되었다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FPfd8f823f",
@@ -2164,7 +2164,7 @@
   "raw_scope": "US;GB;DE;FR;ES;BR;MX_C;AU;IN;KR",
   "raw_description": "AI가 쇼핑 추천을 할 때 첫 번째 질문에 답변을 하면 62%의 브랜드 추천이 사라진다. 이 때문에 소비자들이 AI 추천 대신 검색이나 브랜드 사이트를 직접 방문할 가능성이 커진다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FPcbf33114",
@@ -2191,7 +2191,7 @@
   "raw_scope": "WW",
   "raw_description": "새로운 OpenAI 데이터에 따르면 ChatGPT 사용이 전 세계적으로 늘고 있고, 사람들이 더 많은 기능을 사용하고 있다. 사람들이 정보를 찾을 때 검색 엔진 대신 ChatGPT를 더 많이 쓰게 되면, 삼성닷컴으로 직접 들어오는 트래픽이나 검색을 통해 들어오는 트래픽이 줄어들 수 있다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "A6a2f1e17",
@@ -2218,7 +2218,7 @@
   "raw_scope": "WW",
   "raw_description": "AI를 활용한 리테일 서비스는 깨끗하고 잘 정리된 데이터가 있어야 효과를 낼 수 있다. 이는 삼성닷컴에서 AI 기반 개인화 추천이나 검색 기능이 얼마나 잘 작동하는지에 따라 방문자 유입과 사이트 내 활동에 영향을 줄 수 있다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP5e8a92f9",
@@ -2245,7 +2245,7 @@
   "raw_scope": "WW",
   "raw_description": "OpenAI와 Broadcom이 LLM 추론에 최적화된 맞춤형 AI 칩 '할라페뇨'를 공개했다. 이 칩은 AI 시스템의 성능과 효율성을 높여 AI 기술 발전을 가속화할 것이며, 이로 인해 AI 관련 제품이나 서비스에 대한 사용자들의 관심이 늘어나 삼성닷컴에서 AI 기능이 탑재된 제품 정보를 찾아보는 방문이 증가할 수 있다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FPaab63eaf",
@@ -2272,7 +2272,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "마이크로소프트가 AI 대화 기능 'Copilot Portraits'를 발표했다. 사용자들이 AI와 자연스럽게 대화하며 제품 정보를 찾을 수 있게 되었다. 이 기능이 삼성닷컴에 대한 검색이나 직접 접속을 늘릴 수 있다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP0a37af79",
@@ -2299,7 +2299,7 @@
   "raw_scope": "WW",
   "raw_description": "HP가 OpenAI와의 파트너십을 확대하여 고객 경험, 소프트웨어 개발, 기업 운영 전반에 AI를 도입한다. 이는 사용자들이 정보를 찾고 제품을 탐색하는 방식에 AI가 더 깊이 관여하게 되어, 삼성닷컴으로의 직접적인 웹 트래픽 유입 경로에 변화를 줄 수 있다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP50d351e2",
@@ -2326,7 +2326,7 @@
   "raw_scope": "KR;JP;US;CN;DE;GB",
   "raw_description": "AI 서버용 MLCC 수요가 급격히 늘어나면서 공급 부족 우려가 커졌다. 삼성닷컴에서 MLCC가 들어간 AI 관련 제품이나 부품 정보 검색과 주문이 늘어날 수 있다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FPfcd7eb0c",
@@ -2353,7 +2353,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "AI 서버와 엣지 AI 장치 수요가 급증하면서 성숙 공정 칩 생산이 줄어들었다. 이 때문에 삼성닷컴으로 오는 사용자들이 AI 관련 제품을 찾기 위해 다른 사이트로 넘어갈 수 있다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP75d75184",
@@ -2380,7 +2380,7 @@
   "raw_scope": "US;KR;CN;JP;DE;GB",
   "raw_description": "AI 반도체용 MLCC 수요가 급증하면서 고급 MLCC의 공급이 부족해질 수 있다고 TrendForce가 발표했다. 삼성닷컴에서 MLCC를 포함한 AI 관련 부품 구매를 위한 검색이나 주문이 늘어나거나 반대로 MLCC 부족으로 생산 지연이 발생할 수 있다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "A10e68f79",
@@ -2406,8 +2406,8 @@
   "date_source": "capture",
   "raw_scope": "US",
   "raw_description": "애플이 6월부터 아이폰과 맥 제품 가격을 올렸다고 발표했다. 이 소식이 Best Buy 같은 전자제품 매장에 사람들이 몰려들었다.",
-  "axis": "demand",
-  "axis_source": "heuristic"
+  "axis": "share",
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP8f810d4a",
@@ -2434,7 +2434,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "AI 검색이 제품 리스트icles에서 경쟁사 제품을 더 많이 추천한다. 이 때문에 Samsung.com으로 오는organic 검색 트래픽이 줄어들고, 경쟁사 사이트로 이탈할 가능성이 있다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "A4d72aff8",
@@ -2460,8 +2460,8 @@
   "date_source": "capture",
   "raw_scope": "US;KR;GB;DE;FR;ES;BR;MX_C;AU;IN;TR",
   "raw_description": "애플이 폴더블폰을 출시하기로 했다. 삼성닷컴은 애플 제품과 비교 검색이나 경쟁 제품 탐색으로 자연스럽게 방문자가 늘거나, 반대로 전환이 떨어질 수 있다.",
-  "axis": "demand",
-  "axis_source": "heuristic"
+  "axis": "share",
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP291c3f10",
@@ -2488,7 +2488,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "사파리 브라우저가 AI로 웹사이트 성능을 진단하고 SEO를 개선하는 기능을 발표했다. 이 기능이 보편화되면 검색 결과에서 성능이 좋은 사이트가 더 잘 노출될 것이다. 삼성닷컴도 검색 최적화를 서둘러야 웹 트래픽이 줄어들지 않을 것이다.",
   "axis": "supply",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "A874049e2",
@@ -2515,7 +2515,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "삼성이 7월 22일에 새로운 폴더블 폰을 발표했다. 이 제품이 출시되면서 사람들이 삼성 공식 사이트를 더 많이 방문하고 제품 페이지에서 시간을 보낼 것이다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FPde1d3e4f",
@@ -2542,7 +2542,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "구글이 Gemini 3.5 Flash에 컴퓨터 사용 기능을 넣었다. 사람들이Gemini를 통해 직접 제품 비교나 사양 확인을 할 수 있게 되었다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FPd309c997",
@@ -2569,7 +2569,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "마이크로소프트가 GPT-5를 모든 제품에 통합했다. 이제 사용자들이 제품 정보나 구매 관련 질문을 AI로 쉽게 찾을 수 있게 되었다. 이 때문에 사람들이 삼성닷컴을 직접 방문하기보다는 AI 챗봇이나 검색을 통해 제품을 찾게 될 가능성이 커졌다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP0f4397e1",
@@ -2596,7 +2596,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "마이크로소프트가 삼성 TV와 모니터에 코파일럿을 무료로 추가했다. 삼성 디스플레이 제품에서 코파일럿을 사용하면 삼성 공식 사이트로 연결되는 링크가 뜰 수 있다. 삼성 홈페이지 방문이나 검색 노출이 늘어날 가능성이 크다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "A67f4e05d",
@@ -2623,7 +2623,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "삼성 갤럭시 S27 울트라의 카메라 디자인이 완전히 바뀌었다. 이 소식이 언론과 커뮤니티에 퍼지면서 사람들이 삼성닷컴을 검색하거나 직접 방문하는 경우가 많아질 것이다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "A0134e78e",
@@ -2649,8 +2649,8 @@
   "date_source": "capture",
   "raw_scope": "IN",
   "raw_description": "애플이 인도에서 iOS 27 베타 3를 출시하고 Siri AI 기능을 개선했다. 이 때문에 인도 사용자들이 애플 생태계 내에서 더 많은 검색과 쇼핑을 하게 되면서 samsung.com으로 오는 트래픽이 줄어들 수 있다.",
-  "axis": "demand",
-  "axis_source": "heuristic"
+  "axis": "share",
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "Ab9ee0170",
@@ -2677,7 +2677,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "삼성이 새로운 폴더블 폰을 공개했다. 사람들이 사양과 예약 구매를 확인하려고 삼성닷컴에 더 많이 접속할 것이다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FPa1828869",
@@ -2704,7 +2704,7 @@
   "raw_scope": "US;KR;CN;JP;DE;GB",
   "raw_description": "메모리 반도체 가격이 1분기 100% 이상 뛰었다. 이 때문에 삼성닷컴에서 스마트폰이나 SSD 같은 제품 주문이 줄어들 가능성이 크다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FP1f9ab345",
@@ -2731,7 +2731,7 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "AI 반도체 수요가 급증하면서 삼성전자 파운드리 사업부가 1분기에 매출이 3.7% 증가했다. 삼성닷컴에 삼성전자 파운드리 관련 정보나 주문 문의가 늘어나면서 사이트 방문자 수가 많아질 것이다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FPdbbd799d",
@@ -2758,7 +2758,7 @@
   "raw_scope": "KR",
   "raw_description": "삼성 TV 플러스가 뮤지컬 콘텐츠를 시작했다. 이 콘텐츠는 삼성 TV 플러스 사용자들이 Samsung.com을 통해 더 많은 정보를 찾거나 플랫폼에 접속할 가능성이 높아진다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "FPbe40089c",
@@ -3055,7 +3055,7 @@
   "raw_scope": "KR;FR;US;GB",
   "raw_description": "삼성전자가 런던에서 갤럭시 언팩을 개최한다. 이 행사로 인해 삼성 공식 사이트(갤럭시 제품 페이지)로의 직접 방문과 검색 트래픽이 크게 늘어날 것이다.",
   "axis": "demand",
-  "axis_source": "heuristic"
+  "axis_source": "claude-opus-5"
  },
  {
   "event_id": "A18269875",
