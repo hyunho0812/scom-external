@@ -42,7 +42,7 @@ from llm_common import (PROMPT_VERSION, llm_filter_batch, diag_summary, INTEREST
                         EVENTS_FILE, GDELT_POOL_FILE, QUERY_PERF_FILE,
                         KW_NEWS_FILE, read_json, write_json,
                         load_queries, load_kw_file, clean_axis, clean_scope, clean_date_ex, BATCH,
-                        DupIndex, DEDUP_WINDOW_DAYS)
+                        DupIndex, DEDUP_WINDOW_DAYS, keyword_pass, perf_counter)
 
 NEWS_KEY = os.environ.get("NEWS_API_KEY", "")
 
@@ -118,11 +118,6 @@ def fetch_news():
             time.sleep(1.5)  # small gap between successful calls to ease rate pressure
     print("collected", len(out), "raw articles")
     return out
-
-def keyword_verdict(text):
-    t = text.lower()
-    if any(k in t for k in KW_DROP): return False
-    return any(k in t for k in KW_KEEP)
 
 def to_event(article, verdict, llm_used):
     # Prefer the phenomenon-start date the LLM extracted; fall back to publish date, then today.
@@ -200,7 +195,7 @@ def main():
     perf = {}
     def bump(q, field):
         if not q: q = "(none)"
-        perf.setdefault(q, {"raw":0,"dup":0,"dup_near":0,"kw_pass":0,"kept":0})
+        perf.setdefault(q, perf_counter())
         perf[q][field] += 1
     # Merge NewsAPI + GDELT into the same keyword->LLM pipeline
     all_articles = fetch_news() + load_gdelt()
@@ -228,7 +223,7 @@ def main():
             dup_index.note_coverage(hit[0])
             print(f"  - dup ({hit[1]} {hit[2]}) of: {hit[0].get('title','')[:50]}")
             continue
-        if not keyword_verdict(art["title"] + " " + art["desc"]):
+        if not keyword_pass(art["title"] + " " + art["desc"], KW_KEEP, KW_DROP):
             continue  # obvious noise, never reaches any LLM
         bump(q, "kw_pass")  # counted BEFORE the chain: 1 kw_pass = 1 item judged
         candidates.append(art)

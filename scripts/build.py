@@ -768,6 +768,7 @@ function renderAlloc(vd){
    <span><span class="k">감소 요인 합</span><b style="color:${col(ALLOC.negPct)}">${sgn(ALLOC.negPct)}%</b></span>
    <span><span class="k">계</span><b>100%</b></span>
    ${ALLOC.silent?`<span><span class="k">방향 미상</span><b>${ALLOC.silent}건</b></span>`:''}
+   ${ALLOC.dropped?`<span><span class="k">날짜 불명</span><b>${ALLOC.dropped}건</b></span>`:''}
   </div>` + allocRows();
 
  note.innerHTML =
@@ -1274,10 +1275,13 @@ function eventWeight(e, from, to){
 // would make the percentages stop adding up (same rule as the 3-axis split).
 function allocate(rows, from, to, totalPct){
  if(!rows.length || totalPct==null || !from || !to) return null;
- const w={}; let pos=0, neg=0;
+ const w={}; let pos=0, neg=0, noDir=0;
  rows.forEach(e=>{
   const sign=EXPO.sign[e.impact_direction];
-  if(!sign) return;                    // unknown/neutral direction claims nothing
+  // Counted separately from the zero-weight case below: the panel says
+  // "방향 미상 N건", and folding in events that DO claim a direction but
+  // carry no weight (an unparseable date) would make that label a lie.
+  if(!sign){ noDir++; return; }
   const v=sign*eventWeight(e, from, to);
   if(!v) return;
   w[e.event_id]=v;
@@ -1298,7 +1302,7 @@ function allocate(rows, from, to, totalPct){
          // Events pointing one way while traffic went the other: the split
          // still sums to 100% but reads backwards, so it is said out loud.
          conflict:(net>0)!==(totalPct>0), n:Object.keys(w).length,
-         silent:rows.length-Object.keys(w).length, totalPct};
+         silent:noDir, dropped:rows.length-Object.keys(w).length-noDir, totalPct};
 }
 let ALLOC=null;
 // The period's events, kept so the allocation panel can rank them without
@@ -1786,7 +1790,6 @@ renderVerify();
 LLM_LABELS={"ok":"정상 ✓","retired":"종료됨 — 모델 교체 필요","unknown":"키 없음",
             "error":"점검 실패 — 확인 필요"}
 _LLM_DISPLAY=[("gemini","GEMINI"),("groq","GROQ"),("mistral","MISTRAL")]
-_checked=str(mstat.get("last_checked","n/a"))
 def _badge(name, label):
     s=_mstat_of(name)
     status=s.get("status","unknown")

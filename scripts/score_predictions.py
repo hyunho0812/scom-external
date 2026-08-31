@@ -390,11 +390,25 @@ def summarise(scored):
 
 # ----------------------------------------------------- correlation + null test
 def forward_change(smap, days):
-    """{date: pct change of the next FWD_DAYS vs the trailing FWD_DAYS}."""
+    """{date: pct change of the next FWD_DAYS vs the trailing FWD_DAYS}.
+
+    Both windows must be essentially complete. window_mean() averages whatever
+    days exist, so without this the last few days of the series compare a
+    trailing week against one or two days and report that as a weekly change —
+    the same mistake MIN_WINDOW_COVERAGE already fixed in score_events(), in a
+    different function. Measured on 2026-08-31: 6 of the 59 days in the dense
+    window had a truncated forward window, the worst holding 1 day of 7 and
+    reporting -11.96%; excluding them moved the headline correlation from
+    0.1305 to 0.1773.
+    """
     out = {}
     for d in days:
-        prev = window_mean(smap, d - timedelta(days=FWD_DAYS - 1), d)
-        nxt = window_mean(smap, d + timedelta(days=1), d + timedelta(days=FWD_DAYS))
+        back_from, fwd_to = d - timedelta(days=FWD_DAYS - 1), d + timedelta(days=FWD_DAYS)
+        if (window_coverage(smap, back_from, d) < MIN_WINDOW_COVERAGE
+                or window_coverage(smap, d + timedelta(days=1), fwd_to) < MIN_WINDOW_COVERAGE):
+            continue
+        prev = window_mean(smap, back_from, d)
+        nxt = window_mean(smap, d + timedelta(days=1), fwd_to)
         if prev and nxt is not None:
             out[d] = (nxt - prev) / prev
     return out

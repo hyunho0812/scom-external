@@ -46,7 +46,7 @@ from datetime import datetime, timezone
 
 HERE = os.path.dirname(__file__)
 sys.path.insert(0, HERE)
-from llm_common import load_queries_tagged as _load_queries_tagged_raw, load_kw_file, EVENTS_FILE, FEED_PERF_FILE, KW_FEEDS_FILE, KW_NEWS_FILE, OPTIMIZE_LOG_FILE, QUERIES_FILE, QUERY_PERF_FILE, read_json, write_json
+from llm_common import load_queries_tagged as _load_queries_tagged, load_kw_file, EVENTS_FILE, FEED_PERF_FILE, KW_FEEDS_FILE, KW_NEWS_FILE, OPTIMIZE_LOG_FILE, QUERIES_FILE, QUERY_PERF_FILE, read_json, write_json
 
 MAX_QUERIES = 10
 MAX_BRAND = 4     # max queries (across all categories) that directly contain "samsung" or "galaxy"
@@ -76,10 +76,6 @@ GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 # (shared with collect_news.py/collect_gdelt.py); this just adds the
 # unknown-category-falls-back-to-'other' coercion optimize.py's constraint
 # logic below depends on. =====
-def load_queries_tagged():
-    return [(cat if cat in CATEGORIES else "other", q)
-            for cat, q in _load_queries_tagged_raw(QUERIES_FILE)]
-
 def write_queries_tagged(items):
     header = (
         "# News search queries — shared by NewsAPI and GDELT (refreshed daily by optimize.py)\n"
@@ -157,7 +153,7 @@ def recent_feed_perf():
     keep_rate = kept/kw_pass — a source that's on-topic (high kw_pass) but has
     a low keep_rate is one whose content keeps getting judged out by the LLM
     (e.g. a forecast-heavy trend source since the 2026-07-08 forecast-reject
-    rule), worth a human look even though it's not "broken" like check_health.py
+    rule), worth a human look even though it's not "broken" like `check.py health`
     would flag."""
     hist = read_json(FEED_PERF_FILE, [])
     if isinstance(hist, dict): hist = [hist]
@@ -299,7 +295,7 @@ def apply_query_constraints(cur_tagged, prop_queries, perf):
 
 
 def main():
-    cur_tagged = load_queries_tagged()
+    cur_tagged = _load_queries_tagged(QUERIES_FILE, CATEGORIES)
     cur_q = [q for _, q in cur_tagged]
     perf = recent_perf()
     feed_perf = recent_feed_perf()

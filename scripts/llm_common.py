@@ -692,8 +692,41 @@ INTERESTS = load_interests()
 # --- queries.txt ('category | query text') — shared by collect_news.py,
 # collect_gdelt.py and optimize.py so all three read the exact same file the
 # exact same way. ---
-def load_queries_tagged(path=None):
-    """Returns [(category, query_text), ...] in file order."""
+def keyword_pass(text, keep, drop):
+    """The free pre-filter both collectors run before spending an LLM call.
+
+    Drop wins over keep: one blocked term rejects the item however many keep
+    terms it also matches. Lived in collect_news.py as keyword_verdict() and in
+    collect_feeds.py as relevant() — byte-identical bodies under two names,
+    which is how the Samsung-KR pre-filter bug survived: the fix went into one
+    copy. The keyword LISTS stay per-collector (kw_news.txt / kw_feeds.txt);
+    only the rule is shared.
+    """
+    t = (text or "").lower()
+    if any(k in t for k in drop):
+        return False
+    return any(k in t for k in keep)
+
+
+def perf_counter():
+    """A fresh per-source counter row: raw -> dup -> kw_pass -> kept.
+
+    optimize.py reads these field names out of query_performance.json and
+    feed_performance.json to compute kw_pass_rate / keep_rate / near_dup_rate,
+    so the two collectors must spell them identically or a rate silently reads
+    as zero.
+    """
+    return {"raw": 0, "dup": 0, "dup_near": 0, "kw_pass": 0, "kept": 0}
+
+
+def load_queries_tagged(path=None, categories=None):
+    """Returns [(category, query_text), ...] in file order.
+
+    Pass `categories` to fold anything outside that set into "other".
+    optimize.py used to do that in a wrapper of the same name, so two different
+    functions called load_queries_tagged were live at once and the collectors
+    saw a category optimize.py would have normalised away.
+    """
     path = path or QUERIES_FILE
     out = []
     try:
@@ -703,7 +736,7 @@ def load_queries_tagged(path=None):
                 continue
             cat, q = [p.strip() for p in line.split("|", 1)] if "|" in line else ("other", line)
             if q:
-                out.append((cat, q))
+                out.append((cat if not categories or cat in categories else "other", q))
     except Exception:
         pass
     return out
@@ -1069,7 +1102,7 @@ def gemini_filter(prompt, max_tokens=600):
 #
 # That matches the observed record exactly: Groq entered the chain on
 # 2026-07-06 already on gpt-oss-120b and has produced ZERO kept events since,
-# while check_health.py keeps reporting it "ok" (that check is a metadata GET —
+# while `check.py health` keeps reporting it "ok" (that check is a metadata GET —
 # it never generates, so it cannot see this). It is the same failure the
 # project already fixed for Gemini with thinkingConfig.thinkingBudget=0; the
 # equivalent was simply never applied to Groq.

@@ -32,7 +32,7 @@ from llm_common import (PROMPT_VERSION, llm_filter_batch, diag_summary, INTEREST
                         EVENTS_FILE, FEED_STATE_FILE, FEED_PERF_FILE,
                         FEEDS_FILE, KW_FEEDS_FILE, read_json, write_json,
                         load_kw_file, clean_axis, clean_scope, clean_date_ex, BATCH,
-                        DupIndex, DEDUP_WINDOW_DAYS)
+                        DupIndex, DEDUP_WINDOW_DAYS, keyword_pass, perf_counter)
 
 # daily by optimize.py; collect_news.py has its own SEPARATE kw_news.txt,
 # since feed items differ in language/style — e.g. the Samsung newsroom KR
@@ -131,12 +131,6 @@ def load_feeds():
         print("feeds.txt not found")
     return feeds
 
-def relevant(text):
-    t = text.lower()
-    if any(n in t for n in KW_DROP):
-        return False
-    return any(k in t for k in KW_KEEP)
-
 
 def main():
     events = read_json(EVENTS_FILE, [])
@@ -157,7 +151,7 @@ def main():
     # this file the same way it uses data/query_performance.json for news.
     perf = {}
     def bump(label, field):
-        perf.setdefault(label, {"raw": 0, "dup_near": 0, "kw_pass": 0, "kept": 0})
+        perf.setdefault(label, perf_counter())
         perf[label][field] += 1
     # Pass 1: fetch every feed and keyword-filter it, collecting the survivors
     # across ALL feeds. Judging happens afterwards in batches, so the ~1.1k-token
@@ -175,7 +169,7 @@ def main():
         for it in fresh:
             bump(label, "raw")
             text = it["title"] + " " + it["summary"]
-            if not it["title"] or not relevant(text):
+            if not it["title"] or not keyword_pass(text, KW_KEEP, KW_DROP):
                 continue  # obvious noise, never reaches any LLM
             # Before the LLM: another source already told this story.
             hit = dup_index.find(raw_title=it["title"], url=it.get("link"),
