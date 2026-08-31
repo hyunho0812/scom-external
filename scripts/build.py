@@ -139,7 +139,7 @@ input[type=date]{color-scheme:dark}
   white-space:normal;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .legend{display:flex;gap:11px;font-family:var(--mono);font-size:9.5px;color:oklch(0.62 0.008 250)}
 .note{font-size:10.5px;color:oklch(0.53 0.008 250);margin-top:10px;line-height:1.55}
-.cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);
   border:1px solid var(--line);border-radius:3px;overflow:hidden}
 @media (max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .card{background:var(--card);padding:14px 18px}
@@ -216,6 +216,37 @@ input[type=date]{color-scheme:dark}
 .crow .cn{font-size:11.5px;color:oklch(0.90 0.004 250)}
 .crow .cv{font-family:var(--mono);font-size:12.5px;text-align:right}
 .crow .cx{font-family:var(--mono);font-size:10px;text-align:right;color:oklch(0.50 0.008 250)}
+/* allocation: a diverging row per event, sharing the contribution idiom above */
+.arow{display:grid;grid-template-columns:22px minmax(0,1fr) 150px 62px;gap:10px;align-items:center;
+  padding:5px 0;border-bottom:1px solid var(--line-2)}
+.arow:last-child{border-bottom:0}
+.arow .an{font-family:var(--mono);font-size:9.5px;color:oklch(0.50 0.008 250)}
+.arow .at{font-size:11.5px;color:oklch(0.90 0.004 250);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.arow .at:hover{color:var(--accent)}
+.abar{position:relative;height:9px;background:oklch(0.235 0.006 250);border-radius:2px;
+  border:1px solid var(--line-2)}
+.abar i{position:absolute;top:0;height:9px;border-radius:1px;min-width:2px}
+.abar .mid{position:absolute;top:-3px;height:15px;width:1px;left:50%;
+  background:oklch(0.42 0.008 250)}
+.arow .av{font-family:var(--mono);font-size:12px;text-align:right;font-weight:500}
+.asum{display:flex;gap:22px;flex-wrap:wrap;align-items:baseline;margin-bottom:12px;
+  font-family:var(--mono);font-size:11px}
+.asum b{font-size:15px;font-weight:600;letter-spacing:-0.02em}
+.asum .k{color:oklch(0.57 0.008 250);margin-right:6px}
+/* verification: one row per test, each beside the baseline that reads it */
+.vrow{display:grid;grid-template-columns:minmax(0,1.5fr) 92px 92px 78px;gap:12px;align-items:center;
+  padding:8px 0;border-bottom:1px solid var(--line-2);font-size:11.5px}
+.vrow:last-child{border-bottom:0}
+.vrow .vk{color:oklch(0.86 0.004 250)}
+.vrow .vd{font-size:10.5px;color:oklch(0.53 0.008 250);margin-top:2px}
+.vrow .vv,.vrow .vb{font-family:var(--mono);font-size:12.5px;text-align:right}
+.vrow .vb{color:oklch(0.55 0.008 250)}
+.vhead{display:grid;grid-template-columns:minmax(0,1.5fr) 92px 92px 78px;gap:12px;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;color:oklch(0.50 0.008 250);
+  padding-bottom:7px;border-bottom:1px solid var(--line)}
+.vhead span:not(:first-child){text-align:right}
+.vtag{font-family:var(--mono);font-size:9.5px;padding:2px 7px;border-radius:2px;
+  border:1px solid var(--line);color:oklch(0.60 0.008 250);display:block;text-align:center}
 
 /* ---- glossary ---- */
 .gintro{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:30px;align-items:start}
@@ -308,11 +339,18 @@ input[type=date]{color-scheme:dark}
     </div>
   </div>
 
+  <div class="panel" id="allocPanel">
+    <div class="phead">
+      <div class="ptitle">기간 기여 배분<span class="psub" id="allocSub"></span></div>
+    </div>
+    <div id="allocBody"></div>
+    <div class="note" id="allocNote"></div>
+  </div>
+
   <div>
     <div class="phead" style="margin-bottom:10px">
       <div class="ptitle">외부 요인<span class="psub" id="evcount"></span></div>
     </div>
-    <div class="note" id="allocNote" style="margin:0 0 10px"></div>
     <div class="split">
       <div class="evlist">
         <div class="evstrip">
@@ -340,6 +378,11 @@ input[type=date]{color-scheme:dark}
       <div class="detail" id="detail"></div>
     </div>
     <div class="foot">이벤트는 samsung.com 관련성 기준으로 자동 수집·필터링됩니다. 3축 분해는 인과 입증이 아니라 정황 분해입니다.</div>
+  </div>
+
+  <div class="panel" id="verifyPanel">
+    <div class="phead"><div class="ptitle">검증<span class="psub" id="verifySub"></span></div></div>
+    <div id="verifyBody"></div>
   </div>
 
 </div><!-- /wrap -->
@@ -697,37 +740,125 @@ function scrollToCard(n){
 // room for. Clicking a row selects it; the pane follows.
 let FDIR='ALL', FAXIS='ALL', FSORT='date', SEL=null;
 
-function renderAllocNote(vd){
- const el=document.getElementById('allocNote'); if(!el) return;
+// The allocation is now the centre of the page: the prediction layer it was
+// meant to sit under does not beat "no events at all" (see the 검증 section),
+// so this is what the dashboard can actually say — how a period's move divides
+// under a stated rule. Everything here is a definition, and the note says so.
+const ALLOC_TOP=12;
+function renderAlloc(vd){
+ const sub=document.getElementById('allocSub'), body=document.getElementById('allocBody'),
+       note=document.getElementById('allocNote');
+ if(!sub||!body||!note) return;
  if(!ALLOC){
-  el.innerHTML = vd ? '기여 비중은 기간 비교가 가능할 때 계산됩니다.'
-    : '기여 비중을 계산하려면 현재·비교 기간을 모두 선택해야 합니다.';
+  sub.textContent=''; body.innerHTML='';
+  note.textContent = vd ? '방향이 정해진 요인이 없어 배분할 수 없습니다.'
+    : '배분을 계산하려면 현재·비교 기간을 모두 선택해야 합니다.';
   return;
  }
  const t=ALLOC.totalPct, sgn=v=>(v>=0?'+':'')+v.toFixed(1);
+ // Coloured by the sign of the contribution, not the event's own direction:
+ // during a decline an increase event contributes a NEGATIVE share, and
+ // painting that green would say the opposite of the number.
  const col=v=>v<0?'var(--neg)':'var(--pos)';
- const src=trafficSourceLabel();
- el.innerHTML =
-  `<b>이 기간 트래픽 ${sgn(t)}%</b>(${src})를 요인 ${ALLOC.n}건에 나눈 값입니다 · `
-  // Coloured by the sign of the contribution, not by the event's own
-  // direction: during a decline the increase events contribute a NEGATIVE
-  // share, and painting that green would say the opposite of the number.
-  + `<span style="color:${col(ALLOC.posPct)}">증가 요인 합 ${sgn(ALLOC.posPct)}%</span> · `
-  + `<span style="color:${col(ALLOC.negPct)}">감소 요인 합 ${sgn(ALLOC.negPct)}%</span> · 계 100%`
-  + (ALLOC.silent?` · 방향 미상 ${ALLOC.silent}건은 배분에서 빠집니다`:'')
+ sub.textContent=`${ALLOC.n}건에 배분 · ${trafficSourceLabel()}`;
+
+ body.innerHTML=`<div class="asum">
+   <span><span class="k">트래픽 변화</span><b style="color:${col(t)}">${sgn(t)}%</b></span>
+   <span><span class="k">증가 요인 합</span><b style="color:${col(ALLOC.posPct)}">${sgn(ALLOC.posPct)}%</b></span>
+   <span><span class="k">감소 요인 합</span><b style="color:${col(ALLOC.negPct)}">${sgn(ALLOC.negPct)}%</b></span>
+   <span><span class="k">계</span><b>100%</b></span>
+   ${ALLOC.silent?`<span><span class="k">방향 미상</span><b>${ALLOC.silent}건</b></span>`:''}
+  </div>` + allocRows();
+
+ note.innerHTML =
+  (ALLOC.conflict
+   ? `<span style="color:var(--warn)">요인 구성은 ${ALLOC.net>0?'상승':'하락'}을 가리키는데 트래픽은 `
+     + `반대로 움직였습니다 — 부호가 뒤집혀 읽히니 주의하십시오.</span><br>` : '')
   + (ALLOC.netRatio!=null && ALLOC.netRatio<0.3
-     ? `<br><span style="color:var(--warn)">증가·감소 요인이 서로 상쇄되어 순합이 총합의 `
-       + `${(ALLOC.netRatio*100).toFixed(0)}%뿐입니다 — 개별 비중이 약 `
-       + `${(1/ALLOC.netRatio).toFixed(1)}배로 부풀어 100%를 훌쩍 넘습니다.</span>`
-     : '')
-  + (ALLOC.conflict
-     ? `<br><span style="color:var(--warn)">요인 구성은 ${ALLOC.net>0?'상승':'하락'}을 가리키는데 `
-       + `트래픽은 반대로 움직였습니다 — 부호가 뒤집혀 읽히니 주의하십시오.</span>`
-     : '')
-  + `<br>나누는 규칙은 <b>영향강도 × 신뢰도 × 시간 감쇠</b>이고, 이 비율은 `
-  + `트래픽이 아니라 AI가 매긴 라벨에서 나옵니다. <b>각 요인이 실제로 그만큼 만들었다는 `
-  + `뜻이 아닙니다</b> — 영향 구간이 겹치는 요인이 늘 수십 건이라 트래픽 한 계열을 `
-  + `사건별 몫으로 쪼갤 실측 근거는 없습니다.`;
+   ? `<span style="color:var(--warn)">증가·감소 요인이 서로 상쇄되어 순합이 총합의 `
+     + `${(ALLOC.netRatio*100).toFixed(0)}%뿐입니다 — 개별 비중이 약 `
+     + `${(1/ALLOC.netRatio).toFixed(1)}배로 부풀어 100%를 훌쩍 넘습니다.</span><br>` : '')
+  + `나누는 규칙은 <b>영향강도 × 신뢰도 × 시간 감쇠</b>이고, 이 비율은 트래픽이 아니라 `
+  + `AI가 매긴 라벨에서 나옵니다. <b>각 요인이 실제로 그만큼 만들었다는 뜻이 아닙니다</b> — `
+  + `영향 구간이 겹치는 요인이 늘 수십 건이라 트래픽 한 계열을 사건별 몫으로 쪼갤 실측 근거는 `
+  + `없습니다. 실측 트래픽을 올리면 <b>총량</b>은 그쪽 기준으로 바뀌지만, 요인 사이의 순위는 `
+  + `그대로입니다.`;
+}
+
+function allocRows(){
+ const list=EVLAST.filter(e=>ALLOC.share[e.event_id]!=null)
+   .sort((a,b)=>Math.abs(ALLOC.share[b.event_id])-Math.abs(ALLOC.share[a.event_id]))
+   .slice(0,ALLOC_TOP);
+ if(!list.length) return '';
+ const mx=Math.max(...list.map(e=>Math.abs(ALLOC.share[e.event_id])),0.001);
+ const col=v=>v<0?'var(--neg)':'var(--pos)';
+ const rows=list.map((e,i)=>{
+  const v=ALLOC.share[e.event_id], w=Math.abs(v)/mx*50;
+  // One axis, zero in the middle: the sign is the point, so a bar that only
+  // ever grows rightwards would hide which way each factor pulled.
+  const bar=v<0?`left:${(50-w).toFixed(2)}%;width:${w.toFixed(2)}%`
+                :`left:50%;width:${w.toFixed(2)}%`;
+  return `<div class="arow">
+    <span class="an">${String(i+1).padStart(2,'0')}</span>
+    <span class="at" onclick="selectEvent('${e.event_id}')" title="${(e.title||'').replace(/"/g,'&quot;')}">${e.title||''}</span>
+    <span class="abar"><i style="${bar};background:${col(v)}"></i><span class="mid"></span></span>
+    <span class="av" style="color:${col(v)}">${v>=0?'+':''}${v.toFixed(1)}%</span>
+   </div>`;
+ }).join('');
+ const rest=ALLOC.n-list.length;
+ return rows + (rest>0
+   ? `<div class="note" style="margin-top:9px">상위 ${list.length}건만 표시했습니다 · 나머지 ${rest}건은 아래 목록에 있습니다.</div>`
+   : '');
+}
+
+// ---- verification: the tests, each beside the baseline that makes it -----
+// readable. These used to headline as KPI cards, where a dead number in large
+// type reads as a result. Kept on the page — deleting them would remove the
+// only evidence that the ledger can be wrong — but shown as what they are.
+function fmt(v,d){ return v==null?'—':(v>=0?'':'')+v.toFixed(d==null?3:d); }
+function renderVerify(){
+ const box=document.getElementById('verifyBody'), sub=document.getElementById('verifySub');
+ if(!box) return;
+ const sc=(SCORES.summary&&SCORES.summary.all)||{}, co=SCORES.correlation||{},
+       pm=(SCORES.permutation&&SCORES.permutation.all)||{},
+       ga=SCORES.group_attribution||{}, oos=ga.out_of_sample||{},
+       av=SCORES.axis_validation||{}, pr=SCORES.permutation||{};
+ const tag=ok=>ok?`<span class="vtag" style="border-color:var(--pos);color:var(--pos)">통과</span>`
+                 :`<span class="vtag" style="border-color:var(--warn);color:var(--warn)">결론 없음</span>`;
+ const rows=[];
+ if(sc.hit_rate!=null) rows.push(['방향 적중률',
+   `▲/▼ 예측이 맞은 비율 · n=${sc.n}`, (sc.hit_rate*100).toFixed(1)+'%', '50.0%',
+   sc.hit_rate>0.55]);
+ if(co.pressure_vs_forward_traffic_r!=null) rows.push(['누적 영향지수 상관',
+   `지수가 높은 날 다음 트래픽이 움직였는지 · 순열검정 p=${pm.p_value!=null?pm.p_value:'—'}`,
+   'r '+fmt(co.pressure_vs_forward_traffic_r), '|r| '+fmt(pm.null_p95_abs_r),
+   !!pm.significant]);
+ if(oos.r2_out!=null) rows.push(['그룹 배분 (주 단위 예측)',
+   `학습에 쓰지 않은 ${oos.test_weeks}주에서의 설명력 · 기준선은 이벤트를 하나도 쓰지 않은 모델`,
+   fmt(oos.r2_out,4), fmt(oos.baseline_r2_out,4), !!oos.beats_baseline]);
+ ['demand','share','supply'].forEach(k=>{
+  const v=av[k]; if(!v||v.r==null) return;
+  const q=pr[k]||{};
+  // Baseline is the permutation null's 95th percentile |r| — the same kind of
+  // quantity as the measurement. Putting a p-value in this column would make
+  // "측정값 vs 기준선" compare a correlation against a probability.
+  rows.push([`축 검증 · ${AXIS_KO[k]}`,
+    `${k} 지수 vs ${v.target} · n=${v.n} · 순열검정 p=${q.p_value!=null?q.p_value:'—'}`,
+    'r '+fmt(v.r), '|r| '+fmt(q.null_p95_abs_r), !!q.significant]);
+ });
+ if(!rows.length){ box.innerHTML='<div class="note">아직 채점된 예측이 없습니다.</div>'; return; }
+ const passed=rows.filter(r=>r[4]).length;
+ if(sub) sub.textContent = passed?`${rows.length}개 중 ${passed}개 통과`:`${rows.length}개 전부 결론 없음`;
+ box.innerHTML=`<div class="vhead"><span>검정</span><span>측정값</span><span>기준선</span><span>판정</span></div>`
+  + rows.map(([k,d,v,b,ok])=>`<div class="vrow">
+      <span><div class="vk">${k}</div><div class="vd">${d}</div></span>
+      <span class="vv">${v}</span><span class="vb">${b}</span><span>${tag(ok)}</span>
+     </div>`).join('')
+  + `<div class="note">측정값이 기준선을 넘지 못하면 <b>"데이터가 더 쌓이면 된다"가 아니라 `
+  + `"아직 아무것도 말할 수 없다"</b>입니다. 그룹 배분의 기준선은 이벤트를 하나도 쓰지 않고 `
+  + `"변화 없음"을 예측한 같은 점수이고, 측정값이 그보다 낮다는 것은 <b>이벤트가 예측을 돕는 게 `
+  + `아니라 해치고 있다</b>는 뜻입니다. 위의 기간 기여 배분은 예측이 아니라 관측된 변화를 규칙대로 `
+  + `나눈 값이라 이 검정과 무관하게 성립하지만, 같은 이유로 아무것도 증명하지 않습니다.</div>`;
 }
 
 function evRowHtml(e, n){
@@ -1170,6 +1301,10 @@ function allocate(rows, from, to, totalPct){
          silent:rows.length-Object.keys(w).length, totalPct};
 }
 let ALLOC=null;
+// The period's events, kept so the allocation panel can rank them without
+// re-deriving the filter — and never the list-filtered set, or the shares
+// would stop adding to 100%.
+let EVLAST=[];
 
 // ---- label agreement: the ceiling over every other number on this page ----
 // Every figure above is computed from labels one LLM wrote, and the chain uses
@@ -1248,7 +1383,7 @@ function renderCompactAxis(attr, vd, axName, fmtSigned){
    .sort((a,b)=>b.share-a.share);
  const COL={demand:'var(--pos)',share:'var(--accent)',supply:'var(--neg)'};
  const opposed=parts.filter(p=>p.share>0.5&&!attr.drove(attr.gs[p.k])).map(p=>axName(p.k));
- conEl.innerHTML=`<div class="chead"><span class="k">변화 기여 비중</span>
+ conEl.innerHTML=`<div class="chead"><span class="k">축별 기여 비중</span>
     <span class="v">전체 ${fmtSigned(attr.totalPct,'%',1)} 중</span></div>
    <div class="cbar">${parts.map(p=>`<div style="width:${p.share.toFixed(1)}%;background:${COL[p.k]}"></div>`).join('')}</div>
    ${parts.map(p=>`<div class="crow"><span class="cdot" style="background:${COL[p.k]}"></span>
@@ -1370,27 +1505,28 @@ function render(){
  renderAxisPanel(r, vd, numByDate);
 
  // ---- KPI row ----------------------------------------------------------
- const sc=(SCORES.summary&&SCORES.summary.all)||{};
- const corr=SCORES.correlation||{};
- const hit=(sc.hit_rate!=null)?(sc.hit_rate*100).toFixed(1)+'%':'—';
- const fore=((SCORES.summary&&SCORES.summary.foreknown&&SCORES.summary.foreknown.hit_rate!=null)
-   ? ' · 사전근거 '+(SCORES.summary.foreknown.hit_rate*100).toFixed(1)+'%':'');
+ // Descriptive only. Hit rate and the pressure correlation used to headline
+ // here, but both are indistinguishable from chance (0.51 against a coin flip;
+ // r 0.13 at permutation p 0.96) and a dead number in the largest type on the
+ // page reads as a result. They moved to the 검증 section at the bottom, where
+ // they are shown against the baselines that make them readable.
  const trafVal=vd?((vd.pct>=0?'+':'')+vd.pct.toFixed(1)+'%'):'—';
  const trafCol=vd?(vd.dir==='-'?'var(--neg)':(vd.dir==='+'?'var(--pos)':'var(--neu)')):'var(--neu)';
+ const nUp=r.filter(e=>e.impact_direction==='+').length;
+ const nDn=r.filter(e=>e.impact_direction==='-').length;
  const kpi=[
-  ['수집 이벤트', r.length, '', 'var(--ink)'],
-  ['트래픽 변화', trafVal, vd?('vs 비교 기간'):'기간 비교 필요', trafCol],
-  ['방향 적중률', hit, (sc.n?'n='+sc.n:'')+fore, 'var(--warn)'],
-  ['누적 영향지수 상관', (corr.pressure_vs_forward_traffic_r!=null?'r '+corr.pressure_vs_forward_traffic_r.toFixed(3):'—'),
-    (corr.n_days?'n='+corr.n_days+'일':''), 'var(--neu)'],
+  ['수집 이벤트', r.length, (r.length!==EV.length?'전체 '+EV.length+'건 중':''), 'var(--ink)'],
+  ['트래픽 변화', trafVal, vd?trafficSourceLabel():'기간 비교 필요', trafCol],
+  ['요인 구성', `${nUp} : ${nDn}`, `▲증가 ${nUp} · ▼감소 ${nDn}`, 'var(--ink)'],
   agreeCard(),
  ];
  document.getElementById('cards').innerHTML = kpi.map(([l,v,n,c,t])=>
    `<div class="card"${t?` title="${t}"`:''}><div class="lbl">${l}</div><div><span class="val" style="color:${c}">${v}</span>${n?`<span class="vnote">${n}</span>`:''}</div></div>`).join('');
 
  // ---- per-event allocation (whole period, before any list filter) -------
+ EVLAST = r;
  ALLOC = (vd && sd.value && ed.value) ? allocate(r, sd.value, ed.value, vd.pct) : null;
- renderAllocNote(vd);
+ renderAlloc(vd);
 
  // ---- event list (direction / axis / sort apply here only, never to the
  // axis decomposition, which needs every event in the period) -------------
@@ -1527,8 +1663,9 @@ const GLOSSARY=[
    def:'samsung.com 사이트 자체의 문제입니다. 속도, 검색 노출, 장애.',
    eg:'사이트가 느려짐, 구글 검색에서 페이지가 빠짐',
    myth:'경쟁사 이야기는 절대 여기에 들어가지 않습니다.'},
-  {ko:'변화 기여 비중',en:'CONTRIBUTION',
-   def:'이번 기간 트래픽 변화를 세 축이 각각 몇 %씩 만들어냈는지입니다.',
+  {ko:'축별 기여 비중',en:'AXIS CONTRIBUTION',
+   def:'이번 기간 트래픽 변화를 세 축이 각각 몇 %씩 만들어냈는지입니다. 요인 하나하나에 '
+      +'나누는 아래쪽 "기간 기여 배분"과 달리, 이 값은 트래픽 시계열 계산만으로 나옵니다.',
    eg:'전체 +4.2% 중 수요가 65%, 점유가 29%, 공급이 6%',
    myth:'부호를 뺀 크기 비중입니다. 반대 방향으로 작용한 축의 몫도 함께 표시됩니다.'},
  ]},
@@ -1638,6 +1775,10 @@ document.getElementById('clearTrafficBtn').onclick=()=>{
  showAll=false; render();
 };
 refreshPeriod();
+// The verification table reads only stored scores, so it is rendered once
+// rather than on every filter change — the tests are over the whole history
+// and do not move when a country or period chip does.
+renderVerify();
 
 
 </script></body></html>"""
