@@ -26,16 +26,17 @@ scripts/
   collect_wiki.py     위키피디아 일별 조회수 (트래픽 대리지표), 최초 730일 백필+이후 증분
   collect_crux.py     공급축 — CrUX 실사용자 CWV 주간 시계열 (CRUX_API_KEY 없으면 조용히 스킵)
   optimize.py         매일 Gemini가 queries.txt/kw_news.txt/kw_feeds.txt 자동 튜닝
-  check_health.py     매일 — ① Gemini/Groq/Mistral 도달 여부 → data/model_status.json
-                      ② feeds.txt 20개 피드 파싱 여부 → data/feed_health.json
-                      ※ ①은 메타데이터 GET일 뿐 생성을 안 해봄 — 아래 llm_usage.json 참고
+  check.py            매일 실행되는 진단 2종 (서브커맨드)
+                        health     ① Gemini/Groq/Mistral 도달 여부 → data/model_status.json
+                                   ② feeds.txt 20개 피드 파싱 여부 → data/feed_health.json
+                                   ※ ①은 메타데이터 GET일 뿐 생성을 안 해봄
+                        agreement  같은 기사를 3개 provider에 독립 판정시켜 라벨 일치도
+                                   측정 → data/llm_agreement.json. 라벨 신뢰도의 상한.
+                                   **관측 일치율이 아니라 `kappa`를 볼 것** (원칙 15)
   score_predictions.py 신뢰도 계층 (매일) — 이벤트 원장을 반증 가능하게 만듦.
                       ① 누적 영향지수(일별 시계열화) → data/event_pressure.json
                       ② 사후 채점·교정곡선·순열검정·축 검증 → data/prediction_scores.json
                       API 키 불필요 (events.json + wiki_series.json만 읽음)
-  check_llm_agreement.py 매일 — 같은 기사를 3개 provider에 독립 판정시켜 라벨
-                      일치도 측정 → data/llm_agreement.json. 라벨 신뢰도의 상한.
-                      **관측 일치율이 아니라 `kappa`를 볼 것** (원칙 15)
   maintenance.py      수동 전용 도구 모음 (워크플로가 절대 부르지 않음). 전부
                       기본 dry-run, `--apply`로만 저장:
                         dates       날짜 앵커링 사고 복구 + date_source 보강 (원칙 7)
@@ -126,7 +127,7 @@ KEEP 리스트에 로드 시점에 자동으로 합쳐짐. 둘 다 `optimize.py`
 - Mistral: `MISTRAL_API_KEY`, `MISTRAL_MODEL` (기본 `mistral-small-latest`, 무료
   Experiment 티어라 분당 2회 제한 — 3순위라 괜찮음)
 
-**`check_health.py`의 모델 "ok"를 작동 증거로 믿지 말 것.** 이건 모델 메타데이터 GET이라
+**`check.py health`의 모델 "ok"를 작동 증거로 믿지 말 것.** 이건 모델 메타데이터 GET이라
 생성을 안 해봄 — 위 Groq 증상은 한 달 내내 `model_status.json`에 `ok`로 찍혀 있었음.
 실제 작동 여부는 `data/llm_usage.json`의 `ok`/`empty`/`ko_reject`로 판단할 것.
 
@@ -332,7 +333,7 @@ python3 scripts/build.py
   훨씬 정확히 측정하기 때문. 그때 빠졌던 Semrush/Ahrefs/Moz/HubSpot Marketing/Neil Patel
   5개 복구 — 활동 당시 `data/feed_state.json` 9일치(06-29~07-06) 전 회차에서 각각
   20/10/10/50/10건을 안정적으로 반환한 게 검증 근거(세션 egress 차단으로 실시간 재fetch는
-  불가, 다음 `check_health.py` 일간 실행이 재확인). **이제 소스를 배제하는 사유는 딱 둘,
+  불가, 다음 `check.py health` 일간 실행이 재확인). **이제 소스를 배제하는 사유는 딱 둘,
   둘 다 관찰 가능한 사실이며 편집 판단이 아님**: (1) 에러/0건, (2) 미러(퍼블리셔 자체 피드가
   아님). 같이 빠졌던 Shopify Blog는 복구 대상이 아님 — 같은 9회차 전부 0건이라 (1)에 해당
   (TrendForce Consumer Electronics와 동일 패턴). Anthropic/Perplexity도 (2)라 계속 제외.
@@ -489,7 +490,7 @@ p=0.897로 그 주장을 뒷받침하지 못한다. `누적 영향지수`는 "�
 바꾼 것은 사람이 읽는 한국어 문구뿐이다.
 
 ### 15. 일치도는 우연을 뺀 값으로만 읽는다 (2026-08-28)
-`check_llm_agreement.py`가 **관측 일치율만 보고하고 있었다.** 그런데 이 원장의 라벨은
+`check.py agreement`가 **관측 일치율만 보고하고 있었다.** 그런데 이 원장의 라벨은
 심하게 쏠려 있어서(axis 469건 중 376건이 demand, 강도 58%가 3, confidence `low`는 3건),
 **서로 아무 상관 없는 두 판정자가 이 분포에서 제비뽑기만 해도** 이만큼 일치한다:
 
@@ -603,6 +604,56 @@ p=0.897로 그 주장을 뒷받침하지 못한다. `누적 영향지수`는 "�
 import한다. 누적 영향지수와 배분이 **같은 가중치**를 써야 한 화면에서 같은 이벤트를
 두 가지로 읽는 일이 없다. 실데이터 390건으로 JS·파이썬 가중치를 대조해 최대 오차
 1.4e-14로 일치함을 확인했다.
+
+### 18. 잘린 창은 또 있었다 (2026-08-31)
+원칙 11은 `score_events()`가 **끝나지 않은 horizon을 채점**하던 것을 고쳤다. 같은 실수가
+`forward_change()`에 그대로 남아 있었다 — 누적 영향지수 상관과 축 검증이 전부 이걸 쓴다.
+
+`window_mean()`은 창에 **있는 날만** 평균 내므로, 시계열 끝에서는 7일 앞창이 1~2일로
+쪼그라든 채 "주간 변화"로 보고된다. 실측(2026-08-31): 조밀구간 59일 중 **6일**이
+그랬고, 최악은 **7일 중 1일(14%)** 로 **−11.96%** 를 보고하고 있었다.
+
+`window_coverage(...) >= MIN_WINDOW_COVERAGE`를 앞뒤 창 **양쪽에** 걸었다. 그 6일은
+전부 시계열 꼬리에 몰려 있어 편향도 한쪽이었고, 빼고 나니 숫자가 꽤 움직였다:
+
+| | 이전 | 이후 |
+|---|---|---|
+| 누적 영향지수 상관 | r 0.131 (n=59) | **r 0.177 (n=53)** |
+| 순열검정 p | 0.96 | **0.823** |
+| 축 검증 demand | r 0.125 · p 0.476 | **r 0.271 · p 0.123** |
+
+**demand 축이 p 0.476에서 0.123으로 갔다.** 여전히 유의하지 않지만, 잘린 6일이 실제
+신호를 덮고 있었다는 뜻이다. 결론(원칙 16)은 바뀌지 않는다 — `r2_out`은 그대로
+−0.1805이고 기준선을 못 넘는다.
+
+**교훈: 창을 쓰는 함수를 새로 만들면 충족률 검사를 같이 만들 것.** 이 프로젝트에서
+`window_mean()`을 쓰면서 커버리지를 안 보는 코드는 두 번 다 버그였다. `avgInRange()`
+(build.py JS)도 같은 성질이지만, 기본 기간은 양쪽 100% 커버라 현재는 영향이 없다 —
+시계열 범위 밖을 고르면 문제가 될 수 있으니 다음에 볼 것.
+
+### 19. 중복은 이름이 다를 때 안 보인다 (2026-08-31)
+전수 점검에서 나온 유일한 구조적 중복이 이것이다: `collect_news.keyword_verdict()`와
+`collect_feeds.relevant()`가 **바이트 단위로 같은 함수**였는데 이름이 달라 아무도
+눈치채지 못했다. Samsung KR 사전필터 버그가 살아남은 방식이 정확히 이거다 — 고친
+쪽이 한 벌뿐이었다.
+
+`llm_common.keyword_pass(text, keep, drop)` 하나로 합쳤다. **키워드 목록은 콜렉터별로
+그대로 둔다**(`kw_news.txt` / `kw_feeds.txt`) — 합친 건 규칙뿐이다. 실데이터 1,084건으로
+양쪽 원본과 대조해 불일치 0을 확인했고, 공유판은 `None` 입력도 안전하다(원본은 예외).
+
+같이 정리한 것:
+- `perf_counter()` — 소스별 성과 카운터의 필드명(`raw`/`dup`/`dup_near`/`kw_pass`/`kept`).
+  `optimize.py`가 이 이름들로 비율을 계산하므로 두 콜렉터가 다르게 쓰면 조용히 0이 된다.
+- `optimize.py`가 `load_queries_tagged`라는 **같은 이름의 다른 함수**를 정의하고 있었다
+  (카테고리 정규화 추가분). `llm_common` 쪽에 `categories=` 인자를 주고 래퍼를 없앴다.
+- `check_health.py` + `check_llm_agreement.py` → **`check.py {health,agreement}`** (12→11).
+  `maintenance.py`와 같은 패턴이다. **`diag_summary` 라벨은 옛 이름 그대로 뒀다** —
+  `llm_usage.json`이 그 문자열로 30일치를 묶으므로 바꾸면 이력이 둘로 갈라진다.
+
+**전수 점검 결과 죽은 코드는 거의 없었다.** AST로 전 파일을 훑어 참조 0인 이름은
+`build.py`의 `_checked` 하나뿐이었고, 미사용 import는 2개였다. 실행 코드는 5,065 →
+5,061줄(−4)로 사실상 그대로다 — **이번 작업의 성과는 줄 수가 아니라 버그 2건과
+구조적 중복 제거다.**
 
 ### 12. IMF / 국가별 통계 제거 (2026-08-18)
 `collect_imf.py`, `data/imf_series.json`, 대시보드의 "국가별 통계" 탭, 워크플로의
