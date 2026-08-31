@@ -219,7 +219,7 @@ input[type=date]{color-scheme:dark}
 
 <div class="topbar">
   <div class="brand"><h1>External Event Ledger</h1><span class="sub">samsung.com</span></div>
-  <div class="mbadges"><span class="mbadge ok" title="GEMINI · gemini-2.5-flash — 정상 ✓ (Model responds and supports generateContent.)"><span class="dot"></span>GEMINI</span><span class="mbadge ok" title="GROQ · openai/gpt-oss-120b — 정상 ✓ (Model responds and is active.)"><span class="dot"></span>GROQ</span><span class="mbadge ok" title="MISTRAL · mistral-small-latest — 정상 ✓ (Model found in the account's available model list.)"><span class="dot"></span>MISTRAL</span><span class="mbadge ok"><span class="dot"></span>FEEDS 20/20</span><span style="color:oklch(0.50 0.008 250)">2026-08-31 07:38 UTC</span></div>
+  <div class="mbadges"><span class="mbadge ok" title="GEMINI · gemini-2.5-flash — 정상 ✓ (Model responds and supports generateContent.)"><span class="dot"></span>GEMINI</span><span class="mbadge ok" title="GROQ · openai/gpt-oss-120b — 정상 ✓ (Model responds and is active.)"><span class="dot"></span>GROQ</span><span class="mbadge ok" title="MISTRAL · mistral-small-latest — 정상 ✓ (Model found in the account's available model list.)"><span class="dot"></span>MISTRAL</span><span class="mbadge ok"><span class="dot"></span>FEEDS 20/20</span><span style="color:oklch(0.50 0.008 250)">2026-08-31 08:17 UTC</span></div>
 </div>
 
 <div class="tabbar">
@@ -251,6 +251,7 @@ input[type=date]{color-scheme:dark}
  <button class="btn" id="csvbtn">CSV 내보내기</button>
  <div class="rowbreak"></div>
  <div id="periodSummary" class="foot"></div>
+ <div id="periodWarn" class="foot"></div>
  <div id="csvStatus" class="foot"></div>
  <!-- Resolved period bounds. The chips above are the control surface; these
       hold the actual dates every calculation reads, so they stay in the DOM
@@ -495,16 +496,37 @@ function trendVerdict(){
  // Needs all four dates (current + comparison)
  if(!(csd.value && ced.value && sd.value && ed.value)) return null;
  const sam=samSeries(); if(!sam.length) return null;
- const avg=(from,to)=>{
-  const vals=sam.filter(p=>p.date>=from && p.date<=to).map(p=>p.views);
-  return vals.length? vals.reduce((a,b)=>a+b,0)/vals.length : null;
- };
- const baseAvg=avg(csd.value, ced.value);
- const curAvg=avg(sd.value, ed.value);
+ // Was a private copy of avgInRange() under another name — the same shape of
+ // duplicate as keyword_verdict()/relevant() (원칙 19), and the reason the
+ // coverage hole survived here after being fixed on the python side. Going
+ // through the shared one means a period the series only partly reaches now
+ // yields NO verdict rather than a number built from whichever days existed;
+ // coverageGap() below names which side was short.
+ const baseAvg=avgInRange(sam, csd.value, ced.value);
+ const curAvg=avgInRange(sam, sd.value, ed.value);
  if(baseAvg==null || curAvg==null || baseAvg===0) return null;
  const pct=(curAvg-baseAvg)/baseAvg*100;
  return {pct, dir: pct<0?'-':(pct>0?'+':'neutral'),
          baseFrom:csd.value, baseTo:ced.value, curFrom:sd.value, curTo:ed.value};
+}
+// Which side of the comparison the traffic series does not cover, for the
+// message that stands in for the number. A card that just goes blank reads as a
+// bug, and the honest answer here is specific: how much of which period exists.
+// 6 of the 54 periods the picker can produce are short — worst is "월 2025-08",
+// a full month held up against the 2 days of 2024-08 the backfill reaches.
+function coverageGap(){
+ if(!(csd.value && ced.value && sd.value && ed.value)) return null;
+ const ser=samSeries(); if(!ser.length) return null;
+ const a=coverInRange(ser,sd.value,ed.value), b=coverInRange(ser,csd.value,ced.value);
+ if(a>=MIN_COVER && b>=MIN_COVER) return null;
+ return {which:(a<MIN_COVER&&b<MIN_COVER)?'현재·비교 기간 모두가'
+               :(a<MIN_COVER?'현재 기간이':'비교 기간이'),
+         both:(a<MIN_COVER&&b<MIN_COVER),
+         cur:Math.round(a*100), cmp:Math.round(b*100),
+         from:ser[0].date, to:ser[ser.length-1].date,
+         // A current period that simply has not finished yet is the common
+         // case, and the picker already has an option shaped for it.
+         running:(a<MIN_COVER && ed.value>ser[ser.length-1].date)};
 }
 // Same idea as trendVerdict(), but for the competitor aggregate — lets us tell
 // "market-wide" moves (competitors moved the same direction) apart from
@@ -515,8 +537,8 @@ function compVerdict(){
  const avgSum=(from,to)=>{
   let total=0, any=false;
   names.forEach(n=>{
-   const vals=wikiSeries(n).filter(p=>p.date>=from&&p.date<=to).map(p=>p.views);
-   if(vals.length){ any=true; total+=vals.reduce((a,b)=>a+b,0)/vals.length; }
+   const a=avgInRange(wikiSeries(n),from,to);
+   if(a!=null){ any=true; total+=a; }
   });
   return any?total:null;
  };
@@ -696,7 +718,8 @@ function renderAlloc(vd){
  if(!ALLOC){
   sub.textContent=''; body.innerHTML='';
   note.textContent = vd ? '방향이 정해진 요인이 없어 배분할 수 없습니다.'
-    : '배분을 계산하려면 현재·비교 기간을 모두 선택해야 합니다.';
+    : (coverageGap() ? '선택한 기간을 트래픽 데이터가 덮지 못해 배분할 수 없습니다.'
+                     : '배분을 계산하려면 현재·비교 기간을 모두 선택해야 합니다.');
   return;
  }
  const t=ALLOC.totalPct, sgn=v=>(v>=0?'+':'')+v.toFixed(1);
@@ -1147,15 +1170,48 @@ function shareSeries(){
   return {date:p.date,views:tot?p.views/tot*100:null};
  }).filter(p=>p.views!=null);
 }
-function avgInRange(ser,from,to){
- const vals=ser.filter(p=>(!from||p.date>=from)&&(!to||p.date<=to)).map(p=>p.views);
- return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
-}
 const dayMs=86400000;
 const isoAdd=(iso,n)=>new Date(new Date(iso+'T00:00:00Z').getTime()+n*dayMs).toISOString().slice(0,10);
 const isoDiff=(a,b)=>Math.round((new Date(a+'T00:00:00Z')-new Date(b+'T00:00:00Z'))/dayMs);
 const median=a=>{if(!a.length)return null;const s=a.slice().sort((x,y)=>x-y),m=s.length>>1;
  return s.length%2?s[m]:(s[m-1]+s[m])/2;};
+
+// ---- window means only count when the window is actually there -------------
+// score_predictions.py had to grow this check twice (원칙 11, then 원칙 18)
+// because leaving it out is invisible: a window running past the end of the
+// series still returns a mean, just of fewer days, and the caller reports it as
+// if the whole window were there. avgInRange() is that same function on the
+// dashboard side, and the period picker can ask for windows the series does not
+// hold — "연 2026" is 366 days of which 241 exist, and "월 2025-08" is compared
+// against the two days of 2024-08 that the 730-day backfill reaches. So the
+// check lives here, in the one function every window mean already goes through,
+// instead of in each caller, which is how it got missed twice on the python side.
+const MIN_COVER=0.95;        // same bar as score_predictions.MIN_WINDOW_COVERAGE
+const _stepCache=new WeakMap();   // a 730-point median, ~40x per render otherwise
+// Cadence in days, read from the data instead of declared: wiki views are
+// daily, CrUX points weekly. Counting calendar days for both would fail every
+// CrUX window at 1/7 and silently drop the supply term.
+function seriesStep(ser){
+ if(!ser||ser.length<2) return 1;
+ if(_stepCache.has(ser)) return _stepCache.get(ser);
+ const gaps=[];
+ for(let i=1;i<ser.length;i++) gaps.push(isoDiff(ser[i].date,ser[i-1].date));
+ const st=Math.max(1, median(gaps)||1);
+ _stepCache.set(ser,st); return st;
+}
+function coverInRange(ser,from,to){
+ if(!ser||!ser.length||!from||!to) return 0;
+ const days=isoDiff(to,from)+1; if(days<=0) return 0;
+ const have=ser.filter(p=>p.date>=from&&p.date<=to).length;
+ return Math.min(1, have/Math.max(1,Math.round(days/seriesStep(ser))));
+}
+function avgInRange(ser,from,to){
+ if(!ser||!ser.length) return null;
+ // An open-ended window claims no span, so there is nothing to be short of.
+ if(from&&to&&coverInRange(ser,from,to)<MIN_COVER) return null;
+ const vals=ser.filter(p=>(!from||p.date>=from)&&(!to||p.date<=to)).map(p=>p.views);
+ return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
+}
 
 // How much of a period-over-period change was simply DUE — seasonality, the
 // weekly cycle, the standing trend. The attribution used to hand the whole
@@ -1296,7 +1352,8 @@ function renderCompactAxis(attr, vd, axName, fmtSigned){
  if(!attr){
   sum3.innerHTML=`<div class="ln"><span class="n">–</span><span class="t">${
     vd?'변화가 미미하거나 시장 시계열이 두 기간을 덮지 못해 축별 분해를 할 수 없습니다.'
-      :'기간 비교를 위해 현재·비교 기간이 모두 필요합니다.'}</span></div>`;
+      :(coverageGap()?'선택한 기간을 트래픽 데이터가 덮지 못해 축별 분해를 할 수 없습니다.'
+                     :'기간 비교를 위해 현재·비교 기간이 모두 필요합니다.')}</span></div>`;
   rowsEl.innerHTML=''; conEl.innerHTML=''; return;
  }
 
@@ -1421,6 +1478,22 @@ function renderAxisPanel(r,vd,numByDate){
 function render(){
  let r=rows();  // result after all active filters (region/country/division/KPI/period)
  const vd=trendVerdict();
+ // A period the series only partly covers produces no verdict at all now, so
+ // say which side is short instead of leaving four panels empty. Written from
+ // render() into its own element: applyPeriod() owns periodSummary, and render
+ // runs on its own (filter and selection changes) as well as after it.
+ const gap=vd?null:coverageGap();
+ const warnEl=document.getElementById('periodWarn');
+ if(warnEl) warnEl.innerHTML = gap
+  ? `<span style="color:var(--warn)">선택한 ${gap.which} 트래픽 데이터 범위를 벗어납니다 — `
+    // Both sides short is a different fact from one side short, so print both
+    // numbers rather than the worse of the two under a plural subject.
+    + (gap.both?`현재 ${gap.cur}% · 비교 ${gap.cmp}%`:`${Math.min(gap.cur,gap.cmp)}%`)
+    + `만 있어 변화율·3축 분해·기여 배분을 계산하지 않습니다 `
+    + `(보유 구간 ${gap.from} ~ ${gap.to}).`
+    + (gap.running?` 아직 끝나지 않은 기간이라면 <b>누적</b> 기간 옵션을 쓰십시오.`:'')
+    + `</span>`
+  : '';
  // Default ordering only — the list's own 정렬 segment overrides it below.
  // Trend-direction factors first, then confidence, neutral last, newest last.
  const confRank=e=>CONFW[e.confidence]||0;
@@ -1464,7 +1537,7 @@ function render(){
  const nDn=r.filter(e=>e.impact_direction==='-').length;
  const kpi=[
   ['수집 이벤트', r.length, (r.length!==EV.length?'전체 '+EV.length+'건 중':''), 'var(--ink)'],
-  ['트래픽 변화', trafVal, vd?trafficSourceLabel():'기간 비교 필요', trafCol],
+  ['트래픽 변화', trafVal, vd?trafficSourceLabel():(gap?'데이터 범위 밖':'기간 비교 필요'), trafCol],
   ['요인 구성', `${nUp} : ${nDn}`, `▲증가 ${nUp} · ▼감소 ${nDn}`, 'var(--ink)'],
   agreeCard(),
  ];
