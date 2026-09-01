@@ -559,6 +559,8 @@ apple foldable
 iphone foldable
 folding iphone
 one ui
+qcom
+retailer
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

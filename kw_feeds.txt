@@ -681,6 +681,8 @@ iphone foldable
 folding iphone
 samsung p-series
 one ui
+qcom
+retailer
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

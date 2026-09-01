@@ -1,53 +1,5 @@
 [
  {
-  "date": "2026-07-30",
-  "total_raw": 46,
-  "total_dup": 11,
-  "total_kept": 4,
-  "per_query": {
-   "samsung electronics quarterly earnings report": {
-    "raw": 13,
-    "dup": 2,
-    "kept": 1
-   },
-   "foldable smartphone market share and growth": {
-    "raw": 1,
-    "dup": 0,
-    "kept": 1
-   },
-   "ai-powered personalized shopping experiences impact": {
-    "raw": 1,
-    "dup": 0,
-    "kept": 1
-   },
-   "ecommerce ai shopping adoption": {
-    "raw": 1,
-    "dup": 0,
-    "kept": 0
-   },
-   "consumer electronics product discovery trends innovation": {
-    "raw": 1,
-    "dup": 0,
-    "kept": 0
-   },
-   "apple intelligence market strategy consumer impact": {
-    "raw": 3,
-    "dup": 0,
-    "kept": 0
-   },
-   "apple intelligence strategy": {
-    "raw": 10,
-    "dup": 1,
-    "kept": 0
-   },
-   "semiconductor memory market trend": {
-    "raw": 16,
-    "dup": 8,
-    "kept": 1
-   }
-  }
- },
- {
   "date": "2026-07-31",
   "total_raw": 135,
   "total_dup": 15,
@@ -2040,6 +1992,51 @@
     "dup_near": 0,
     "kw_pass": 4,
     "kept": 0
+   }
+  }
+ },
+ {
+  "date": "2026-09-01",
+  "total_raw": 22,
+  "total_dup": 8,
+  "total_dup_near": 0,
+  "total_kw_pass": 13,
+  "total_kept": 4,
+  "per_query": {
+   "samsung product launch": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 1
+   },
+   "galaxy phone launch": {
+    "raw": 7,
+    "dup": 1,
+    "dup_near": 0,
+    "kw_pass": 6,
+    "kept": 2
+   },
+   "ai shopping": {
+    "raw": 2,
+    "dup": 1,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "ecommerce trends": {
+    "raw": 2,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 2,
+    "kept": 0
+   },
+   "semiconductor market": {
+    "raw": 10,
+    "dup": 6,
+    "dup_near": 0,
+    "kw_pass": 3,
+    "kept": 1
    }
   }
  }
