@@ -1566,5 +1566,33 @@
    "ai search traffic"
   ],
   "rationale": "쿼리 및 키워드 유지/제외 목록을 현재 성능과 샘플 기사 제목을 기반으로 검토했지만, 기존 쿼리가 여전히 관련성이 높고 짧은 길이 규칙을 잘 준수하며, 키워드 목록도 포괄적이어서 큰 변경 없이 유지합니다. 샘플 기사에서 'Qcom'과 'retailer' 같은 키워드가 유효했기에 이를 추가했습니다."
+ },
+ {
+  "date": "2026-09-01",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "rationale": "전반적인 쿼리 성능이 양호하여 기존 쿼리 및 키워드를 유지하여 안정적인 수집을 지속합니다. 특히 'ai search traffic'의 dup 및 near_dup 비율이 높지만, 원본 추출량이 낮아 (raw=30) 쿼리를 변경하기보다는 키워드 필터링을 통해 중복을 줄이는 것이 더 효율적이라 판단됩니다. 전반적으로 낮은 keep_rate를 보이는 피드 소스는 이미 키워드 필터링을 통해 걸러지고 있으므로 쿼리 자체는 변경하지 않고 유지합니다."
  }
 ]

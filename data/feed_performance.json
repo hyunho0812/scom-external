@@ -1,52 +1,5 @@
 [
  {
-  "date": "2026-07-31",
-  "total_raw": 29,
-  "total_kept": 7,
-  "per_feed": {
-   "OpenAI news": {
-    "raw": 10,
-    "kw_pass": 9,
-    "kept": 4
-   },
-   "Gemini (Google)": {
-    "raw": 2,
-    "kw_pass": 2,
-    "kept": 0
-   },
-   "Samsung newsroom (KR)": {
-    "raw": 3,
-    "kw_pass": 3,
-    "kept": 2
-   },
-   "Pew Research Internet & Tech": {
-    "raw": 2,
-    "kw_pass": 2,
-    "kept": 0
-   },
-   "Search Engine Journal": {
-    "raw": 4,
-    "kw_pass": 4,
-    "kept": 1
-   },
-   "Retail Dive": {
-    "raw": 3,
-    "kw_pass": 3,
-    "kept": 0
-   },
-   "Practical Ecommerce": {
-    "raw": 1,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Digiday": {
-    "raw": 4,
-    "kw_pass": 3,
-    "kept": 0
-   }
-  }
- },
- {
   "date": "2026-08-01",
   "total_raw": 11,
   "total_kept": 2,
@@ -1531,6 +1484,98 @@
     "kept": 0
    },
    "Neil Patel": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   }
+  }
+ },
+ {
+  "date": "2026-09-01",
+  "total_raw": 41,
+  "total_dup_near": 1,
+  "total_kept": 4,
+  "per_feed": {
+   "OpenAI news": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 1,
+    "kw_pass": 9,
+    "kept": 0
+   },
+   "Gemini (Google)": {
+    "raw": 2,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 2,
+    "kept": 0
+   },
+   "Google AI blog": {
+    "raw": 2,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 2,
+    "kept": 0
+   },
+   "Samsung newsroom (KR)": {
+    "raw": 3,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 3,
+    "kept": 2
+   },
+   "TrendForce Semiconductors": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Pew Research Internet & Tech": {
+    "raw": 7,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 7,
+    "kept": 0
+   },
+   "Search Engine Journal": {
+    "raw": 5,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 5,
+    "kept": 2
+   },
+   "Retail Dive": {
+    "raw": 4,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 4,
+    "kept": 0
+   },
+   "Practical Ecommerce": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Digiday": {
+    "raw": 4,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 3,
+    "kept": 0
+   },
+   "Semrush": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "HubSpot Marketing": {
     "raw": 1,
     "dup": 0,
     "dup_near": 0,
