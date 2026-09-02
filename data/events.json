@@ -201,7 +201,7 @@
   "category": "marketing",
   "title": "소비자 다수, 브랜드 사이트를 '조사용'으로 활용",
   "description": "조사에서 소비자 59%가 브랜드 사이트에서 제품을 조사하길 선호하고 55%는 제조사 직접 구매를 선호한다고 나타났다.",
-  "impact_direction": "neutral",
+  "impact_direction": "+",
   "impact_horizon": "months",
   "confidence": "med",
   "metric": "both",
@@ -213,7 +213,9 @@
   "raw_description": "조사에서 소비자 59%가 브랜드 사이트에서 제품을 조사하길 선호하고 55%는 제조사 직접 구매를 선호한다고 나타났다. samsung.com이 정보탐색과 구매 두 역할을 함께 갖되, 조사 비중이 큰 경향을 시사한다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "claude-opus-5"
+  "axis_source": "claude-opus-5",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "E110",
@@ -585,7 +587,7 @@
   "category": "marketing",
   "title": "GEO(생성형 엔진 최적화) 마케팅 부상",
   "description": "검색이 AI 답변 중심으로 바뀌며 기존 SEO를 넘어 GEO(생성형 엔진 최적화)가 디지털 마케팅 화두로 떠올랐다.",
-  "impact_direction": "neutral",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "confidence": "med",
   "metric": "traffic",
@@ -597,7 +599,9 @@
   "raw_description": "검색이 AI 답변 중심으로 바뀌며 기존 SEO를 넘어 GEO(생성형 엔진 최적화)가 디지털 마케팅 화두로 떠올랐다. AI 답변에 인용되는지가 브랜드 노출을 좌우하게 된다.",
   "date_source": "seed",
   "axis": "demand",
-  "axis_source": "claude-opus-5"
+  "axis_source": "claude-opus-5",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "E126",
@@ -1394,7 +1398,7 @@
   "title": "[Apple newsroom] 애플, AI 개발 도구 강화로 앱 생태계 확장",
   "impact": "애플 AI 개발 도구 강화로 개발자들의 애플 사이트 방문이 늘고, 플랫폼 비교 과정에서 삼성닷컴으로도 트래픽이 옮겨갈 수 있다",
   "description": "애플이 AI 기반 개발 도구와 Xcode 기능을 대폭 늘렸다.",
-  "impact_direction": "neutral",
+  "impact_direction": "+",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -1408,7 +1412,9 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "애플이 AI 기반 개발 도구와 Xcode 기능을 대폭 늘렸다. 이 때문에 개발자들이 애플 플랫폼에 더 관심을 갖게 되어 애플 관련 사이트 방문과 검색이 많아졌다.",
   "axis": "share",
-  "axis_source": "claude-opus-5"
+  "axis_source": "claude-opus-5",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP5431f074",
@@ -1421,7 +1427,7 @@
   "title": "[Apple newsroom] 애플 AI 기능 발표로 삼성닷컴 트래픽 영향",
   "impact": "AI 기능 발표로 애플 제품 관심 증가 -> 삼성닷컴 검색/방문 트래픽 간접적 영향",
   "description": "애플이 새로운 AI 기능과 Siri 업그레이드를 발표했다.",
-  "impact_direction": "neutral",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -1435,7 +1441,9 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "애플이 새로운 AI 기능과 Siri 업그레이드를 발표했다. 삼성닷컴은 애플 AI 관련 검색이나 비교 방문으로 간접적 트래픽 변화가 있을 수 있다.",
   "axis": "share",
-  "axis_source": "claude-opus-5"
+  "axis_source": "claude-opus-5",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FPb5ccbedb",
@@ -1448,7 +1456,7 @@
   "title": "[Apple newsroom] 애플 인텔리전스 AI 기능 공개",
   "impact": "아이폰 AI 기능 공개로 사람들이 스마트폰을 검색·탐색하는 방식이 바뀌면서, 검색·광고를 통한 삼성닷컴 유입에도 영향을 줄 수 있다",
   "description": "애플이 아이폰에 AI 기능을 추가했다고 발표했다.",
-  "impact_direction": "neutral",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -1462,7 +1470,9 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "애플이 아이폰에 AI 기능을 추가했다고 발표했다. 사람들이 아이폰을 검색하거나 비교할 때 삼성닷컴으로 유입될 수도 있다.",
   "axis": "share",
-  "axis_source": "claude-opus-5"
+  "axis_source": "claude-opus-5",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A64254fe2",
@@ -1610,7 +1620,7 @@
   "title": "[Google Search Central Blog] 구글 서치 콘솔, 소셜/비디오 성과 추적 기능 출시",
   "impact": "구글 검색에서 소셜 및 비디오 콘텐츠의 노출 및 클릭률 변화가 삼성닷컴으로의 유입 트래픽에 영향을 줄 수 있다.",
   "description": "구글 서치 콘솔에 인스타그램, 틱톡, X, 유튜브 등 소셜 및 비디오 플랫폼 콘텐츠의 구글 검색 성과를 추적하는 기능이 전 세계적으로 출시되었다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 3,
   "confidence": "med",
@@ -1624,7 +1634,9 @@
   "date_source": "url",
   "raw_scope": "full list if worldwide",
   "raw_description": "구글 서치 콘솔에 인스타그램, 틱톡, X, 유튜브 등 소셜 및 비디오 플랫폼 콘텐츠의 구글 검색 성과를 추적하는 기능이 전 세계적으로 출시되었다. 이로 인해 삼성닷컴 관련 소셜 및 비디오 콘텐츠가 구글 검색에서 더 잘 노출되거나 클릭률이 변하면, 삼성닷컴으로 유입되는 트래픽 양과 질에 직접적인 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP6c32ea48",
@@ -2015,7 +2027,7 @@
   "title": "[OpenAI news] AI 에이전트, 업무 방식 변화 및 생산성 향상",
   "impact": "AI 에이전트 확산으로 사용자 검색 및 정보 탐색 방식이 변화하여 웹사이트 트래픽 및 전환율에 영향",
   "description": "새로운 OpenAI 연구 논문은 AI 에이전트가 업무를 변화시키고 생산성을 높인다고 보여주었다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -2029,7 +2041,9 @@
   "raw_scope": "WW",
   "raw_description": "새로운 OpenAI 연구 논문은 AI 에이전트가 업무를 변화시키고 생산성을 높인다고 보여주었다. 이는 사용자들이 정보를 찾고 제품을 탐색하는 방식에 변화를 가져와 samsung.com으로의 직접 방문이나 검색 유입 트래픽에 영향을 줄 수 있다.",
   "axis": "demand",
-  "axis_source": "claude-opus-5"
+  "axis_source": "claude-opus-5",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP70d7ce96",
@@ -2069,7 +2083,7 @@
   "title": "[Practical Ecommerce] 구글 AI 검색 결과에 삼성닷컴 노출 데이터 추가",
   "impact": "AI 검색 결과 노출 데이터 추가 -> 검색 트래픽 변화",
   "description": "구글 서치 콘솔에 AI 개요와 AI 모드에서 삼성닷컴 페이지 노출 데이터를 제공하기 시작했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -2083,7 +2097,9 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "구글 서치 콘솔에 AI 개요와 AI 모드에서 삼성닷컴 페이지 노출 데이터를 제공하기 시작했다. 이 데이터가 공개되면서 삼성닷컴 사이트로 오는 검색 트래픽이 어떻게 변할지 지켜봐야 한다.",
   "axis": "supply",
-  "axis_source": "claude-opus-5"
+  "axis_source": "claude-opus-5",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A373d9964",
@@ -2123,7 +2139,7 @@
   "title": "[Search Engine Journal] 구글 검색 콘솔에 SNS·영상 플랫폼 추가",
   "impact": "소셜·영상 플랫폼 검색 노출 증가 → Samsung.com 트래픽 변화",
   "description": "구글이 검색 콘솔에 인스타그램, 틱톡, X, 유튜브 등 플랫폼을 추가했다. 사람들이 검색할 때 이런 플랫폼의 콘텐츠가 더 잘 노출된다.",
-  "impact_direction": "neutral",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -2137,7 +2153,9 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "구글이 검색 콘솔에 인스타그램, 틱톡, X, 유튜브 등 플랫폼을 추가했다. 사람들이 검색할 때 이런 플랫폼의 콘텐츠가 더 잘 노출된다. 이 때문에 사람들이 삼성닷컴을 직접 방문하지 않고도 제품 정보를 접할 수 있게 되었다.",
   "axis": "demand",
-  "axis_source": "claude-opus-5"
+  "axis_source": "claude-opus-5",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FPfd8f823f",
@@ -2204,7 +2222,7 @@
   "title": "AI 리테일 성공은 데이터 품질에 달렸다",
   "impact": "AI 기반 쇼핑 경험 개선 여부가 웹사이트 트래픽 및 전환율에 영향을 미친다",
   "description": "AI를 활용한 리테일 서비스는 깨끗하고 잘 정리된 데이터가 있어야 효과를 낼 수 있다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -2218,7 +2236,9 @@
   "raw_scope": "WW",
   "raw_description": "AI를 활용한 리테일 서비스는 깨끗하고 잘 정리된 데이터가 있어야 효과를 낼 수 있다. 이는 삼성닷컴에서 AI 기반 개인화 추천이나 검색 기능이 얼마나 잘 작동하는지에 따라 방문자 유입과 사이트 내 활동에 영향을 줄 수 있다.",
   "axis": "demand",
-  "axis_source": "claude-opus-5"
+  "axis_source": "claude-opus-5",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP5e8a92f9",
@@ -2285,7 +2305,7 @@
   "title": "[OpenAI news] HP, OpenAI와 AI 파트너십 확대",
   "impact": "HP의 AI 활용 증가는 AI 검색 및 정보 탐색 방식 변화로 삼성닷컴 트래픽에 간접적 영향",
   "description": "HP가 OpenAI와의 파트너십을 확대하여 고객 경험, 소프트웨어 개발, 기업 운영 전반에 AI를 도입한다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "med",
@@ -2299,7 +2319,9 @@
   "raw_scope": "WW",
   "raw_description": "HP가 OpenAI와의 파트너십을 확대하여 고객 경험, 소프트웨어 개발, 기업 운영 전반에 AI를 도입한다. 이는 사용자들이 정보를 찾고 제품을 탐색하는 방식에 AI가 더 깊이 관여하게 되어, 삼성닷컴으로의 직접적인 웹 트래픽 유입 경로에 변화를 줄 수 있다.",
   "axis": "demand",
-  "axis_source": "claude-opus-5"
+  "axis_source": "claude-opus-5",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP50d351e2",
@@ -2366,7 +2388,7 @@
   "title": "[TrendForce Semiconductors] AI ASIC 수요 증가로 MLCC 부족 우려 2H26",
   "impact": "AI ASIC 수요 증가로 MLCC 부족이 우려되면서 삼성전자도 MLCC 확보 경쟁에 뛰어들 가능성이 높아져 삼성닷컴의 주문 전환율과 트래픽에 영향",
   "description": "AI 반도체용 MLCC 수요가 급증하면서 고급 MLCC의 공급이 부족해질 수 있다고 TrendForce가 발표했다.",
-  "impact_direction": "neutral",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "med",
@@ -2380,7 +2402,9 @@
   "raw_scope": "US;KR;CN;JP;DE;GB",
   "raw_description": "AI 반도체용 MLCC 수요가 급증하면서 고급 MLCC의 공급이 부족해질 수 있다고 TrendForce가 발표했다. 삼성닷컴에서 MLCC를 포함한 AI 관련 부품 구매를 위한 검색이나 주문이 늘어나거나 반대로 MLCC 부족으로 생산 지연이 발생할 수 있다.",
   "axis": "demand",
-  "axis_source": "claude-opus-5"
+  "axis_source": "claude-opus-5",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A10e68f79",
@@ -2393,7 +2417,7 @@
   "title": "애플 가격 인상 소식으로 베스트바이 방문 급증",
   "impact": "Apple 가격 인상 소식 -> Best Buy 트래픽 급증, Samsung.com 간접 영향",
   "description": "애플이 6월부터 아이폰과 맥 제품 가격을 올렸다고 발표했다.",
-  "impact_direction": "neutral",
+  "impact_direction": "+",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -2407,7 +2431,9 @@
   "raw_scope": "US",
   "raw_description": "애플이 6월부터 아이폰과 맥 제품 가격을 올렸다고 발표했다. 이 소식이 Best Buy 같은 전자제품 매장에 사람들이 몰려들었다.",
   "axis": "share",
-  "axis_source": "claude-opus-5"
+  "axis_source": "claude-opus-5",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP8f810d4a",
@@ -2447,7 +2473,7 @@
   "title": "애플 폴더블폰 출시로 삼성닷컴 트래픽 영향",
   "impact": "폴더블폰 경쟁 심화로 삼성닷컴 방문 증가 또는 전환율 변화",
   "description": "애플이 폴더블폰을 출시하기로 했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "weeks",
   "impact_strength": 3,
   "confidence": "med",
@@ -2461,7 +2487,9 @@
   "raw_scope": "US;KR;GB;DE;FR;ES;BR;MX_C;AU;IN;TR",
   "raw_description": "애플이 폴더블폰을 출시하기로 했다. 삼성닷컴은 애플 제품과 비교 검색이나 경쟁 제품 탐색으로 자연스럽게 방문자가 늘거나, 반대로 전환이 떨어질 수 있다.",
   "axis": "share",
-  "axis_source": "claude-opus-5"
+  "axis_source": "claude-opus-5",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP291c3f10",
@@ -2474,7 +2502,7 @@
   "title": "[Search Engine Journal] 사파리 AI가 웹사이트 성능 진단해 SEO 개선",
   "impact": "AI 기반 SEO 진단 도구 확산으로 Core Web Vitals에 최적화된 사이트로 자연 검색 트래픽이 옮겨갈 수 있어, 삼성닷컴의 검색 노출과 방문에도 영향을 줄 수 있다",
   "description": "사파리 브라우저가 AI로 웹사이트 성능을 진단하고 SEO를 개선하는 기능을 발표했다. 이 기능이 보편화되면 검색 결과에서 성능이 좋은 사이트가 더 잘 노출될 것이다.",
-  "impact_direction": "neutral",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 3,
   "confidence": "med",
@@ -2488,7 +2516,9 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "사파리 브라우저가 AI로 웹사이트 성능을 진단하고 SEO를 개선하는 기능을 발표했다. 이 기능이 보편화되면 검색 결과에서 성능이 좋은 사이트가 더 잘 노출될 것이다. 삼성닷컴도 검색 최적화를 서둘러야 웹 트래픽이 줄어들지 않을 것이다.",
   "axis": "supply",
-  "axis_source": "claude-opus-5"
+  "axis_source": "claude-opus-5",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A874049e2",
@@ -2528,7 +2558,7 @@
   "title": "[Gemini (Google)] 구글 Gemini 3.5 Flash에 컴퓨터 사용 기능 추가",
   "impact": "AI 컴퓨터 사용 기능 추가로 사람들이 온라인에서 전자제품을 탐색하는 방식이 바뀌면서 트래픽에 영향을 줄 수 있다 -> Traffic, Click, Impression",
   "description": "구글이 Gemini 3.5 Flash에 컴퓨터 사용 기능을 넣었다.",
-  "impact_direction": "neutral",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -2542,7 +2572,9 @@
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "구글이 Gemini 3.5 Flash에 컴퓨터 사용 기능을 넣었다. 사람들이Gemini를 통해 직접 제품 비교나 사양 확인을 할 수 있게 되었다.",
   "axis": "demand",
-  "axis_source": "claude-opus-5"
+  "axis_source": "claude-opus-5",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FPd309c997",
@@ -2852,7 +2884,7 @@
   "title": "[OpenAI news] OpenAI, GPT-5.5 생물학 버그 바운티 프로그램 시작",
   "impact": "AI 검색 결과의 신뢰도와 안전성 향상으로 사용자 검색 행동 변화 -> Impression, Click, Traffic",
   "description": "OpenAI가 GPT-5.5 모델의 생물학적 오용 가능성을 찾는 버그 바운티 프로그램을 시작했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "med",
@@ -2866,7 +2898,9 @@
   "date_source": "capture",
   "raw_scope": "WW",
   "raw_description": "OpenAI가 GPT-5.5 모델의 생물학적 오용 가능성을 찾는 버그 바운티 프로그램을 시작했다. 이는 AI 검색 결과의 신뢰도와 안전성에 대한 사용자 인식을 높여, 정보 탐색 방식과 웹사이트 방문 패턴에 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A3aeb0a20",
@@ -2879,7 +2913,7 @@
   "title": "AI 에이전트 표준: 검색 엔진 트래픽에 미치는 영향",
   "impact": "AI 에이전트 표준 변화는 검색 결과 노출 방식과 사용자 클릭률에 영향을 주어 samsung.com 트래픽을 변화시킬 수 있다.",
   "description": "AI 에이전트 표준에 대한 논의가 활발해지면서 검색 엔진이 정보를 수집하고 사용자에게 제공하는 방식이 바뀔 수 있다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -2893,7 +2927,9 @@
   "date_source": "capture",
   "raw_scope": "WW",
   "raw_description": "AI 에이전트 표준에 대한 논의가 활발해지면서 검색 엔진이 정보를 수집하고 사용자에게 제공하는 방식이 바뀔 수 있다. 이는 samsung.com이 검색 결과에 노출되는 방식과 사용자가 웹사이트로 유입되는 클릭률에 직접적인 영향을 미쳐 전체 웹 트래픽에 변화를 가져올 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Aa6045b70",
@@ -3311,7 +3347,7 @@
   "title": "[OpenAI news] 미국, 주 및 연방 차원 AI 안전 조치 추진",
   "impact": "AI 규제 강화로 검색 엔진 작동 방식 변화 -> 웹사이트 노출 및 클릭률에 영향",
   "description": "미국에서 주 및 연방 차원의 AI 안전 조치가 추진되고 있습니다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -3325,7 +3361,9 @@
   "date_source": "capture",
   "raw_scope": "US",
   "raw_description": "미국에서 주 및 연방 차원의 AI 안전 조치가 추진되고 있습니다. 이는 검색 엔진의 정보 제공 방식에 변화를 가져와 삼성닷컴으로의 유입 트래픽에 영향을 줄 수 있습니다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A7d0f20a8",
@@ -3581,7 +3619,7 @@
   "title": "[OpenAI news] GPT-Red: AI 안전성 및 견고성 향상",
   "impact": "AI 검색 결과의 품질과 안전성 향상으로 검색 엔진 트래픽 및 클릭률에 영향",
   "description": "OpenAI가 GPT-Red라는 자동화된 레드팀 시스템을 공개하여 AI 안전성과 프롬프트 주입 견고성을 개선했습니다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "med",
@@ -3595,7 +3633,9 @@
   "date_source": "capture",
   "raw_scope": "WW",
   "raw_description": "OpenAI가 GPT-Red라는 자동화된 레드팀 시스템을 공개하여 AI 안전성과 프롬프트 주입 견고성을 개선했습니다. 이는 AI 검색 결과의 신뢰도를 높여 사용자들이 검색 엔진을 통해 정보를 찾는 방식에 영향을 줄 수 있으며, 결과적으로 삼성닷컴으로 유입되는 검색 트래픽과 클릭률에 변화를 가져올 수 있습니다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A4c40c961",
@@ -3689,7 +3729,7 @@
   "title": "라이브 커머스, 서구 시장에서 성장 잠재력 커",
   "impact": "라이브 커머스 트렌드 확산은 삼성닷컴의 트래픽 유입 경로와 전환율에 영향을 줄 수 있다.",
   "description": "중국의 라이브 커머스 시장이 크게 성장하여 서구 시장에서도 유사한 트렌드가 나타날 가능성이 있다는 보고서가 나왔다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -3703,7 +3743,9 @@
   "date_source": "capture",
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR",
   "raw_description": "중국의 라이브 커머스 시장이 크게 성장하여 서구 시장에서도 유사한 트렌드가 나타날 가능성이 있다는 보고서가 나왔다. 이는 소비자들이 제품을 발견하고 구매하는 방식이 변화하면서 삼성닷컴으로의 직접 유입 트래픽이 줄어들고, 라이브 커머스 플랫폼을 통한 유입이 늘어날 수 있음을 의미한다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP54ee7bd8",
@@ -3743,7 +3785,7 @@
   "title": "[Search Engine Journal] 구글 AI 검색, 웹사이트 클릭 수 발표",
   "impact": "구글 AI 검색 기능이 웹사이트로 보내는 클릭 수에 대한 정보는 삼성닷컴으로의 유입 트래픽에 영향을 줄 수 있다.",
   "description": "구글이 AI 검색 기능이 매주 수십억 건의 클릭을 웹사이트로 보낸다고 발표했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "immediate",
   "impact_strength": 3,
   "confidence": "med",
@@ -3757,7 +3799,9 @@
   "date_source": "capture",
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR",
   "raw_description": "구글이 AI 검색 기능이 매주 수십억 건의 클릭을 웹사이트로 보낸다고 발표했다. 이는 삼성닷컴으로의 검색 유입 트래픽 양과 방식에 변화를 가져올 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP87c38775",
@@ -3824,7 +3868,7 @@
   "title": "[OpenAI news] OpenAI, 장기 AI 모델 안전성 및 정렬 교훈 공유",
   "impact": "AI 모델의 안전성 및 신뢰성 우려가 사용자 검색 행동에 영향을 미쳐 삼성닷컴 트래픽에 간접적 영향을 줄 수 있음",
   "description": "OpenAI가 장기 실행 AI 모델 배포에서 얻은 안전성 위험, 실패 사례, 개선된 보호 조치에 대한 교훈을 공유했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "med",
@@ -3838,7 +3882,9 @@
   "date_source": "capture",
   "raw_scope": "full list if worldwide",
   "raw_description": "OpenAI가 장기 실행 AI 모델 배포에서 얻은 안전성 위험, 실패 사례, 개선된 보호 조치에 대한 교훈을 공유했다. 이는 AI 기술 전반에 대한 사용자 신뢰도와 검색 방식에 영향을 미쳐, 삼성닷컴으로의 유입 트래픽이나 검색 엔진을 통한 발견 가능성에 간접적인 변화를 가져올 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A413fee25",
@@ -3932,7 +3978,7 @@
   "title": "[Search Engine Journal] 구글 로컬 서비스 광고가 구글 애즈로 통합",
   "impact": "로컬 서비스 광고가 구글 애즈로 통합되면서 검색 광고 노출 방식이 바뀌어 Samsung.com의 클릭/트래픽에 영향",
   "description": "구글이 로컬 서비스 광고를 구글 애즈로 통합한다고 발표했다. 구글 검색 결과에서 로컬 서비스 광고가 기존 방식과 다르게 노출된다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -3946,7 +3992,9 @@
   "date_source": "capture",
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "구글이 로컬 서비스 광고를 구글 애즈로 통합한다고 발표했다. 구글 검색 결과에서 로컬 서비스 광고가 기존 방식과 다르게 노출된다. Samsung.com으로 오는 트래픽이 구글 검색 광고 노출 방식 변화로 줄어들거나 늘 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Af5f3a10b",
@@ -4013,7 +4061,7 @@
   "title": "[OpenAI news] OpenAI, 소상공인 위한 ChatGPT 프로그램 출시",
   "impact": "소상공인의 AI 활용 증가로 검색 행동 변화, 삼성닷컴 트래픽에 간접적 영향",
   "description": "OpenAI가 소상공인을 위한 ChatGPT 프로그램을 출시하여 기업들이 AI 기술을 활용해 업무를 자동화하고 성장하도록 돕는다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "med",
@@ -4027,7 +4075,9 @@
   "date_source": "capture",
   "raw_scope": "US",
   "raw_description": "OpenAI가 소상공인을 위한 ChatGPT 프로그램을 출시하여 기업들이 AI 기술을 활용해 업무를 자동화하고 성장하도록 돕는다. 이로 인해 소상공인들의 정보 검색 방식이나 업무 관련 도구 탐색 행동이 변화할 수 있으며, 이는 삼성닷컴으로의 유입 트래픽에 간접적인 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP45cc5ed8",
@@ -4094,7 +4144,7 @@
   "title": "트럼프 법무부 지명자, 온라인 음란물 금지 및 빅테크 기소 추진",
   "impact": "온라인 콘텐츠 규제 강화로 검색 및 웹사이트 트래픽 유입 방식 변화 -> Impression, Click, Traffic",
   "description": "트럼프 행정부의 법무부 지명자가 온라인 음란물 금지와 빅테크 기업에 대한 정부 규제 강화를 주장했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "med",
@@ -4108,7 +4158,9 @@
   "date_source": "url",
   "raw_scope": "US",
   "raw_description": "트럼프 행정부의 법무부 지명자가 온라인 음란물 금지와 빅테크 기업에 대한 정부 규제 강화를 주장했다. 이는 온라인 콘텐츠 접근 방식과 검색 엔진의 작동 방식에 영향을 미쳐 samsung.com으로의 웹 트래픽 유입 경로와 양에 변화를 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP6a4e6eee",
@@ -4634,7 +4686,7 @@
   "title": "[Search Engine Journal] AI 오버뷰가 브랜드 위치를 어떻게 보여주는지 감사하기",
   "impact": "AI 오버뷰의 정보가 삼성닷컴으로의 유입 트래픽에 영향을 줄 수 있음",
   "description": "AI 오버뷰가 특정 브랜드 위치에 대해 어떤 정보를 제공하는지 감사하는 방법이 제시되었다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 3,
   "confidence": "med",
@@ -4648,7 +4700,9 @@
   "date_source": "capture",
   "raw_scope": "WW",
   "raw_description": "AI 오버뷰가 특정 브랜드 위치에 대해 어떤 정보를 제공하는지 감사하는 방법이 제시되었다. 이는 삼성닷컴으로의 직접적인 검색 유입이나 브랜드 인지도를 통한 간접적인 트래픽에 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP6d0e0d66",
@@ -4661,7 +4715,7 @@
   "title": "[Search Engine Journal] AI 개요, 유튜브 트래픽 유입의 중요성",
   "impact": "AI 개요가 유튜브를 통해 트래픽을 유입시키는 방식 변화 -> 노출, 클릭, 트래픽 KPI에 영향",
   "description": "AI 개요가 검색 결과에 나타나면서 유튜브 콘텐츠가 트래픽 유입에 중요한 역할을 하게 되었다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "immediate",
   "impact_strength": 3,
   "confidence": "med",
@@ -4675,7 +4729,9 @@
   "date_source": "capture",
   "raw_scope": "WW",
   "raw_description": "AI 개요가 검색 결과에 나타나면서 유튜브 콘텐츠가 트래픽 유입에 중요한 역할을 하게 되었다. 이는 삼성닷컴으로의 직접적인 웹사이트 방문자 수나 검색을 통한 유입 경로에 변화를 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP10ef8df0",
@@ -5039,7 +5095,7 @@
   "title": "중국 AI 연구소, 미국 경쟁사 제치고 비용 우위",
   "impact": "중국 AI 기술 발전은 검색 엔진 및 온라인 콘텐츠 소비 방식 변화를 통해 삼성닷컴 트래픽에 영향을 줄 수 있다.",
   "description": "중국 AI 연구소들이 미국 경쟁사들을 제치고 비용 효율성에서 우위를 점하며 빠르게 성장하고 있다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -5053,7 +5109,9 @@
   "date_source": "capture",
   "raw_scope": "KR;US;CN",
   "raw_description": "중국 AI 연구소들이 미국 경쟁사들을 제치고 비용 효율성에서 우위를 점하며 빠르게 성장하고 있다. 이는 AI 기반 검색 엔진 및 콘텐츠 추천 시스템의 변화를 가속화하여 사용자들이 정보를 탐색하고 제품을 발견하는 방식에 영향을 미치고, 결과적으로 삼성닷컴으로의 유입 트래픽에 변화를 가져올 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP28cebd9e",
@@ -5174,7 +5232,7 @@
   "title": "[OpenAI news] AI 코딩 에이전트, 과학 컴퓨팅 가속화",
   "impact": "AI 에이전트 사용 증가로 검색 행동 변화 -> 트래픽, 클릭, 노출에 영향",
   "description": "새로운 보고서에 따르면 과학자들이 AI 코딩 에이전트를 사용하여 과학 컴퓨팅을 현대화하고 소프트웨어 개발을 가속화하고 있습니다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "med",
@@ -5188,7 +5246,9 @@
   "date_source": "capture",
   "raw_scope": "WW",
   "raw_description": "새로운 보고서에 따르면 과학자들이 AI 코딩 에이전트를 사용하여 과학 컴퓨팅을 현대화하고 소프트웨어 개발을 가속화하고 있습니다. 이러한 AI 에이전트의 확산은 사용자들이 정보를 검색하고 제품을 발견하는 방식에 변화를 가져와 samsung.com으로의 직접적인 웹 트래픽 유입 방식에 영향을 줄 수 있습니다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP18a5f7e9",
@@ -5228,7 +5288,7 @@
   "title": "AI SEO 도구, 검색 가시성 향상에 기여",
   "impact": "AI SEO 도구 사용 증가는 검색 엔진 결과 페이지에서 삼성닷컴의 노출 및 클릭률에 영향을 미쳐 트래픽을 변화시킬 수 있다.",
   "description": "AI SEO 도구들이 빠르게 발전하여 검색 연구부터 AI 검색 가시성 향상까지 전반적인 SEO 작업에 활용되고 있다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -5242,7 +5302,9 @@
   "date_source": "capture",
   "raw_scope": "WW",
   "raw_description": "AI SEO 도구들이 빠르게 발전하여 검색 연구부터 AI 검색 가시성 향상까지 전반적인 SEO 작업에 활용되고 있다. 이러한 AI SEO 도구의 확산은 삼성닷컴이 검색 엔진에서 노출되는 방식과 사용자들이 사이트로 유입되는 트래픽 양에 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FPfea25efb",
@@ -5498,7 +5560,7 @@
   "title": "[Search Engine Journal] 유럽 검색 전략: 구글 외 다른 플랫폼 고려",
   "impact": "유럽 내 다양한 검색 엔진 및 플랫폼의 중요성 증가로 삼성닷컴의 유기적 트래픽 유입 방식 변화",
   "description": "유럽 시장에서 구글과 빙 외에 세즈남, 에코시아, 잘란도 등 다양한 검색 엔진과 플랫폼이 중요해지고 규제 환경도 복잡해졌다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -5512,7 +5574,9 @@
   "date_source": "capture",
   "raw_scope": "DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;US;GB",
   "raw_description": "유럽 시장에서 구글과 빙 외에 세즈남, 에코시아, 잘란도 등 다양한 검색 엔진과 플랫폼이 중요해지고 규제 환경도 복잡해졌다. 이는 삼성닷컴으로의 유기적 검색 트래픽 유입 경로가 다양해지고, 특정 검색 엔진에 대한 의존도를 줄여야 함을 의미한다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP824fdc6d",
@@ -5552,7 +5616,7 @@
   "title": "[Search Engine Journal] Perplexity AI, 웹 소스 선택 방식 분석",
   "impact": "Perplexity AI의 검색 결과 소스 선택 방식이 삼성닷컴으로의 유입 트래픽에 영향을 줄 수 있음",
   "description": "Perplexity AI가 웹사이트를 검색 소스로 활용하는 방식에 대한 분석이 나왔다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 3,
   "confidence": "med",
@@ -5566,7 +5630,9 @@
   "date_source": "capture",
   "raw_scope": "WW",
   "raw_description": "Perplexity AI가 웹사이트를 검색 소스로 활용하는 방식에 대한 분석이 나왔다. 이는 삼성닷컴이 AI 검색 결과에 노출되는 방식과 클릭률에 영향을 주어 웹 트래픽 변화를 가져올 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP218aa3f2",
@@ -5633,7 +5699,7 @@
   "title": "[Search Engine Journal] Q3 AI 가시성: AI 인용, 브랜드 언급 및 콘텐츠 업데이트",
   "impact": "AI 검색 결과에서 삼성닷컴 콘텐츠의 노출 및 클릭률 변화가 트래픽에 영향을 미친다.",
   "description": "AI 검색 결과에서 콘텐츠가 인용되고 브랜드가 언급되는 방식에 대한 분석이 나왔다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 3,
   "confidence": "med",
@@ -5647,7 +5713,9 @@
   "date_source": "capture",
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR",
   "raw_description": "AI 검색 결과에서 콘텐츠가 인용되고 브랜드가 언급되는 방식에 대한 분석이 나왔다. 이는 삼성닷컴이 AI 검색을 통해 얻는 웹사이트 방문자 수와 유입 경로에 직접적인 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Aee8c986c",
@@ -6092,7 +6160,7 @@
   "title": "[OpenAI news] 아바타린, GPT-리얼타임으로 24시간 AI 상담원 구축",
   "impact": "AI 챗봇 도입으로 검색 엔진 결과 및 직접 방문 트래픽에 변화가 생길 수 있다.",
   "description": "아바타린이 GPT-리얼타임을 활용하여 야마다 전기 매장에 24시간 다국어 지원 AI 상담원을 도입했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -6106,7 +6174,9 @@
   "date_source": "capture",
   "raw_scope": "KR;JP",
   "raw_description": "아바타린이 GPT-리얼타임을 활용하여 야마다 전기 매장에 24시간 다국어 지원 AI 상담원을 도입했다. 이러한 AI 상담원 도입은 사용자들이 정보를 얻는 방식에 영향을 주어, 삼성닷컴으로의 직접 방문이나 검색 엔진을 통한 유입 트래픽에 변화를 가져올 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP63673af2",
@@ -6497,7 +6567,7 @@
   "title": "영국 정부, 애플 iCloud 백도어 요구 재시도",
   "impact": "규제 이슈가 애플 vs 영국 정부로만 보이며 삼성닷컴 직접 영향은 약함",
   "description": "영국 정부가 애플의 암호화된 iCloud 데이터 접근을 요구하며 다시 법적 공방을 벌였다.",
-  "impact_direction": "neutral",
+  "impact_direction": "+",
   "impact_horizon": "immediate",
   "impact_strength": 1,
   "confidence": "high",
@@ -6511,7 +6581,9 @@
   "date_source": "url",
   "raw_scope": "GB",
   "raw_description": "영국 정부가 애플의 암호화된 iCloud 데이터 접근을 요구하며 다시 법적 공방을 벌였다. 이 때문에 애플 제품과 iCloud 관련 검색이나 관심도가 잠시 증가했다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A1380a475",
@@ -6551,7 +6623,7 @@
   "title": "[OpenAI news] OpenAI, 수학 및 이론 컴퓨터 과학 발전 발표",
   "impact": "AI 기술 발전이 검색 행동을 변화시켜 삼성닷컴 트래픽에 영향을 줄 수 있음",
   "description": "OpenAI가 수학 및 이론 컴퓨터 과학 분야의 오랜 난제에 대한 새로운 연구 결과를 발표했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "med",
@@ -6565,7 +6637,9 @@
   "date_source": "capture",
   "raw_scope": "WW",
   "raw_description": "OpenAI가 수학 및 이론 컴퓨터 과학 분야의 오랜 난제에 대한 새로운 연구 결과를 발표했다. 이러한 AI 기술 발전은 사용자들이 정보를 검색하고 웹사이트를 발견하는 방식에 변화를 가져와 삼성닷컴으로의 직접적인 웹 트래픽 유입에 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP998703c9",
@@ -7334,7 +7408,7 @@
   "title": "PC 제조사 CXMT 메모리 사용 시작",
   "impact": "PC용 메모리 공급 변화가 삼성전자 메모리 사업에 영향 -> PC 제조사 웹사이트 트래픽과 삼성닷컴 간 간접 연결",
   "description": "세계 최대 PC 제조사들이 중국 CXMT의 메모리 칩을 사용하기 시작했다.",
-  "impact_direction": "neutral",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "med",
@@ -7348,7 +7422,9 @@
   "date_source": "capture",
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "세계 최대 PC 제조사들이 중국 CXMT의 메모리 칩을 사용하기 시작했다. 삼성전자 메모리 사업부가 PC용 메모리 공급에서 경쟁력을 잃을 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A40d8b54b",
@@ -7442,7 +7518,7 @@
   "title": "[OpenAI news] ChatGPT 교육 플러그인, 학습 및 연구 방식 변화",
   "impact": "AI 교육 도구 확산으로 정보 검색 및 학습 방식이 변화하여 삼성닷컴 웹 트래픽에 간접적 영향",
   "description": "OpenAI가 K-12 교사, 대학 교육자, 학생들을 위한 새로운 교육 플러그인을 출시했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "med",
@@ -7456,7 +7532,9 @@
   "date_source": "capture",
   "raw_scope": "WW",
   "raw_description": "OpenAI가 K-12 교사, 대학 교육자, 학생들을 위한 새로운 교육 플러그인을 출시했다. 이는 사용자들이 정보를 찾고 학습하는 방식에 변화를 가져와 삼성닷컴으로의 직접적인 검색 유입이나 웹사이트 내 정보 탐색 행동에 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP1f662044",
@@ -7469,7 +7547,7 @@
   "title": "[OpenAI news] OpenAI, AI 모델 보안 강화 조치 발표",
   "impact": "AI 검색 결과의 신뢰도 변화가 삼성닷컴 유입 트래픽에 영향",
   "description": "OpenAI가 최근 발생한 사이버 보안 평가 사고에 대해 설명하고, AI 모델 테스트 및 평가를 강화하기 위한 새로운 안전 장치를 발표했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -7483,7 +7561,9 @@
   "date_source": "capture",
   "raw_scope": "WW",
   "raw_description": "OpenAI가 최근 발생한 사이버 보안 평가 사고에 대해 설명하고, AI 모델 테스트 및 평가를 강화하기 위한 새로운 안전 장치를 발표했다. AI 검색 결과의 신뢰도나 노출 방식이 변하면, 사용자들이 삼성닷컴으로 유입되는 검색 트래픽이나 클릭률에 간접적인 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FPf656773d",
@@ -7766,7 +7846,7 @@
   "title": "[Retail Dive] AI가 쇼핑 도구로 급부상",
   "impact": "AI 검색 증가 -> samsung.com 직접/간접 트래픽 변화",
   "description": "연말 쇼핑 시즌에 소비자들이 제품 비교와 할인 찾기에 AI를 많이 쓴다.",
-  "impact_direction": "neutral",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 3,
   "confidence": "med",
@@ -7780,7 +7860,9 @@
   "date_source": "capture",
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR;worldwide",
   "raw_description": "연말 쇼핑 시즌에 소비자들이 제품 비교와 할인 찾기에 AI를 많이 쓴다. 이 때문에 사람들이 samsung.com을 직접 찾기보다 AI 검색 결과나 AI 기반 플랫폼을 통해 유입될 가능성이 커진다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Aa06ddb47",
@@ -7982,7 +8064,7 @@
   "title": "AI 쇼핑용 지갑·신분증 도구 클라우드플레어 출시",
   "impact": "AI 기반 쇼핑 에이전트 증가로 samsung.com 직접/간접 트래픽 변화 가능성",
   "description": "클라우드플레어가 AI 에이전트용 지갑과 신분증 도구를 정식 출시했다.",
-  "impact_direction": "neutral",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -7996,7 +8078,9 @@
   "date_source": "capture",
   "raw_scope": "worldwide",
   "raw_description": "클라우드플레어가 AI 에이전트용 지갑과 신분증 도구를 정식 출시했다. 이 도구가 보편화되면 소비자들이 AI를 통해 상품을 검색하고 구매할 때 samsung.com에 직접 방문하지 않고도 연결될 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP85ba09f5",
@@ -8225,7 +8309,7 @@
   "title": "OpenAI, 에이전트 플러그인 표준 공개",
   "impact": "AI 에이전트 플러그인 표준은 검색 행동을 변화시켜 삼성닷컴 트래픽에 영향을 줄 수 있다.",
   "description": "OpenAI가 에이전트 플러그인이라는 새로운 개방형 표준을 발표했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -8239,7 +8323,9 @@
   "date_source": "url",
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR",
   "raw_description": "OpenAI가 에이전트 플러그인이라는 새로운 개방형 표준을 발표했다. 이 표준은 사용자들이 정보를 찾고 제품을 탐색하는 방식에 변화를 가져와 삼성닷컴으로의 웹 트래픽 유입 경로와 양에 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Aa0adf8be",
@@ -8252,7 +8338,7 @@
   "title": "구글 지도, Gemini 기반 'Ask Maps' 전 세계 출시",
   "impact": "AI 기반 지도 서비스 확대로 모바일 기기 사용자의 정보 탐색 방식 변화, 삼성닷컴 트래픽에 영향",
   "description": "Gemini 기반의 'Ask Maps' 기능이 구글 지도에 전 세계적으로 출시되었다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -8266,7 +8352,9 @@
   "date_source": "url",
   "raw_scope": "WW",
   "raw_description": "Gemini 기반의 'Ask Maps' 기능이 구글 지도에 전 세계적으로 출시되었다. 이는 사용자들이 모바일 기기에서 정보를 검색하고 탐색하는 방식에 변화를 주어, 삼성닷컴으로의 직접적인 검색 유입이나 제품 관련 정보 탐색 트래픽에 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A49381f23",
@@ -8387,7 +8475,7 @@
   "title": "AI 검색 트렌드가 PPC 캠페인 구조를 바꾼다",
   "impact": "AI 검색 행동 변화로 검색 엔진 결과 페이지(SERP) 노출 및 클릭률이 변하여 samsung.com 트래픽에 영향",
   "description": "AI 검색 습관이 유료 검색 캠페인 구조를 바꾸고 있습니다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "immediate",
   "impact_strength": 3,
   "confidence": "med",
@@ -8401,7 +8489,9 @@
   "date_source": "capture",
   "raw_scope": "US",
   "raw_description": "AI 검색 습관이 유료 검색 캠페인 구조를 바꾸고 있습니다. 이는 검색 엔진 결과 페이지에서 samsung.com의 노출 방식과 클릭률에 직접적인 영향을 줄 수 있습니다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Abda8400d",
@@ -8603,7 +8693,7 @@
   "title": "Cloudflare, 웹사이트에 WebMCP 인터페이스 제공",
   "impact": "AI 에이전트의 웹사이트 사용 방식 변화로 삼성닷컴 트래픽 유입 경로 및 클릭률에 영향",
   "description": "Cloudflare가 WebMCP 개발자 미리보기를 출시하여 어떤 웹사이트든 AI 에이전트가 사용할 수 있게 되었다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -8617,7 +8707,9 @@
   "date_source": "capture",
   "raw_scope": "WW",
   "raw_description": "Cloudflare가 WebMCP 개발자 미리보기를 출시하여 어떤 웹사이트든 AI 에이전트가 사용할 수 있게 되었다. 이는 AI 에이전트가 삼성닷컴을 탐색하고 정보를 수집하는 방식에 변화를 주어, 검색 결과 노출 및 직접적인 웹사이트 방문 트래픽에 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A03bb1b32",
@@ -9062,7 +9154,7 @@
   "title": "타임지, AI 에이전트 영향 위한 광고 게재 시작",
   "impact": "AI 에이전트의 정보 수집 방식 변화로 웹사이트 노출 및 클릭에 영향",
   "description": "타임지가 AI 에이전트에 영향을 주기 위한 광고를 게재하기 시작했으며, 이는 인터넷이 AI 봇을 위한 공간으로 변하고 있음을 시사한다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -9076,7 +9168,9 @@
   "date_source": "capture",
   "raw_scope": "WW",
   "raw_description": "타임지가 AI 에이전트에 영향을 주기 위한 광고를 게재하기 시작했으며, 이는 인터넷이 AI 봇을 위한 공간으로 변하고 있음을 시사한다. AI 에이전트가 정보를 수집하고 사용자에게 제공하는 방식이 변화하면, samsung.com이 AI 검색 결과에 노출되는 방식이나 사용자가 AI를 통해 사이트로 유입되는 트래픽에 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A57d4ad7d",
@@ -9386,7 +9480,7 @@
   "title": "[Search Engine Journal] Microsoft Clarity, AI 인용구분 기능 추가",
   "impact": "AI 검색 결과에서 삼성닷컴의 브랜드 인용과 비브랜드 인용을 분석하여 트래픽 전략을 개선할 수 있다.",
   "description": "Microsoft Clarity가 AI 검색 인용을 브랜드와 비브랜드로 나누어 분석하는 기능을 추가했다.",
-  "impact_direction": "neutral",
+  "impact_direction": "+",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -9400,7 +9494,9 @@
   "date_source": "capture",
   "raw_scope": "WW",
   "raw_description": "Microsoft Clarity가 AI 검색 인용을 브랜드와 비브랜드로 나누어 분석하는 기능을 추가했다. 이는 삼성닷컴이 AI 검색 결과에서 어떤 방식으로 노출되고 트래픽이 발생하는지 더 정확하게 파악하여 웹사이트 유입 전략을 세우는 데 도움을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP28e308a4",
@@ -9440,7 +9536,7 @@
   "title": "[Retail Dive] AI가 리테일 운영 시스템이 되고 있다",
   "impact": "AI 기반의 연결된 의사결정 시스템이 리테일 전반에 확산되면, 삼성닷컴으로의 유입 경로와 검색 가시성에 영향을 미쳐 트래픽이 변화할 수 있다.",
   "description": "AI가 리테일 산업의 핵심 운영 시스템으로 자리 잡고 있으며, 특히 챗봇보다는 연결된 의사결정 시스템이 중요해지고 있다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -9454,7 +9550,9 @@
   "date_source": "capture",
   "raw_scope": "US",
   "raw_description": "AI가 리테일 산업의 핵심 운영 시스템으로 자리 잡고 있으며, 특히 챗봇보다는 연결된 의사결정 시스템이 중요해지고 있다. 이는 소비자들이 제품을 발견하고 구매하는 방식에 변화를 가져와, 삼성닷컴으로의 직접적인 웹 트래픽 유입보다는 AI 기반 플랫폼을 통한 간접적인 유입이 늘어날 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FPd980edba",
@@ -9467,7 +9565,7 @@
   "title": "[Practical Ecommerce] 생성형 AI 가시성 전략의 한계점",
   "impact": "생성형 AI 검색 결과에서 가시성을 높이는 단일 해결책이 없다는 점은 삼성닷컴의 AI 검색 노출 전략에 영향을 미쳐 트래픽 변화를 가져올 수 있다.",
   "description": "생성형 AI 검색 결과에서 가시성을 높이는 데에는 단일한 해결책이 없으며, 여러 요소를 복합적으로 고려해야 한다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -9481,7 +9579,9 @@
   "date_source": "capture",
   "raw_scope": "US",
   "raw_description": "생성형 AI 검색 결과에서 가시성을 높이는 데에는 단일한 해결책이 없으며, 여러 요소를 복합적으로 고려해야 한다. 이는 삼성닷컴이 AI 검색 환경에서 소비자에게 노출되는 방식에 영향을 미쳐, 웹사이트로의 유입 트래픽에 변화를 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP76836382",
@@ -9494,7 +9594,7 @@
   "title": "[Digiday] Zoom, AI 검색 결과 향상 위해 크리에이터 활용",
   "impact": "AI가 브랜드 발견 방식을 변화시키면서, 크리에이터와 저널리스트를 통한 평판 관리가 삼성닷컴의 AI 검색 가시성과 유입 트래픽에 영향을 줄 수 있다.",
   "description": "AI가 브랜드 발견 방식을 변화시키고 있으며, Zoom은 AI 검색 결과에서 자사 평판을 높이기 위해 크리에이터와 저널리스트에 의존하고 있다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -9508,7 +9608,9 @@
   "date_source": "capture",
   "raw_scope": "US",
   "raw_description": "AI가 브랜드 발견 방식을 변화시키고 있으며, Zoom은 AI 검색 결과에서 자사 평판을 높이기 위해 크리에이터와 저널리스트에 의존하고 있다. 이는 소비자들이 AI를 통해 삼성 제품을 검색하고 발견하는 방식에 영향을 미쳐, 삼성닷컴으로의 웹 트래픽 유입 경로와 양에 변화를 가져올 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FPbdae823b",
@@ -9602,7 +9704,7 @@
   "title": "유럽 AI 규제, AI 주권 확보에 한계",
   "impact": "유럽의 AI 규제 강화는 AI 검색 및 서비스 이용 방식 변화를 유도하여 삼성닷컴 트래픽에 영향을 줄 수 있다.",
   "description": "유럽연합(EU)이 AI 규제를 강화하고 있지만, 이는 AI 기술 주권을 확보하는 데 한계가 있다는 분석이 나왔다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "med",
@@ -9616,7 +9718,9 @@
   "date_source": "capture",
   "raw_scope": "DE;FR;ES;PT;GB",
   "raw_description": "유럽연합(EU)이 AI 규제를 강화하고 있지만, 이는 AI 기술 주권을 확보하는 데 한계가 있다는 분석이 나왔다. 이러한 규제는 유럽 내 사용자들이 AI 기반 검색 엔진이나 서비스 이용 시 행동 변화를 가져올 수 있으며, 이는 삼성닷컴으로 유입되는 웹 트래픽의 양이나 검색 경로에 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A3c1637c8",
@@ -9850,7 +9954,7 @@
   "title": "구글 제미니 월 사용자 10억 명 돌파, 음성 사용 63%",
   "impact": "구글 제미니의 음성 검색 사용 증가는 삼성닷컴으로의 유기적 트래픽 유입 방식에 영향을 줄 수 있다.",
   "description": "구글 제미니 앱의 월간 사용자가 10억 명을 넘어섰고, 이 중 63%가 음성 기능을 사용한다고 구글이 발표했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 3,
   "confidence": "med",
@@ -9865,7 +9969,9 @@
   "date_source": "url",
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR",
   "raw_description": "구글 제미니 앱의 월간 사용자가 10억 명을 넘어섰고, 이 중 63%가 음성 기능을 사용한다고 구글이 발표했다. 이는 사용자들이 제품 정보를 검색하고 웹사이트에 접근하는 방식이 변화하고 있음을 시사하며, 삼성닷컴으로의 유기적 검색 트래픽 유입 경로와 검색어 패턴에 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A1cc091b8",
@@ -10046,7 +10152,7 @@
   "title": "Z세대 온라인 쇼핑 트렌드: 무료 배송 선호",
   "impact": "Z세대의 무료 배송 선호는 삼성닷컴의 무료 배송 정책이 트래픽과 전환율에 영향을 미칠 수 있음을 시사합니다.",
   "description": "새로운 설문조사에 따르면 미국 Z세대의 93%가 온라인 쇼핑 시 무료 배송을 매우 중요하게 생각하는 것으로 나타났다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "weeks",
   "impact_strength": 3,
   "confidence": "med",
@@ -10061,7 +10167,9 @@
   "date_source": "url",
   "raw_scope": "US",
   "raw_description": "새로운 설문조사에 따르면 미국 Z세대의 93%가 온라인 쇼핑 시 무료 배송을 매우 중요하게 생각하는 것으로 나타났다. 이는 삼성닷컴이 무료 배송을 제공하지 않거나 조건이 까다로울 경우, Z세대 방문자들이 다른 쇼핑 채널로 이탈하여 삼성닷컴의 트래픽과 전환율에 부정적인 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Ad08175b2",
@@ -10466,7 +10574,7 @@
   "title": "구글 픽셀 워치 5 vs 삼성 갤럭시 워치 9 비교",
   "impact": "경쟁사 제품과의 직접 비교로 갤럭시 워치 9에 대한 관심이 변화하여 트래픽, 주문, 매출에 영향을 줄 수 있다.",
   "description": "구글 픽셀 워치 5와 삼성 갤럭시 워치 9를 비교하는 기사가 나왔다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "immediate",
   "impact_strength": 3,
   "confidence": "high",
@@ -10481,7 +10589,9 @@
   "date_source": "url",
   "raw_scope": "US",
   "raw_description": "구글 픽셀 워치 5와 삼성 갤럭시 워치 9를 비교하는 기사가 나왔다. 이 기사는 소비자들이 갤럭시 워치 9에 대한 정보를 얻기 위해 삼성닷컴을 방문하는 트래픽에 직접적인 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Ab25367d1",
@@ -10550,7 +10660,7 @@
   "title": "포트나이트 플레이에 가장 강력한 폰은?",
   "impact": "특정 게임에 최적화된 폰에 대한 정보가 삼성 제품에 대한 관심으로 이어져 트래픽, 주문, 매출에 영향을 줄 수 있다.",
   "description": "포트나이트와 같은 게임을 플레이하기에 가장 강력한 휴대폰에 대한 사용자 및 리뷰어들의 의견이 담긴 기사가 나왔다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -10565,7 +10675,9 @@
   "date_source": "url",
   "raw_scope": "US",
   "raw_description": "포트나이트와 같은 게임을 플레이하기에 가장 강력한 휴대폰에 대한 사용자 및 리뷰어들의 의견이 담긴 기사가 나왔다. 이 기사에서 삼성 제품이 언급될 경우, 해당 제품에 대한 정보 탐색을 위해 삼성닷컴으로 유입되는 트래픽이 증가할 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A1d54bd4a",
@@ -10662,7 +10774,7 @@
   "title": "스크린 없는 피트니스 밴드 인기, 웨어러블 시장 변화",
   "impact": "스크린 없는 피트니스 밴드에 대한 관심 증가로 관련 제품 검색량과 삼성닷컴 트래픽이 변동할 수 있다.",
   "description": "스크린이 없는 피트니스 밴드가 다시 인기를 얻고 있으며, 전체 웨어러블 시장은 축소되고 있다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -10677,7 +10789,9 @@
   "date_source": "url",
   "raw_scope": "IN",
   "raw_description": "스크린이 없는 피트니스 밴드가 다시 인기를 얻고 있으며, 전체 웨어러블 시장은 축소되고 있다. 이는 삼성닷컴에서 피트니스 밴드 관련 제품 정보나 구매를 위한 검색 유입 및 트래픽에 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Acc233aed",
@@ -10802,7 +10916,7 @@
   "title": "ChatGPT, 검색 전 특정 브랜드 추천",
   "impact": "ChatGPT의 브랜드 추천이 삼성닷컴 노출 및 클릭에 영향 -> Impression, Click, Traffic 변화",
   "description": "ChatGPT가 검색을 시작하기 전에 특정 브랜드를 추천하는 경향이 있으며, 이는 일반 검색보다 33배 더 가치 있는 것으로 나타났다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "immediate",
   "impact_strength": 4,
   "confidence": "high",
@@ -10817,7 +10931,9 @@
   "date_source": "url",
   "raw_scope": "WW",
   "raw_description": "ChatGPT가 검색을 시작하기 전에 특정 브랜드를 추천하는 경향이 있으며, 이는 일반 검색보다 33배 더 가치 있는 것으로 나타났다. 만약 ChatGPT가 삼성 브랜드를 추천하지 않는다면, 삼성닷컴으로 유입되는 검색 트래픽과 클릭 수가 줄어들 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Af533246e",
@@ -10970,7 +11086,7 @@
   "title": "[Search Engine Journal] ChatGPT 검색 인덱스 및 GA 벤치마크 업데이트",
   "impact": "ChatGPT의 검색 인덱스 변화는 검색 결과 노출에 영향을 주어 -> Impression, Click, Traffic에 변화를 줄 수 있다.",
   "description": "ChatGPT의 검색 인덱스에 대한 새로운 데이터가 나왔고, Google Analytics에 캠페인 벤치마크 기능이 추가되었다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -10985,7 +11101,9 @@
   "date_source": "url",
   "raw_scope": "WW",
   "raw_description": "ChatGPT의 검색 인덱스에 대한 새로운 데이터가 나왔고, Google Analytics에 캠페인 벤치마크 기능이 추가되었다. ChatGPT의 검색 인덱스 변화는 사용자들이 정보를 찾는 방식에 영향을 주어 samsung.com으로의 유입 트래픽에 변화를 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A3b1618b3",
@@ -11054,7 +11172,7 @@
   "title": "갤럭시 Z 폴드 8 구매 이유와 비구매 이유 분석",
   "impact": "제품 구매를 고민하는 고객에게 다양한 관점을 제공하여 삼성닷컴 방문 트래픽에 영향을 줄 수 있다.",
   "description": "갤럭시 Z 폴드 8 구매를 고려하는 사람들을 위해 구매해야 할 4가지 이유와 구매하지 말아야 할 4가지 이유를 제시하는 리뷰가 나왔다.",
-  "impact_direction": "neutral",
+  "impact_direction": "+",
   "impact_horizon": "weeks",
   "impact_strength": 3,
   "confidence": "med",
@@ -11069,7 +11187,9 @@
   "date_source": "url",
   "raw_scope": "WW",
   "raw_description": "갤럭시 Z 폴드 8 구매를 고려하는 사람들을 위해 구매해야 할 4가지 이유와 구매하지 말아야 할 4가지 이유를 제시하는 리뷰가 나왔다. 이는 잠재 고객들이 제품 정보를 더 자세히 탐색하기 위해 삼성닷컴을 방문하거나, 구매를 망설여 방문하지 않게 하는 등 웹 트래픽에 복합적인 영향을 줄 수 있다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A503603c6",
@@ -11698,7 +11818,7 @@
   "title": "[Retail Dive] AI 가시성, 브랜드 자산보다 구조가 중요",
   "impact": "AI 검색 결과에서 삼성닷컴의 노출 및 클릭률이 변화할 수 있습니다.",
   "description": "브랜드 인지도나 마케팅 비용이 AI 검색 결과에서의 가시성을 보장하지 않고, 웹사이트의 구조와 콘텐츠 구성이 더 중요하다고 합니다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -11713,7 +11833,9 @@
   "date_source": "url",
   "raw_scope": "US;GB;DE;FR;ES;PT;BR;MX_C;AU;IN;TR;KR",
   "raw_description": "브랜드 인지도나 마케팅 비용이 AI 검색 결과에서의 가시성을 보장하지 않고, 웹사이트의 구조와 콘텐츠 구성이 더 중요하다고 합니다. 이는 사용자들이 AI를 통해 정보를 얻을 때 삼성닷컴으로의 직접적인 유입 경로가 달라질 수 있음을 의미합니다.",
-  "axis_source": "llm"
+  "axis_source": "llm",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP3b6c0162",
@@ -11782,7 +11904,7 @@
   "title": "FMCG, 디지털 우선 발견으로 성장 전략 변화",
   "impact": "소비자들이 제품 발견 및 구매를 위해 소셜 미디어와 마켓플레이스를 더 많이 활용한다는 점은 samsung.com으로의 직접 유입보다는 다양한 디지털 채널을 통한 간접 유입의 중요성이 커지고 있음을 시사한다. 이는 삼성 제품에 대한 초기 탐색이 다른 플랫폼에서 이루어진 후 samsung.com으로 전환될 가능성을 높일 수 있다.",
   "description": "소비자들이 소셜 미디어, 퀵 커머스, 마켓플레이스, 오프라인 매장 등 다양한 채널을 오가면서 FMCG 브랜드들이 인지도 구축, 구매 유도, 고객 유지 방식을 재고하고 있다.",
-  "impact_direction": "neutral",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "med",
@@ -11793,7 +11915,9 @@
   "raw_title": "FMCG's new growth playbook: From shelf space to digital-first discovery",
   "raw_desc": "As consumers move between social media, quick commerce, marketplaces and stores, FMCG brands are rethinking how they build awareness, drive purchases and retain customers",
   "raw_url": "https://www.business-standard.com/industry/news/fmcg-growth-playbook-shifts-from-shelf-space-to-digital-discovery-126082500401_1.html",
-  "raw_date": "2026-08-25"
+  "raw_date": "2026-08-25",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A3b2770ec",
@@ -11886,7 +12010,7 @@
   "title": "SK하이닉스, 임금 협상안 부결",
   "impact": "SK하이닉스는 삼성전자와 경쟁하는 주요 메모리 반도체 기업으로, 임금 협상 부결은 생산 차질이나 비용 증가로 이어질 수 있다. 이는 전반적인 반도체 시장의 공급 및 가격에 영향을 미쳐 삼성닷컴에서 판매하는 제품의 가격 경쟁력이나 공급 안정성에 간접적인 영향을 줄 수 있다.",
   "description": "SK하이닉스 직원들이 임금 협상안을 25표 차이로 부결했다. 제안된 6.3% 임금 인상과 수정된 보너스 구조에 50.08%가 반대했으며, 주식 변동성으로 인해 보너스의 60%를 주식으로 받는 것에 대한 저항이 주된 이유였다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "low",
@@ -11897,7 +12021,9 @@
   "raw_title": "Global Market: SK Hynix workers reject pay deal amid bonus dispute",
   "raw_desc": "SK Hynix workers narrowly rejected a wage agreement by just 25 votes, with 50.08% opposing the proposed 6.3% pay hike and revised bonus structure. Resistance centred on receiving 60% of bonuses in shares amid stock volatility. The decision comes as strong AI-…",
   "raw_url": "https://economictimes.indiatimes.com/markets/us-stocks/wall-street-guide/global-market-sk-hynix-workers-reject-pay-deal-amid-bonus-dispute/articleshow/133492196.cms",
-  "raw_date": "2026-08-25"
+  "raw_date": "2026-08-25",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A8b2e18bb",
@@ -11964,7 +12090,7 @@
   "title": "구글 플레이 서비스, 앱 번들 및 구글북 지원 도입",
   "impact": "구글 플레이 서비스 업데이트는 안드로이드 기기 사용자들의 앱 사용 경험에 영향을 미칠 수 있다. 삼성 갤럭시 기기 사용자들의 앱 다운로드 및 사용 방식 변화는 삼성닷컴의 모바일 앱 관련 트래픽에 간접적으로 영향을 줄 수 있다.",
   "description": "구글 플레이 서비스 v26.33 업데이트가 배포되었으며, 구글북 지원과 구글 플레이용 새로운 앱 번들이 포함되었다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "low",
@@ -11975,7 +12101,9 @@
   "raw_title": "Google Play Services Intros App Bundles, Googlebook Support",
   "raw_desc": "A relatively large Google Play services update is now rolling out, labeled as v26.33. Inside, there are a lot of miscellaneous changes, but the things that stuck out to us includes a mention of Googlebook support as well as new App Bundles for Google Play. Wi…",
   "raw_url": "https://www.droid-life.com/2026/08/24/google-play-services-intros-app-bundles-googlebook-support/",
-  "raw_date": "2026-08-25"
+  "raw_date": "2026-08-25",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A61472292",
@@ -11990,7 +12118,7 @@
   "title": "WikiHow, OpenAI에 무단 스크래핑으로 소송 제기",
   "impact": "이 소송은 AI 학습 데이터 수집 관행에 대한 논의를 촉발하여, 삼성닷컴과 같은 웹사이트의 콘텐츠 보호 및 AI 활용 전략에 대한 관심이 높아질 수 있다. 이는 잠재적으로 삼성닷컴의 AI 관련 정보 탐색 트래픽에 영향을 줄 수 있다.",
   "description": "WikiHow가 OpenAI를 상대로 11,000개 이상의 기사를 무단으로 스크래핑했다고 주장하며 소송을 제기했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "low",
@@ -12001,7 +12129,9 @@
   "raw_title": "WikiHow sues OpenAI for scraping over 11,000 articles without permission",
   "raw_desc": "This lawsuit could redefine AI training practices, impacting how companies balance innovation with respecting intellectual property rights.\nThe post WikiHow sues OpenAI for scraping over 11,000 articles without permission appeared first on Crypto Briefing.",
   "raw_url": "https://cryptobriefing.com/wikihow-sues-openai-scraping-articles-copyright/",
-  "raw_date": "2026-08-25"
+  "raw_date": "2026-08-25",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A15222400",
@@ -12095,7 +12225,7 @@
   "title": "모바일 인터넷, 음성 통화 추월 및 틱톡, 왓츠앱 제쳐",
   "impact": "모바일 인터넷 사용 증가와 특정 소셜 미디어 플랫폼의 부상은 삼성 기기 사용자의 온라인 활동 변화를 시사한다. 이는 삼성닷컴으로의 직접 유입보다는 소셜 미디어를 통한 제품 탐색 및 정보 습득 방식에 영향을 줄 수 있다.",
   "description": "우간다 통신 위원회(UCC) 보고서에 따르면 모바일 인터넷 사용량이 음성 통화를 넘어섰고, 틱톡이 왓츠앱을 제치고 가장 많이 사용되는 소셜 미디어 플랫폼이 되었다고 한다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -12106,7 +12236,9 @@
   "raw_title": "UCC : Mobile internet outpaces voice , TikTok overtakes WhatsApp",
   "raw_desc": "",
   "raw_url": "https://pctechmag.com/2026/08/ucc-mobile-internet-outpaces-voice-tiktok-overtakes-whatsapp/",
-  "raw_date": "2026-08-25"
+  "raw_date": "2026-08-25",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP315211cc",
@@ -12538,7 +12670,7 @@
   "title": "아이폰 17이 Q2 전 세계 스마트폰 판매 1위 차지",
   "impact": "아이폰 17의 인기 상승으로 스마트폰 시장 전체 관심도가 높아졌지만, 삼성닷컴으로의 직접적인 트래픽 전환은 크지 않을 것으로 보인다. 아이폰 17 구매자들은 애플 공식 사이트나 애플 스토어 중심으로 이동할 가능성이 높다.",
   "description": "2026년 4~6월 아이폰 17이 전 세계 스마트폰 판매량 1위를 차지했다고 보도됐다.",
-  "impact_direction": "neutral",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -12549,7 +12681,9 @@
   "raw_title": "iPhone 17 topped worldwide smartphone sales during Q2",
   "raw_desc": "",
   "raw_url": "https://9to5mac.com/2026/08/26/counterpoint-iphone-17-topped-worldwide-smartphone-sales-during-q2/",
-  "raw_date": "2026-08-26"
+  "raw_date": "2026-08-26",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A1fad094b",
@@ -12590,7 +12724,7 @@
   "title": "애플 폴더블 아이폰 깜짝 발표",
   "impact": "폴더블 아이폰 발표는 삼성 폴더블폰(갤럭시 Z 시리즈) 경쟁 제품으로 소비자 관심을Redirect시킬 가능성이 크다. 특히 폴더블폰 시장에서 삼성과 애플이 맞붙는 만큼 삼성닷컴으로의 비교 검색이나 구매 전환이 늘어날 수 있다.",
   "description": "애플이 2026년 8월 26일 폴더블 아이폰을 깜짝 공개할 예정이라고 보도됐다.",
-  "impact_direction": "neutral",
+  "impact_direction": "+",
   "impact_horizon": "weeks",
   "impact_strength": 4,
   "confidence": "med",
@@ -12601,7 +12735,9 @@
   "raw_title": "Apple Surprise and Shine : Foldable IPhone set to be unveiled",
   "raw_desc": "",
   "raw_url": "https://www.theage.com.au/technology/apple-set-to-unveil-foldable-iphone-next-month-20260827-p60rxd.html",
-  "raw_date": "2026-08-26"
+  "raw_date": "2026-08-26",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FPe570627f",
@@ -12773,7 +12909,7 @@
   "title": "인도 반도체 투자 가속화, 타타 등 주요 기업 참여",
   "impact": "인도의 반도체 생산 능력 증가는 장기적으로 삼성의 부품 조달 비용에 영향을 미칠 수 있으며, 이는 삼성 제품의 가격 경쟁력과 samsung.com의 매출에 간접적인 영향을 줄 수 있다.",
   "description": "2025년 1월부터 타타 일렉트로닉스, 무루가파 그룹의 CG 파워, HCL 그룹이 인도 반도체 미션에 따라 총 1조 2900억 루피 규모의 반도체 프로젝트를 발표했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "low",
@@ -12784,7 +12920,9 @@
   "raw_title": "India's semiconductor investment push gains pace as Tata, L&T chip in",
   "raw_desc": "Starting January 2025, Tata Electronics, Murugappa Group's CG Power, and HCL Group have announced semiconductor projects worth  ₹1.29 trillion under the India Semiconductor Mission. Since then, these firms have invested  ₹3,345 crore in semiconductor manufact…",
   "raw_url": "https://www.livemint.com/companies/indias-semiconductor-investment-push-gains-pace-as-tata-l-t-chip-in-11787668226247.html",
-  "raw_date": "2026-08-27"
+  "raw_date": "2026-08-27",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Acd8d1161",
@@ -13322,7 +13460,7 @@
   "title": "미국 FTC, 유튜브 소셜 미디어 정책 조사",
   "impact": "유튜브 정책 변경 가능성은 삼성닷컴으로 유입되는 트래픽에 영향을 줄 수 있다. 유튜브는 삼성 제품 광고 및 콘텐츠를 통해 잠재 고객을 유치하는 중요한 플랫폼이기 때문이다.",
   "description": "미국 연방거래위원회(FTC)가 작년부터 유튜브의 소셜 미디어 정책을 조사해 왔으며, 현재 소송 제기를 준비하는 마지막 단계에 있다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -13333,7 +13471,9 @@
   "raw_title": "US Federal Trade Commission probes YouTube over social media policies",
   "raw_desc": "The antitrust and consumer protection agency has been probing YouTube since last year and is in the final stages of preparing a potential lawsuit",
   "raw_url": "https://www.business-standard.com/technology/tech-news/us-federal-trade-commission-probes-youtube-over-social-media-policies-126082800089_1.html",
-  "raw_date": "2026-08-28"
+  "raw_date": "2026-08-28",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Ae3e88bef",
@@ -13348,7 +13488,7 @@
   "title": "샤오미 홍미 노트 17 프로 맥스 리뷰",
   "impact": "경쟁사 제품 리뷰는 삼성 제품에 대한 직접적인 관심은 아니지만, 스마트폰 구매를 고려하는 사용자들이 관련 정보를 탐색하는 과정에서 삼성닷컴으로 유입될 가능성이 있다.",
   "description": "샤오미 홍미 노트 17 프로 맥스 제품에 대한 리뷰 기사가 발행되었다.",
-  "impact_direction": "neutral",
+  "impact_direction": "+",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -13359,7 +13499,9 @@
   "raw_title": "Xiaomi Redmi Note 17 Pro Max Review",
   "raw_desc": "",
   "raw_url": "https://www.trustedreviews.com/reviews/xiaomi-redmi-note-17-pro-max",
-  "raw_date": "2026-08-28"
+  "raw_date": "2026-08-28",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A65bf5855",
@@ -13479,7 +13621,7 @@
   "title": "[Search Engine Journal] WebMCP, AI 에이전트의 웹사이트 사용 방식 변화",
   "impact": "AI 에이전트가 웹사이트를 탐색하고 정보를 수집하는 방식이 변화하면 samsung.com으로의 유입 트래픽 패턴이나 사이트 내 행동에 영향을 줄 수 있다. 이는 AI 에이전트가 제품 정보를 찾거나 구매 과정을 시작하는 방식에 변화를 가져올 수 있다.",
   "description": "OpenAI, Shopify, Cloudflare가 WebMCP를 실제 제품에 적용하여 AI 에이전트가 시각적 클릭 없이 웹사이트를 구조화된 방식으로 사용할 수 있게 했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 3,
   "confidence": "med",
@@ -13491,7 +13633,9 @@
   "raw_desc": "OpenAI, Shopify, and Cloudflare are putting WebMCP into live products, giving AI agents a structured way to use websites without relying on visual clicks. \n The post  WebMCP Connects AI Agents To Actions Inside Websites  appeared first on  Search Engine Journal .",
   "raw_url": "https://www.searchenginejournal.com/webmcp-connects-ai-agents-actions-inside-websites/587303/",
   "raw_date": "2026-08-28",
-  "coverage_count": 2
+  "coverage_count": 2,
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FPc691d9e0",
@@ -13533,7 +13677,7 @@
   "title": "[Search Engine Journal] Google, 업데이트 후 SEO 신호 제공 여부 설명",
   "impact": "Google 업데이트가 samsung.com의 검색 순위에 영향을 미칠 수 있지만, 구체적인 개선 지침이 없으면 SEO 전략 수립이 어려워진다. 이는 검색을 통한 samsung.com 유입 트래픽의 변동성을 높일 수 있다.",
   "description": "Google은 특정 업데이트가 순위에 영향을 미치더라도 웹사이트 소유자에게 구체적인 조치 신호를 제공하지 않는 이유를 설명했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -13545,7 +13689,9 @@
   "raw_desc": "Google explains why a named update can shake up rankings without giving affected site owners anything specific to act on. \n The post  Google Answers If Updates Come With Actionable SEO Signals  appeared first on  Search Engine Journal .",
   "raw_url": "https://www.searchenginejournal.com/google-answers-if-updates-come-with-actionable-seo-signals/587432/",
   "raw_date": "2026-08-28",
-  "coverage_count": 2
+  "coverage_count": 2,
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FPf32312bb",
@@ -13717,7 +13863,7 @@
   "title": "마이크론 직원들, 보너스 문제로 파업 지지",
   "impact": "이 기사는 삼성닷컴 웹 트래픽에 직접적인 영향을 미치지 않는다. 마이크론의 노사 분규는 삼성의 직접적인 경쟁사나 제품 판매에 영향을 주지 않기 때문이다.",
   "description": "대만 마이크론 직원 80%가 보너스 협상이 타결되지 않으면 파업할 의향이 있다고 밝혔다. 이들은 현재의 보너스 시스템을 이익 공유 제도로 바꾸기를 원한다.",
-  "impact_direction": "neutral",
+  "impact_direction": "+",
   "impact_horizon": "months",
   "impact_strength": 1,
   "confidence": "high",
@@ -13728,7 +13874,9 @@
   "raw_title": "Micron workers increasingly support strike over bonus pay — labor union wants profit-sharing scheme, as employees at Samsung, SK hynix enjoy bonuses worth hundreds of thousands of dollars",
   "raw_desc": "80% of Micron workers in Taiwan have signaled that they're willing to go on strike if the company does not strike a deal over bonuses. The employees want to replace the current bonus system with a profit-sharing scheme, allowing them to take advantage of the …",
   "raw_url": "https://www.tomshardware.com/tech-industry/micron-workers-increasingly-support-strike-over-bonus-pay-labor-union-wants-profit-sharing-scheme-as-employees-at-samsung-sk-hynix-enjoy-bonuses-worth-hundreds-of-thousands-of-dollars",
-  "raw_date": "2026-08-28"
+  "raw_date": "2026-08-28",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Ada4c7df1",
@@ -13743,7 +13891,7 @@
   "title": "중국 CXMT, 메모리 부족 속 매출 10배 급증",
   "impact": "DRAM 가격 변동은 삼성 제품의 최종 가격에 영향을 미쳐, 잠재적으로 삼성닷컴 방문자의 구매 결정에 영향을 줄 수 있다. 그러나 이는 간접적인 영향이며, 웹 트래픽에 직접적인 변화를 가져올 가능성은 낮다.",
   "description": "중국 칩 제조업체 CXMT의 매출이 2026년 상반기에 1,503억 위안(224억 달러)으로 거의 10배 증가했으며, 이는 2025년 전체 매출의 두 배 이상이다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "med",
@@ -13754,7 +13902,9 @@
   "raw_title": "Chinese chipmaker CXMT's sales soar almost 10-fold amid memory crunch",
   "raw_desc": "The Hefei-based company's revenue expanded to 150.3 billion yuan ($22.4 billion) in the first six months, more than double the sales it raked in across all of 2025",
   "raw_url": "https://www.business-standard.com/world-news/chinese-chipmaker-cxmt-s-sales-soar-almost-10-fold-amid-memory-crunch-126082801400_1.html",
-  "raw_date": "2026-08-28"
+  "raw_date": "2026-08-28",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Ad09183e6",
@@ -14057,7 +14207,7 @@
   "title": "Cloudflare, 봇 운영자를 위한 BotBase 개선",
   "impact": "Cloudflare의 봇 관리 기능 개선은 삼성닷컴을 크롤링하는 봇의 효율성과 정확성에 영향을 줄 수 있다. 이는 검색 엔진 인덱싱 및 콘텐츠 업데이트 속도에 간접적으로 영향을 미쳐 삼성닷컴으로의 유기적 트래픽에 변화를 가져올 수 있다.",
   "description": "Cloudflare는 봇 운영자가 제출물을 관리하고, 제출 상태를 추적하며, 제출물을 편집하고, 봇의 콘텐츠 사용 방식을 정확하게 선언할 수 있는 행동 모델을 추가하는 BotBase 업데이트를 발표했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -14068,7 +14218,9 @@
   "raw_title": "BotBase for Operators: A clearer path to joining Cloudflare's directory of bots and agents",
   "raw_desc": "Bot operators now have a home in the Cloudflare dashboard to manage submissions. This update adds submission status tracking, submission editing, and a behavior model so operators can accurately declare how their bots use content.",
   "raw_url": "https://blog.cloudflare.com/botbase-for-operators/",
-  "raw_date": "2026-08-28"
+  "raw_date": "2026-08-28",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A87cbbeb2",
@@ -14083,7 +14235,7 @@
   "title": "Cloudflare, BotBase에 상태 추적 및 빠른 검토 기능 추가",
   "impact": "Cloudflare의 BotBase 개선으로 AI 크롤러의 승인 및 관리 프로세스가 빨라지면 삼성닷컴 콘텐츠의 검색 엔진 인덱싱 속도와 정확성이 향상될 수 있다. 이는 검색 결과 노출에 영향을 주어 삼성닷컴으로의 유기적 트래픽에 변화를 가져올 수 있다.",
   "description": "Cloudflare는 BotBase를 봇 디렉토리에서 운영자 대시보드로 전환하여 개발자가 제출물을 추적하고, 거부된 항목을 수정하며, 봇 ID를 업데이트할 수 있도록 했다. 새로운 워크플로우는 AI 크롤러 승인 속도를 높이는 자동화된 검사 기능도 도입했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -14094,7 +14246,9 @@
   "raw_title": "Cloudflare gives BotBase operators status tracking, editing, and faster reviews",
   "raw_desc": "Cloudflare is turning BotBase from a one-way bot directory into an operator dashboard where developers can track submissions, fix rejected entries, and update bot identities. The new workflow also introduces automated checks to speed approval as AI crawlers a…",
   "raw_url": "https://4sysops.com/archives/cloudflare-gives-botbase-operators-status-tracking-editing-and-faster-reviews/",
-  "raw_date": "2026-08-28"
+  "raw_date": "2026-08-28",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Aff93ab7e",
@@ -14135,7 +14289,7 @@
   "title": "샤오미 폴더블 폰에 LPDDR6 메모리 탑재",
   "impact": "샤오미의 차세대 폴더블 폰이 LPDDR6 메모리를 탑재하면서 삼성전자 LPDDR5X/6 메모리 수요에 영향을 줄 수 있지만, 삼성닷컴 직접 방문보다는 DRAM 공급망이나 제조사 차원의 변화로 간접적 영향만 있을 수 있다.",
   "description": "샤오미의 차세대 폴더블 스마트폰에 중국 DRAM 업체인 JEDEC 표준 LPDDR6 메모리가 사용된다고 보도했다.",
-  "impact_direction": "neutral",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -14146,7 +14300,9 @@
   "raw_title": "Chinese DRAM maker is putting its latest LPDDR6 memory inside Xiaomi next foldable phone",
   "raw_desc": "",
   "raw_url": "https://www.digitaltrends.com/phones/chinese-dram-maker-is-putting-its-latest-lpddr6-memory-inside-xiaomis-next-foldable/",
-  "raw_date": "2026-08-29"
+  "raw_date": "2026-08-29",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FPf5ea1bb7",
@@ -14396,7 +14552,7 @@
   "title": "[Search Engine Journal] Rank Math 워드프레스 플러그인 관리자 접근 권한 논란",
   "impact": "삼성닷컴이 워드프레스를 사용하고 Rank Math 플러그인을 사용한다면, 이 논란으로 인해 플러그인 사용을 재고하거나 보안 점검을 강화할 수 있어 사이트 관리 및 트래픽에 간접적인 영향을 줄 수 있다.",
   "description": "Rank Math 워드프레스 플러그인이 사용자에게 알리지 않고 워드프레스 사이트에 대한 관리자 수준 권한을 회사에 부여하는 기능을 도입했다는 새로운 주장이 제기되었다.",
-  "impact_direction": "neutral",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -14407,7 +14563,9 @@
   "raw_title": "Rank Math WordPress Plugin Accused Of Secretly Taking Admin Access via @sejournal, @martinibuster",
   "raw_desc": "New allegations surfaced that the Rank Math WordPress plugin has introduced a functionality that silently gives the company administrator-level permissions over WordPress sites. The access is triggered when a user is connected to a free Rank Math account and the user opens the plugin’s Help & Support section. Allegedly There Is Zero Consent Or Notification The developer of The SEO Framework SEO plugin recently tweeted that when a user opens Rank Math’s Help & Support section that the plugin creates a WordPress Application Password tied to the user that is opening that Help & Support section. S",
   "raw_url": "https://www.searchenginejournal.com/rank-math-wordpress-plugin-accused-of-secretly-taking-admin-access/587554/",
-  "raw_date": "2026-08-30"
+  "raw_date": "2026-08-30",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A39e251b3",
@@ -14501,7 +14659,7 @@
   "title": "SEMICON Taiwan 2026 개막: AI 칩 병목 현상은 연결 와이어",
   "impact": "AI 칩 기술의 병목 현상에 대한 논의는 AI 관련 제품에 대한 전반적인 시장 관심에 영향을 줄 수 있다. 이는 잠재적으로 삼성의 AI 관련 제품 페이지에 대한 트래픽 변화로 이어질 수 있다.",
   "description": "SEMICON Taiwan 2026이 개막했으며, AI 칩의 주요 병목 현상이 칩 자체보다는 칩을 연결하는 와이어에 있다고 보고되었다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -14512,7 +14670,9 @@
   "raw_title": "SEMICON Taiwan 2026 Kicks Off : AI Chip Bottleneck Is Wires Connecting Them",
   "raw_desc": "",
   "raw_url": "https://www.techtimes.com/articles/326056/20260831/semicon-taiwan-2026-kicks-off-ai-chips-bottleneck-wires-connecting-them.htm",
-  "raw_date": "2026-08-31"
+  "raw_date": "2026-08-31",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FPa9c99f9d",
@@ -14527,7 +14687,7 @@
   "title": "[Search Engine Journal] FTC, 아마존의 200억 달러 광고 과징금 부과 소송 제기",
   "impact": "이 소송은 아마존의 광고 플랫폼 신뢰도에 영향을 미쳐, 광고주들이 다른 플랫폼으로 광고 예산을 재분배할 가능성이 있다. 이는 삼성닷컴의 광고 노출 및 유입 트래픽에 간접적인 영향을 줄 수 있다.",
   "description": "FTC와 22개 주가 아마존의 광고 경매 변경으로 광고주들에게 200억 달러 이상을 과징금으로 부과했다고 주장하며 아마존을 고소했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "weeks",
   "impact_strength": 2,
   "confidence": "med",
@@ -14538,7 +14698,9 @@
   "raw_title": "FTC Sues Amazon Over Alleged $20 Billion Advertising Surcharge Scheme via @sejournal, @brookeosmundson",
   "raw_desc": "FTC and 22 states sued Amazon over alleged changes to its ad auctions that the agency says overcharged advertisers by more than $20 billion. \n The post  FTC Sues Amazon Over Alleged $20 Billion Advertising Surcharge Scheme  appeared first on  Search Engine Journal .",
   "raw_url": "https://www.searchenginejournal.com/ftc-sues-amazon-over-alleged-20-billion-advertising-surcharge-scheme/587870/",
-  "raw_date": "2026-08-31"
+  "raw_date": "2026-08-31",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FPbb758842",
@@ -14553,7 +14715,7 @@
   "title": "[Search Engine Journal] Google Search Console AI 보고서 전 세계 출시",
   "impact": "삼성닷컴은 AI 개요 및 AI 모드 노출 데이터를 통해 AI 검색 결과에서의 가시성을 파악하고, 이를 바탕으로 트래픽 전략을 조정할 수 있다. 이는 잠재적으로 삼성닷컴으로의 유입 트래픽에 영향을 줄 수 있다.",
   "description": "Google은 AI 개요 및 AI 모드 노출을 추적하는 Search Console의 생성형 AI 성능 보고서가 전 세계 모든 사이트에 출시되었다고 밝혔다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "immediate",
   "impact_strength": 3,
   "confidence": "med",
@@ -14565,7 +14727,9 @@
   "raw_desc": "Google says Search Console's generative AI performance reports, which track AI Overviews and AI Mode impressions, have now rolled out to all sites worldwide. \n The post  Google Search Console AI Reports Rolled Out Worldwide  appeared first on  Search Engine Journal .",
   "raw_url": "https://www.searchenginejournal.com/google-search-console-ai-reports-rolled-out-worldwide/587836/",
   "raw_date": "2026-08-31",
-  "coverage_count": 2
+  "coverage_count": 2,
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FPa945349e",
@@ -14580,7 +14744,7 @@
   "title": "[Search Engine Journal] ChatGPT, EU에서 '초대형 온라인 검색 엔진'으로 지정",
   "impact": "ChatGPT가 EU에서 초대형 온라인 검색 엔진으로 지정됨에 따라, EU 사용자들의 정보 탐색 방식에 변화가 생길 수 있다. 이는 삼성닷컴으로의 직접적인 검색 유입 트래픽에 영향을 미칠 수 있다.",
   "description": "OpenAI가 월평균 검색 수신자 약 1억 5,910만 명을 보고함에 따라 ChatGPT는 EU 디지털 서비스법에 따라 초대형 온라인 검색 엔진으로 지정되었다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 3,
   "confidence": "med",
@@ -14591,7 +14755,9 @@
   "raw_title": "ChatGPT Is Now A “Very Large Online Search Engine” In The EU via @sejournal, @MattGSouthern",
   "raw_desc": "ChatGPT is now a very large online search engine under the EU Digital Services Act after OpenAI reported about 159.1 million average monthly search recipients. \n The post  ChatGPT Is Now A &#8220;Very Large Online Search Engine&#8221; In The EU  appeared first on  Search Engine Journal .",
   "raw_url": "https://www.searchenginejournal.com/chatgpt-is-now-a-very-large-online-search-engine-in-the-eu/587801/",
-  "raw_date": "2026-08-31"
+  "raw_date": "2026-08-31",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "FP82cea834",
@@ -14635,7 +14801,7 @@
   "description": "아마존이 2026년 노동절 세일을 진행하면서 갤럭시 Z 폴드 8 울트라를 300달러 이상 할인된 가격에 판매한다.",
   "impact_direction": "-",
   "impact_horizon": "immediate",
-  "impact_strength": "3",
+  "impact_strength": 3,
   "confidence": "med",
   "metric": "traffic",
   "axis": "demand",
@@ -14763,7 +14929,7 @@
   "title": "인도, 휴대폰 생산 인센티브 갱신",
   "impact": "이 정책은 인도 내 휴대폰 생산을 장려하여 삼성의 인도 시장 전략 및 공급망에 영향을 줄 수 있다. 이는 장기적으로 삼성닷컴의 인도 내 트래픽이나 매출에 간접적인 영향을 미칠 수 있다.",
   "description": "인도가 국내 휴대폰 생산 인센티브를 갱신하고 부품 생태계 계획을 발표하여 수출 야망을 강화했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "+",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "med",
@@ -14774,7 +14940,9 @@
   "raw_title": "Perpetually linked incentives? India’s handset makers must shorten their curve to competitiveness",
   "raw_desc": "India’s renewal of incentives for domestic cellphone production and plan for an input ecosystem represent a doubling down on a big export ambition. As an AI-robotics takeover of factories looms, local players need to both think and act global.",
   "raw_url": "https://www.livemint.com/opinion/online-views/perpetually-linked-incentives-india-phone-makers-must-get-competitive-faster-pli-scheme-mpms-11788073628753.html",
-  "raw_date": "2026-08-31"
+  "raw_date": "2026-08-31",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A0ccb7aad",
@@ -14789,7 +14957,7 @@
   "title": "인도 저가 스마트폰 시장, 비용 상승으로 변화",
   "impact": "이러한 시장 변화는 인도에서 삼성의 저가 스마트폰 판매 전략에 영향을 줄 수 있으며, 이는 삼성닷컴 인도 사이트의 특정 제품군 트래픽 및 매출에 영향을 미칠 수 있다.",
   "description": "메모리 및 부품 비용 상승으로 기존 스마트폰 제조업체들이 고가 제품으로 이동하면서 인도 브랜드들이 저가 스마트폰 시장을 공략할 기회가 생겼다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 3,
   "confidence": "med",
@@ -14800,7 +14968,9 @@
   "raw_title": "How rising costs give Indian brands room to revive budget smartphones",
   "raw_desc": "Budget Smartphone Market: Rising memory and component costs are pushing established smartphone makers towards higher price points, leaving room for Indian brands to target budget-conscious buyers",
   "raw_url": "https://www.business-standard.com/technology/tech-news/indian-smartphone-brands-budget-market-rising-phone-prices-126083100841_1.html",
-  "raw_date": "2026-08-31"
+  "raw_date": "2026-08-31",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A51314a43",
@@ -14815,7 +14985,7 @@
   "title": "UCP, 스키마 변경 포함한 사양 업데이트 발표",
   "impact": "UCP 스키마 변경은 삼성닷컴의 제품 정보 구조에 영향을 미칠 수 있다. 이는 검색 엔진 최적화 및 사용자 경험에 영향을 주어 잠재적으로 웹 트래픽과 전환율에 변화를 가져올 수 있다.",
   "description": "Universal Commerce Protocol(UCP)이 4월 이후 첫 사양 업데이트를 발표했다. 이번 업데이트에는 식료품 준비 기능이 추가되었고, 식품 및 숙박업을 위한 기반이 마련되었으며, 스키마 변경이 포함되었다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 3,
   "confidence": "med",
@@ -14826,7 +14996,9 @@
   "raw_title": "UCP Releases Spec Update With Schema Changes via @sejournal, @MattGSouthern",
   "raw_desc": "The Universal Commerce Protocol's first spec release since April adds grocery readiness, lays groundwork for food and lodging, and brings schema changes.\nThe post UCP Releases Spec Update With Schema Changes appeared first on Search Engine Journal.",
   "raw_url": "https://www.searchenginejournal.com/ucp-releases-spec-update-with-schema-changes/587590/",
-  "raw_date": "2026-08-31"
+  "raw_date": "2026-08-31",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Ad291cbcf",
@@ -14841,7 +15013,7 @@
   "title": "워드프레스 7.1 출시 및 AI 관련 소식",
   "impact": "워드프레스 7.1 출시는 삼성닷컴의 콘텐츠 관리 시스템에 직접적인 영향을 미치지 않지만, 워드프레스 생태계의 전반적인 기술 발전과 AI 통합은 장기적으로 웹사이트 구축 및 운영 방식에 대한 관심을 높여 삼성닷컴의 기술 관련 정보 검색 트래픽에 간접적인 영향을 줄 수 있다.",
   "description": "8월에 워드프레스 7.1이 출시되었고, WordCamp US에서는 AI 관련 강연이 진행되었다. WPVibe는 한 달 만에 설치 기반이 두 배로 증가했다.",
-  "impact_direction": "neutral",
+  "impact_direction": "-",
   "impact_horizon": "months",
   "impact_strength": 2,
   "confidence": "low",
@@ -14852,7 +15024,9 @@
   "raw_title": "WPBeginner Spotlight 27: WordPress 7.1, WPVibe AI Everywhere, and a New Way to Record Your Screen",
   "raw_desc": "August was a big month for WordPress. WordPress 7.1 arrived on schedule, and WordCamp US brought four days of AI-focused talks to Phoenix. WPVibe doubled its install base in a single month. There is also a brand-new screen recording tool that we think you wil…",
   "raw_url": "https://www.wpbeginner.com/news/wpbeginner-spotlight-27-wordpress-7-1-wpvibe-ai-everywhere-and-a-new-way-to-record-your-screen/",
-  "raw_date": "2026-08-31"
+  "raw_date": "2026-08-31",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A7066e821",
@@ -14893,7 +15067,7 @@
   "title": "CXMT, 미 국방부에 군사 연계 기업 목록 삭제 요청",
   "impact": "이 뉴스는 삼성닷컴 웹 트래픽에 직접적인 영향을 미치지 않을 것으로 보인다. 특정 제품이나 서비스에 대한 소비자 관심 변화를 유도하지 않는다.",
   "description": "미 국방부가 중국 반도체 제조업체 CXMT를 중국 공산당 군사 작전과 직접 연계된 기업으로 지정했고, CXMT는 이 분류를 삭제해달라고 국방부를 고소했다.",
-  "impact_direction": "neutral",
+  "impact_direction": "+",
   "impact_horizon": "months",
   "impact_strength": 1,
   "confidence": "low",
@@ -14904,7 +15078,9 @@
   "raw_title": "Chip manufacturer CXMT asks Pentagon to remove it from list of Chinese military-linked companies",
   "raw_desc": "The Pentagon recently confirmed CXMT's designation as a company directly linked to Beijing's Communist Party military operations, and the chipmaker is now suing the DoD to have this \"baseless\" classification removed. The semiconductor manufacturer claims its …",
   "raw_url": "https://www.techspot.com/news/113684-chip-manufacturer-cxmt-asks-pentagon-remove-list-chinese.html",
-  "raw_date": "2026-08-31"
+  "raw_date": "2026-08-31",
+  "raw_impact_direction": "neutral",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "A4a643fae",
@@ -14997,7 +15173,7 @@
   "title": "Claude 검색 방식, Claude Code와 다르다",
   "impact": "AI 챗봇의 검색 및 정보 추출 방식 차이는 삼성닷컴으로의 유입 경로와 트래픽 양에 영향을 줄 수 있다. 특정 AI 모델이 삼성 제품이나 관련 정보를 더 자주 언급하거나 특정 페이지 유형을 선호한다면, 삼성닷컴으로의 간접 트래픽이 변화할 수 있다.",
   "description": "새로운 데이터에 따르면 Claude와 Claude Code는 다른 비율로 검색하고, 다른 브랜드를 언급하며, 다른 유형의 페이지로 에이전트를 보낸다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 3,
   "confidence": "med",
@@ -15008,7 +15184,9 @@
   "raw_title": "Claude Searches Web Differently From Claude Code, Data Shows via @sejournal, @MattGSouthern",
   "raw_desc": "New data finds Claude and Claude Code search at different rates, mention different brands, and send their agents to different types of pages.\nThe post Claude Searches Web Differently From Claude Code, Data Shows appeared first on Search Engine Journal.",
   "raw_url": "https://www.searchenginejournal.com/claude-code-rarely-searches-web-compared-claude-data/587584/",
-  "raw_date": "2026-08-31"
+  "raw_date": "2026-08-31",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  },
  {
   "event_id": "Ad07bc7d9",
@@ -15231,7 +15409,7 @@
   "title": "[Search Engine Journal] 구글, 유럽 검색 데이터 라이선스 규격 공개",
   "impact": "이 규격으로 유럽 사용자들이 구글 검색 결과에서 데이터 접근 권한을 가진 사이트로 이동할 가능성이 커진다. 삼성닷컴도 검색 노출 경쟁에서 유리한 위치에 서게 될 수 있지만, 반대로 경쟁사들이 데이터 기반 최적화를 통해 삼성닷컴보다 더 많은 트래픽을 가져갈 수도 있다.",
   "description": "구글이 EU 디지털시장법에 따라 유럽경제지역(EEA) 검색 데이터(랭킹, 쿼리, 클릭, 뷰) 라이선스 대상자, 샘플, 주요 일정을 공개했다.",
-  "impact_direction": "unknown",
+  "impact_direction": "-",
   "impact_horizon": "weeks",
   "impact_strength": 3,
   "confidence": "med",
@@ -15242,6 +15420,8 @@
   "raw_title": "Google Details Who Can License Its Search Data In Europe via @sejournal, @MattGSouthern",
   "raw_desc": "Google published eligibility rules, samples, and key dates for licensing ranking, query, click, and view data from EEA Search under the EU's Digital Markets Act. \n The post  Google Details Who Can License Its Search Data In Europe  appeared first on  Search Engine Journal .",
   "raw_url": "https://www.searchenginejournal.com/google-details-who-can-license-its-search-data-in-europe/587995/",
-  "raw_date": "2026-09-01"
+  "raw_date": "2026-09-01",
+  "raw_impact_direction": "unknown",
+  "direction_source": "claude-opus-5"
  }
 ]
