@@ -37,10 +37,14 @@ scripts/
                       ① 누적 영향지수(일별 시계열화) → data/event_pressure.json
                       ② 사후 채점·교정곡선·순열검정·축 검증 → data/prediction_scores.json
                       API 키 불필요 (events.json + wiki_series.json만 읽음)
-  maintenance.py      수동 전용 도구 모음 (워크플로가 절대 부르지 않음). 전부
-                      기본 dry-run, `--apply`로만 저장:
+  maintenance.py      수동 전용 도구 모음 (워크플로가 절대 부르지 않음). 9개 서브커맨드,
+                      전부 기본 dry-run, `--apply`로만 저장:
                         dates       날짜 앵커링 사고 복구 + date_source 보강 (원칙 7)
                         scope       scope를 "전체"/한글 국가·지역명으로 정규화 (원칙 10)
+                        direction   방향이 없는(neutral/unknown) 이벤트에 +/- 부여 (원칙 20).
+                                    `--rejudge`는 방향 하나만 묻고(FILTER_SYSTEM 아님),
+                                    `--from-file`은 키 없이 판정 결과를 적용. 옛 값은
+                                    raw_impact_direction에 보존
                         dedupe      이미 저장된 근접 중복 제거 (원칙 9의 임계값 그대로),
                                     제거분 전문을 data/pruned_duplicates.json에 남김
                         merge       수기 이벤트 배치를 events.json에 병합(스키마 검증)
@@ -303,7 +307,7 @@ print(len(cf.load_feeds()), '개 피드 파싱됨')
 "
 
 # 수동 도구 5개가 전부 dry-run으로 도는지 (events.json을 건드리지 않음)
-for c in dates scope dedupe translation; do python3 scripts/maintenance.py $c >/dev/null; done
+for c in dates scope dedupe translation direction; do python3 scripts/maintenance.py $c >/dev/null; done
 
 # 워크플로 YAML 파싱
 python3 -c "import yaml; yaml.safe_load(open('.github/workflows/daily-update.yml'))"
@@ -691,6 +695,60 @@ import한다. 누적 영향지수와 배분이 **같은 가중치**를 써야 �
 `build.py`의 `_checked` 하나뿐이었고, 미사용 import는 2개였다. 실행 코드는 5,065 →
 5,061줄(−4)로 사실상 그대로다 — **이번 작업의 성과는 줄 수가 아니라 버그 2건과
 구조적 중복 제거다.**
+
+### 20. 모든 요인은 방향을 갖는다 (2026-09-02)
+`impact_direction`의 enum이 `+|-|neutral|unknown`이었고, 572건 중 **90건**이 그 뒤쪽
+둘이었다. 방향이 없으면 `DIR_SIGN`에 걸리지 않아 **배분·축 분해·채점에서 전부 빠지는데**,
+원장에는 판정이 끝난 이벤트처럼 남아 있었다.
+
+**90건 중 65건은 애초에 판정이 아니었다.** 두 콜렉터가
+`verdict.get("impact_direction", "unknown")`으로 **모델이 비워 둔 필드를 문자열
+"unknown"으로 채우고** 있었다 — 이 프로젝트가 다른 데서는 전부 금지하는 하드코딩
+기본값이다("하지 말아야 할 것" 참고). 나머지 25건만이 모델이 실제로 고른 `neutral`이다.
+
+고친 것 넷:
+- **프롬프트에서 중간을 없앴다.** `"+ or - ONLY … 정말 모르겠으면 더 그럴듯한 쪽을 고르고
+  confidence를 low로"`. 불확실성에는 이미 필드가 있다 — `confidence`의 정의문이
+  "low = … 방향 자체가 불확실"이라고 말한다. low는 가중치 0.33으로 들어가 **불확실한
+  채로 계산에 남지만**, `neutral`은 이벤트를 화면의 모든 계산에서 조용히 지웠다.
+  `PROMPT_VERSION` 2 → 3.
+- **판정 검증에 `_direction_ok`를 붙였다.** `_korean_fields_ok`와 같은 자리, 같은 처리:
+  방향이 없는 응답은 실패로 보고 그 항목만 개별 재판정 → 체인 → 그래도 안 되면 **skip**.
+  기본값으로 저장하는 경로가 사라졌다. 텔레메트리는 `llm_usage.json`의 `dir_reject`.
+- **콜렉터의 `"unknown"` 기본값을 `clean_direction()`으로 교체**했다. 체인이 이미
+  보장하므로 이건 정규화이지 기본값이 아니다.
+- **`maintenance.py audit`이 이제 이걸 검사한다.** `+`/`-`가 아니면 실패다. 한 번 채우고
+  끝내는 게 아니라 유지되는 불변식으로 만들었다.
+
+**기존 90건은 `maintenance.py direction --from-file`로 채웠다**(`direction_source:
+"claude-opus-5"`, 원칙 3의 축 재판정과 같은 경로·같은 가드). `--rejudge`도 있지만 키가
+필요하다. 결과는 **`-` 63건 · `+` 27건.**
+
+**옛 값은 `raw_impact_direction`에 보존한다.** 축 재판정 때는 옛 휴리스틱 값을 버렸는데,
+그때 쓴 기준이 "결정론적 함수의 출력이라 다시 만들 수 있는가"였다. `neutral`은 다시 만들
+수 없다 — 모델이 **한쪽을 고르기를 거부했다는 사실**의 유일한 기록이고 이벤트의 다른
+필드로 재계산되지 않는다.
+
+**효과: 무엇도 뒤집지 못했다.**
+
+(같은 572건 원장에서, 방향을 채우기 전후)
+
+| | 이전 | 이후 |
+|---|---|---|
+| 채점 건수 | 261 | **285** |
+| 방향 적중률 | 0.513 | 0.523 |
+| 누적 영향지수 상관 r | 0.174 | **0.239** (순열 p 0.817 → 0.765) |
+| `r2_out` | −0.2040 | −0.1442 (기준선 −0.0010, 여전히 못 넘음) |
+| 축 검증 demand r | 0.171 | **0.047** |
+
+채점 대상이 24건 늘고 상관이 조금 올랐지만 **전부 여전히 유의하지 않고, demand 축은
+오히려 나빠졌다.** 원칙 16의 결론은 그대로다. 방향을 채운 것은 원장을 계산 가능하게
+만든 것이지 신호를 만든 것이 아니다.
+
+**남은 주의: 이 90건의 `confidence`는 손대지 않았다.** 모델이 `neutral`을 고를 수 있던
+상황에서 매긴 값이라, 강제된 방향에 `med`(가중치 0.66)가 붙어 있는 건이 있다. 실제
+확신보다 무겁게 들어갈 수 있다는 뜻이다. 저장된 판정을 필요 이상으로 덮어쓰지 않으려고
+남겨 두었고, 다음에 재판정한다면 방향과 confidence를 **같이** 물어야 한다.
 
 ### 12. IMF / 국가별 통계 제거 (2026-08-18)
 `collect_imf.py`, `data/imf_series.json`, 대시보드의 "국가별 통계" 탭, 워크플로의
