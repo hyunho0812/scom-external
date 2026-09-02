@@ -146,7 +146,7 @@ _mistral_off = {"flag": False}
 #                were re-seated by their echoed number. Every one of these
 #                would have been a judgement filed against the wrong article
 #                before 2026-08-18.
-_STAT_FIELDS = ("attempt", "ok", "ko_reject", "empty", "batch_shape_fail",
+_STAT_FIELDS = ("attempt", "ok", "ko_reject", "dir_reject", "empty", "batch_shape_fail",
                 "batch_no_index", "batch_reordered",
                 "http_429", "http_auth", "http_other", "exception", "skipped_off")
 _STATS = {p: dict.fromkeys(_STAT_FIELDS, 0) for p in ("gemini", "groq", "mistral")}
@@ -211,6 +211,38 @@ VALID_AXES = {"demand", "share", "supply"}
 def clean_axis(v):
     v = (v or "").strip().lower()
     return v if v in VALID_AXES else ""
+
+
+# Every factor points somewhere. "neutral"/"unknown" were in the enum, and an
+# event carrying one gets no share of the period's move, no percentage and no
+# bar — it sat in the ledger looking judged when nothing had been decided about
+# it. 79 of 540 were in that state, and 56 of those never came from a model at
+# all: the collectors filled a MISSING field with the literal "unknown", the
+# hardcoded-default habit this project forbids everywhere else.
+#
+# So the escape hatch is gone from the prompt and from here. Uncertainty has a
+# field of its own — `confidence` already reads "low = ... or you are unsure of
+# the DIRECTION itself" — and that is where it belongs: a forced guess recorded
+# as low confidence is weighted at 0.33 and stays visible as a guess, whereas
+# "neutral" silently removed the event from every calculation on the page.
+VALID_DIRECTIONS = {"+", "-"}
+def clean_direction(v):
+    v = (v or "").strip()
+    return v if v in VALID_DIRECTIONS else ""
+
+
+def clean_strength(v, default=2):
+    """1-5 as an int. Groq answered "3" (a string) on 2026-09-01 and the
+    collectors stored it verbatim, because they pass this field straight
+    through. Both readers coerce (`+e.impact_strength` in build.py,
+    `int(...)` in score_predictions.py) so nothing was visibly wrong — only
+    `maintenance.py audit`, which checks the type, caught it. Same lesson as
+    the date field (원칙 7): a value a model fills in gets range-checked and
+    type-checked before it is stored, not where it happens to be read."""
+    try:
+        return max(1, min(5, int(str(v).strip())))
+    except (TypeError, ValueError):
+        return default
 
 # The fallback used when an event carries no axis of its own — events collected
 # before the field existed, and anything the model left blank. build.py has the
@@ -775,7 +807,7 @@ def load_kw_file(path):
 # improvement inside the old ones.
 #   1 — everything up to 2026-08-24 (no stamp on those events; treated as 1)
 #   2 — 2026-08-25: anchored strength/confidence scales, calibration note
-PROMPT_VERSION = 2
+PROMPT_VERSION = 3
 
 
 FILTER_SYSTEM = (
@@ -833,7 +865,11 @@ FILTER_SYSTEM = (
  'visits, how people find or reach the site, session behavior) and WHY. Not '
  'a general claim about purchase decisions or consumer behavior.",'
  '"impact_direction":'
- '"+|-|neutral|unknown","impact_horizon":"immediate|weeks|months",'
+ '"+ or - ONLY — does this move samsung.com traffic up or down? There is no '
+ 'neutral and no unknown: every external factor tips one way, even slightly. '
+ 'When you genuinely cannot tell, pick the more likely side and say so in '
+ 'confidence (low), which is the field for exactly that doubt. Do not use '
+ 'the middle as a way out of deciding.","impact_horizon":"immediate|weeks|months",'
  '"impact_strength":"1-5, HOW MANY samsung.com visits this moves. Anchor to '
  'these, do not average toward the middle: 5 = samsung.com is itself the '
  'subject and many visitors are directly affected (a Samsung flagship launch '
@@ -1248,6 +1284,25 @@ def _korean_fields_ok(verdict):
     return True
 
 
+def _direction_ok(verdict):
+    """The prompt now allows only "+" or "-". Anything else — an omitted field,
+    a leftover "neutral"/"unknown", a sentence instead of a sign — is a verdict
+    that did not decide, and the collectors used to paper over it with the
+    literal string "unknown". Treat it like the non-Korean case instead: the
+    item is re-judged on its own, then through the rest of the chain, and only
+    skipped if nobody will commit to a side. Never stored as a default."""
+    if not verdict.get("relevant", True):
+        return True
+    return bool(clean_direction(verdict.get("impact_direction")))
+
+
+def _reject_dir(prov, model):
+    print(f"  {model} returned no usable impact_direction — "
+          f"treating as a failed judgement, trying next LLM.")
+    _bump(prov, "ok", -1)
+    _bump(prov, "dir_reject")
+
+
 def _chain():
     """The judgement chain, resolved at call time rather than captured at
     import. Binding these once at module level would freeze whatever the
@@ -1281,6 +1336,9 @@ def llm_filter(article):
             verdict = verdict[0] if len(verdict) == 1 else None
         if verdict is not None and not _korean_fields_ok(verdict):
             _reject_ko(prov, model)
+            verdict = None
+        if verdict is not None and not _direction_ok(verdict):
+            _reject_dir(prov, model)
             verdict = None
         if verdict is not None:
             return verdict, model
@@ -1367,6 +1425,9 @@ def llm_filter_batch(articles):
                 results.append(None); redo.append(i); continue
             if not _korean_fields_ok(v):
                 _reject_ko(prov, model)
+                results.append(None); redo.append(i); continue
+            if not _direction_ok(v):
+                _reject_dir(prov, model)
                 results.append(None); redo.append(i); continue
             results.append((v, model))
         for i in redo:  # re-judge just the unusable ones, individually

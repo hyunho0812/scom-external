@@ -52,7 +52,7 @@ from collections import Counter
 
 sys.path.insert(0, os.path.dirname(__file__))
 from llm_common import (EVENTS_FILE, PRUNED_FILE, DEDUP_WINDOW_DAYS, LEGACY_MARKETS,
-                        SCOPE_ALL, DupIndex, clean_scope, clean_axis, parse_date,
+                        SCOPE_ALL, DupIndex, clean_scope, clean_axis, clean_direction, parse_date,
                         has_korean, read_json, write_json, guess_axis, data_path,
                         VALID_AXES, AXIS_SPEC)
 import llm_common as L
@@ -561,6 +561,181 @@ def cmd_split(args):
     write_json(EVENTS_FILE, events)
     print(f"\n저장 완료: {len(changes)}건 분리 (원본은 raw_description에 보존)")
 
+
+# ------------------------------------------------------------ direction
+DIR_BATCH = int(os.environ.get("DIR_BATCH", "5"))
+
+
+def _direction_prompt(items):
+    """Ask for the direction and nothing else — the axis pass's rule, applied
+    to the other field that was left undecided. NOT FILTER_SYSTEM, for the same
+    reasons spelled out in _axis_prompt(): it would re-decide relevance, the
+    Korean body text and everything else the ledger is meant to preserve.
+
+    The wording of the question is llm_common's, so a re-judgement is made
+    against the same sentence the collectors now judge against. Two copies of
+    that sentence would drift, and drifted judgements are not comparable.
+    """
+    blocks = []
+    for i, e in enumerate(items):
+        blocks.append(
+            f"[{i}] CATEGORY: {e.get('category') or '-'}\n"
+            f"TITLE: {(e.get('title') or '')[:200]}\n"
+            f"SUMMARY: {(e.get('description') or '')[:400]}\n"
+            f"INFERENCE: {(e.get('impact') or '')[:300]}")
+    return ("You classify stored events for a samsung.com traffic dashboard.\n"
+            "For EACH item below decide ONLY impact_direction.\n\n"
+            "impact_direction: does this move samsung.com WEB TRAFFIC up (+) or "
+            "down (-)? There is no neutral and no unknown — every external "
+            "factor tips one way, even slightly. When you genuinely cannot "
+            "tell, pick the more likely side; the stored confidence field "
+            "already records that doubt.\n\n"
+            f"Return a JSON array of exactly {len(items)} objects, same order as the "
+            'items, each {"i":<index>,"direction":"+|-"}. '
+            "No other fields and no prose.\n\n" + "\n\n".join(blocks))
+
+
+def _judge_directions(items):
+    """{index: (direction, model)} from the provider chain — see _judge_axes()."""
+    out = {}
+    pending = list(range(len(items)))
+    for fn, model, name in L._chain():
+        if not pending:
+            break
+        for flag in (L._gemini_off, L._groq_off, L._mistral_off):
+            flag["flag"] = False
+        subset = [items[i] for i in pending]
+        res = fn(_direction_prompt(subset), 200 + 40 * len(subset))
+        if isinstance(res, dict):
+            vals = [v for v in res.values() if isinstance(v, list)]
+            res = vals[0] if len(vals) == 1 else None
+        if not isinstance(res, list):
+            print(f"  {name}: 응답 형태 불일치 — 다음 provider로")
+            continue
+        got = 0
+        for pos, row in enumerate(res):
+            if not isinstance(row, dict):
+                continue
+            j = row.get("i")
+            j = j if isinstance(j, int) and 0 <= j < len(subset) else pos
+            d = clean_direction(row.get("direction"))
+            if d:
+                out[pending[j]] = (d, model)
+                got += 1
+        print(f"  {name} ({model}): {got}/{len(subset)}건 판정")
+        pending = [i for i in pending if i not in out]
+    return out
+
+
+def undecided(events):
+    """Events carrying no usable direction — the ones every calculation drops."""
+    return [e for e in events if not clean_direction(e.get("impact_direction"))]
+
+
+def cmd_direction(args):
+    """Give every factor a direction.
+
+    "neutral"/"unknown" removed an event from the allocation, the axis split and
+    the scoring while still looking like a stored judgement. 56 of the 79 were
+    not judgements at all — the collectors wrote the literal "unknown" into a
+    field the model had omitted. The prompt no longer offers the middle, and
+    this fills in what the old one left behind.
+
+    The previous value IS kept, in raw_impact_direction. That is the opposite of
+    the axis pass, which threw its old value away, and the reason is the test
+    that pass used: a heuristic axis was reproducible from fields the event
+    still carries, so storing it was storing a duplicate. "neutral" is not
+    reproducible — where it came from a model it is the only record that the
+    model declined to pick a side, and nothing in the event lets us recompute
+    that. Cheap to keep, impossible to recover.
+    """
+    events = read_json(EVENTS_FILE, [])
+    todo = undecided(events)
+
+    if getattr(args, "from_file", None):
+        # Directions decided elsewhere, applied under the same guards as the
+        # API path. --rejudge needs keys and egress that a sandboxed session
+        # does not have; a reviewer with the ledger in front of them can answer
+        # the same question and hand over {event_id: "+"|"-"}.
+        mapping = read_json(args.from_file, {})
+        if not isinstance(mapping, dict) or not mapping:
+            print("적용할 판정이 없습니다:", args.from_file)
+            return
+        by_id = {e.get("event_id"): e for e in events}
+        applied, skipped = [], []
+        for eid, raw in mapping.items():
+            e = by_id.get(eid)
+            d = clean_direction(raw)
+            if e is None:
+                skipped.append((eid, "이벤트 없음"))
+            elif clean_direction(e.get("impact_direction")):
+                # Never overwrite a side the model actually picked.
+                skipped.append((eid, f"이미 방향 있음: {e.get('impact_direction')!r}"))
+            elif not d:
+                skipped.append((eid, f"방향 값이 잘못됨: {raw!r}"))
+            else:
+                applied.append((e, e.get("impact_direction"), d))
+                if args.apply:
+                    e["raw_impact_direction"] = e.get("impact_direction") or ""
+                    e["impact_direction"] = d
+                    e["direction_source"] = args.source
+        moves = Counter((a or "(없음)", b) for _, a, b in applied)
+        print(f"{args.from_file}\n방향 없는 {len(todo)}건 중 적용 {len(applied)}건 · "
+              f"건너뜀 {len(skipped)}건 · direction_source → {args.source!r}")
+        for (a, b), n in moves.most_common():
+            print(f"  {a} → {b}: {n}건")
+        left = len(todo) - len(applied)
+        if left:
+            print(f"  아직 방향 없음: {left}건")
+        for eid, why in skipped[:10]:
+            print(f"  건너뜀 {eid}: {why}")
+        if args.apply:
+            write_json(EVENTS_FILE, events)
+            print("적용됨:", EVENTS_FILE)
+        else:
+            print("(dry-run — 저장하려면 --apply)")
+        return
+
+    if not args.rejudge:
+        print(f"방향 없는 이벤트 {len(todo)}건 / 전체 {len(events)}건")
+        c = Counter(e.get("impact_direction") or "(없음)" for e in todo)
+        for k, n in c.most_common():
+            print(f"  {k}: {n}건")
+        for e in todo[:10]:
+            print(f"  {e.get('event_id')} [{e.get('date')}] "
+                  f"{(e.get('title') or '')[:48]}")
+        print("\n--rejudge 로 모델에 다시 묻거나, --from-file 로 판정 결과를 적용하십시오.")
+        return
+
+    if args.limit:
+        todo = todo[:args.limit]
+    print(f"방향 없는 {len(todo)}건을 {args.batch}건씩 재판정합니다")
+    decided, failed = [], 0
+    for start in range(0, len(todo), args.batch):
+        chunk = todo[start:start + args.batch]
+        print(f"[{start + 1}-{start + len(chunk)}/{len(todo)}]")
+        res = _judge_directions(chunk)
+        for i, e in enumerate(chunk):
+            if i not in res:
+                failed += 1     # nobody committed to a side: leave it alone
+                continue
+            d, model = res[i]
+            decided.append((e, e.get("impact_direction"), d, model))
+    moves = Counter((a or "(없음)", b) for _, a, b, _ in decided)
+    print(f"\n판정 {len(decided)}건 · 실패 {failed}건")
+    for (a, b), n in moves.most_common():
+        print(f"  {a} → {b}: {n}건")
+    if args.apply:
+        for e, _old, d, model in decided:
+            e["raw_impact_direction"] = e.get("impact_direction") or ""
+            e["impact_direction"] = d
+            e["direction_source"] = model
+        write_json(EVENTS_FILE, events)
+        print("적용됨:", EVENTS_FILE)
+    else:
+        print("(dry-run — 저장하려면 --apply)")
+
+
 # ============================================================ dispatch
 AXIS_BATCH = int(os.environ.get("AXIS_BATCH", "5"))
 
@@ -800,7 +975,12 @@ def cmd_audit(args):
         ok("date 정렬")
     checks = [
         ("axis", lambda e: e.get("axis") in VALID_AXES),
-        ("impact_direction", lambda e: e.get("impact_direction") in ("+", "-", "neutral", "unknown")),
+        # "+" or "-" only. "neutral"/"unknown" used to pass here, which is how
+        # 79 events sat in the ledger contributing to nothing while looking
+        # judged. The prompt no longer offers the middle and the chain rejects a
+        # verdict without a side, so this is the invariant that keeps it that
+        # way — `maintenance.py direction` fills anything that slips through.
+        ("impact_direction", lambda e: bool(clean_direction(e.get("impact_direction")))),
         ("impact_horizon", lambda e: e.get("impact_horizon") in ("immediate", "weeks", "months")),
         ("confidence", lambda e: (e.get("confidence") or "").lower() in ("high", "med", "low")),
         ("impact_strength", lambda e: isinstance(e.get("impact_strength"), int) and 1 <= e["impact_strength"] <= 5),
@@ -899,6 +1079,22 @@ def main():
     p.add_argument("--source", default="claude-opus-5",
                    help="axis_source to stamp when using --from-file")
     p.set_defaults(func=cmd_axis)
+
+    p = sub.add_parser("direction", help="give every factor a + or - direction")
+    p.add_argument("--apply", action="store_true", help="write the filled file")
+    p.add_argument("--rejudge", action="store_true",
+                   help="ask the LLM for the direction of undecided events "
+                        "(needs the API keys; asks for the direction only)")
+    p.add_argument("--batch", type=int, default=DIR_BATCH,
+                   help="events per request when re-judging")
+    p.add_argument("--limit", type=int, default=0,
+                   help="stop after this many events (0 = all)")
+    p.add_argument("--from-file", dest="from_file",
+                   help="apply directions from a {event_id: \"+\"|\"-\"} JSON "
+                        "file instead of calling the API")
+    p.add_argument("--source", default="claude-opus-5",
+                   help="direction_source to stamp when using --from-file")
+    p.set_defaults(func=cmd_direction)
 
     p = sub.add_parser("audit", help="consistency sweep over data/ (read-only)")
     p.set_defaults(func=cmd_audit)

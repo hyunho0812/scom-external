@@ -31,7 +31,7 @@ sys.path.insert(0, HERE)
 from llm_common import (PROMPT_VERSION, llm_filter_batch, diag_summary, INTERESTS,
                         EVENTS_FILE, FEED_STATE_FILE, FEED_PERF_FILE,
                         FEEDS_FILE, KW_FEEDS_FILE, read_json, write_json,
-                        load_kw_file, clean_axis, clean_scope, clean_date_ex, BATCH,
+                        load_kw_file, clean_axis, clean_direction, clean_strength, clean_scope, clean_date_ex, BATCH,
                         DupIndex, DEDUP_WINDOW_DAYS, keyword_pass, perf_counter)
 
 # daily by optimize.py; collect_news.py has its own SEPARATE kw_news.txt,
@@ -232,9 +232,10 @@ def main():
                 "title": f"[{label}] " + title_ko,
                 "impact": verdict.get("impact", ""),
                 "description": verdict.get("description", ""),
-                "impact_direction": verdict.get("impact_direction", "unknown"),
+                # see collect_news.to_event(): normalisation, not a default
+                "impact_direction": clean_direction(verdict.get("impact_direction")),
                 "impact_horizon": verdict.get("impact_horizon", "weeks"),
-                "impact_strength": verdict.get("impact_strength", 2),
+                "impact_strength": clean_strength(verdict.get("impact_strength")),
                 "confidence": verdict.get("confidence", "med"),
                 "metric": verdict.get("metric", "traffic"),
                 "axis": clean_axis(verdict.get("axis", "")),  # demand|share|supply|"" (build.py falls back to a heuristic if empty)

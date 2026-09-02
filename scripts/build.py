@@ -806,9 +806,11 @@ function renderAlloc(vd){
   + `AI가 매긴 라벨에서 나옵니다. <b>각 요인이 실제로 그만큼 만들었다는 뜻이 아닙니다</b> — `
   + `영향 구간이 겹치는 요인이 늘 수십 건이라 트래픽 한 계열을 사건별 몫으로 쪼갤 실측 근거는 `
   + `없습니다. 실측 트래픽을 올리면 <b>총량</b>은 그쪽 기준으로 바뀌지만, 요인 사이의 순위는 `
-  + `그대로입니다. 요인별 몫은 아래 목록의 각 행에 있고, <b>기여도순</b>으로 정렬하면 큰 것부터 봅니다. `
-  + `방향이 없어 배분에서 빠진 건은 목록에 나오지 않습니다`
-  + (ALLOC.silent?` — 위 <b>방향 미상 ${ALLOC.silent}건</b>이 그것입니다.`:'.');
+  + `그대로입니다. 요인별 몫은 아래 목록의 각 행에 있고, <b>기여도순</b>으로 정렬하면 큰 것부터 봅니다.`
+  // Only said when it actually happened. Every event now carries a direction,
+  // so this is normally silent; it comes back the moment one does not.
+  + (ALLOC.silent
+     ? ` 방향이 없어 배분에서 빠진 <b>${ALLOC.silent}건</b>은 목록에 나오지 않습니다.` : '');
 }
 
 // ---- verification: the tests, each beside the baseline that makes it -----
@@ -1629,7 +1631,8 @@ function render(){
  // invite the reader to look for the missing 117 in a list that never had them.
  const _base = ALLOC ? ALLOC.n : EV.length;
  const _sfx = ALLOC
-   ? ' · 배분 대상만' + (lr.length!==ALLOC.n ? ' · 목록 필터 적용' : '')
+   ? (ALLOC.n!==r.length ? ' · 배분 대상만' : '')
+     + (lr.length!==ALLOC.n ? ' · 목록 필터 적용' : '')
    : (lr.length!==r.length ? ' · 목록 필터 적용'
       : r.length!==EV.length ? ' · 기간·지역 필터 적용' : '');
  document.getElementById('evcount').textContent = `${lr.length} / ${_base}건` + _sfx;

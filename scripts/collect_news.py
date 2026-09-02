@@ -41,7 +41,7 @@ sys.path.insert(0, HERE)
 from llm_common import (PROMPT_VERSION, llm_filter_batch, diag_summary, INTERESTS, SCOPE_ALL,
                         EVENTS_FILE, GDELT_POOL_FILE, QUERY_PERF_FILE,
                         KW_NEWS_FILE, read_json, write_json,
-                        load_queries, load_kw_file, clean_axis, clean_scope, clean_date_ex, BATCH,
+                        load_queries, load_kw_file, clean_axis, clean_direction, clean_strength, clean_scope, clean_date_ex, BATCH,
                         DupIndex, DEDUP_WINDOW_DAYS, keyword_pass, perf_counter)
 
 NEWS_KEY = os.environ.get("NEWS_API_KEY", "")
@@ -149,9 +149,13 @@ def to_event(article, verdict, llm_used):
         "title":(title_ko or article["title"])[:140],
         "impact":(verdict.get("impact","") if verdict else "samsung.com 노출·유입에 영향 가능"),
         "description":(desc_ko or ""),
-        "impact_direction":verdict.get("impact_direction","unknown") if verdict else "unknown",
+        # The chain guarantees a valid sign (llm_common._direction_ok rejects a
+        # verdict without one), so this normalises rather than defaults —
+        # the "unknown" that used to sit here was a hardcoded default, and it
+        # is what put 56 undecided events into the ledger.
+        "impact_direction":clean_direction(verdict.get("impact_direction")) if verdict else "",
         "impact_horizon":verdict.get("impact_horizon","weeks") if verdict else "weeks",
-        "impact_strength":(verdict.get("impact_strength",2) if verdict else 1),
+        "impact_strength":(clean_strength(verdict.get("impact_strength")) if verdict else 1),
         "confidence":(verdict.get("confidence","low") if verdict else "low"),
         "metric":verdict.get("metric","traffic") if verdict else "traffic",
         "axis":clean_axis(verdict.get("axis","")) if verdict else "",  # demand|share|supply|"" (build.py falls back to a heuristic if empty)
