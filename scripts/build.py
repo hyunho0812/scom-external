@@ -216,21 +216,17 @@ input[type=date]{color-scheme:dark}
 .crow .cn{font-size:11.5px;color:oklch(0.90 0.004 250)}
 .crow .cv{font-family:var(--mono);font-size:12.5px;text-align:right}
 .crow .cx{font-family:var(--mono);font-size:10px;text-align:right;color:oklch(0.50 0.008 250)}
-/* allocation: a diverging row per event, sharing the contribution idiom above */
-.arow{display:grid;grid-template-columns:22px minmax(0,1fr) 150px 62px;gap:10px;align-items:center;
-  padding:5px 0;border-bottom:1px solid var(--line-2)}
-.arow:last-child{border-bottom:0}
-.arow .an{font-family:var(--mono);font-size:9.5px;color:oklch(0.50 0.008 250)}
-.arow .at{font-size:11.5px;color:oklch(0.90 0.004 250);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
-.arow .at:hover{color:var(--accent)}
-.abar{position:relative;height:9px;background:oklch(0.235 0.006 250);border-radius:2px;
-  border:1px solid var(--line-2)}
-.abar i{position:absolute;top:0;height:9px;border-radius:1px;min-width:2px}
-.abar .mid{position:absolute;top:-3px;height:15px;width:1px;left:50%;
+/* allocation: one diverging bar per event row, zero in the middle so the sign
+   of the share is visible without reading the number */
+.abar{position:relative;height:7px;margin-top:4px;background:oklch(0.235 0.006 250);
+  border-radius:2px;border:1px solid var(--line-2)}
+.abar i{position:absolute;top:0;height:7px;border-radius:1px;min-width:2px}
+.abar .mid{position:absolute;top:-2px;height:11px;width:1px;left:50%;
   background:oklch(0.42 0.008 250)}
-.arow .av{font-family:var(--mono);font-size:12px;text-align:right;font-weight:500}
-.asum{display:flex;gap:22px;flex-wrap:wrap;align-items:baseline;margin-bottom:12px;
+.asum{display:flex;gap:22px;flex-wrap:wrap;align-items:baseline;padding:11px 14px;
+  background:var(--strip);border:1px solid var(--line);border-radius:3px;
   font-family:var(--mono);font-size:11px}
+.asum .src{color:oklch(0.50 0.008 250);margin-left:auto}
 .asum b{font-size:15px;font-weight:600;letter-spacing:-0.02em}
 .asum .k{color:oklch(0.57 0.008 250);margin-right:6px}
 /* verification: one row per test, each beside the baseline that reads it */
@@ -340,18 +336,17 @@ input[type=date]{color-scheme:dark}
     </div>
   </div>
 
-  <div class="panel" id="allocPanel">
-    <div class="phead">
-      <div class="ptitle">기간 기여 배분<span class="psub" id="allocSub"></span></div>
-    </div>
-    <div id="allocBody"></div>
-    <div class="note" id="allocNote"></div>
-  </div>
-
   <div>
     <div class="phead" style="margin-bottom:10px">
       <div class="ptitle">외부 요인<span class="psub" id="evcount"></span></div>
     </div>
+    <!-- The allocation totals and their standing caveat used to be a section of
+         their own, above this one, listing its own top 12 by share. That put the
+         same events on the page twice and made the ranking a thing you read
+         somewhere else. The totals belong here, over the list they describe, and
+         the ranking is now just the list's 기여도순 sort. -->
+    <div id="allocBody"></div>
+    <div class="note" id="allocNote" style="margin-top:0;margin-bottom:12px"></div>
     <div class="split">
       <div class="evlist">
         <div class="evstrip">
@@ -371,6 +366,7 @@ input[type=date]{color-scheme:dark}
           <div class="fgroup"><span class="flbl">정렬</span>
             <div class="seg" id="segSort">
               <button data-v="date" class="on">최신순</button>
+              <button data-v="alloc">기여도순</button>
               <button data-v="strength">영향강도순</button>
             </div></div>
         </div>
@@ -762,17 +758,22 @@ function scrollToCard(n){
 // room for. Clicking a row selects it; the pane follows.
 let FDIR='ALL', FAXIS='ALL', FSORT='date', SEL=null;
 
-// The allocation is now the centre of the page: the prediction layer it was
-// meant to sit under does not beat "no events at all" (see the 검증 section),
-// so this is what the dashboard can actually say — how a period's move divides
-// under a stated rule. Everything here is a definition, and the note says so.
-const ALLOC_TOP=12;
+// The allocation is what the dashboard can actually say: the prediction layer
+// it was meant to sit under does not beat "no events at all" (see the 검증
+// section), so all that survives is how a period's move divides under a stated
+// rule. Everything here is a definition, and the note says so.
+//
+// This renders the TOTALS only. The per-event ranking it used to print as its
+// own top-12 list is the 외부 요인 list sorted by 기여도순 — one set of rows,
+// one place to look. The totals still come from the whole period (ALLOC is
+// built from `r`, never the list-filtered set), so filtering the list below
+// cannot move them.
 function renderAlloc(vd){
- const sub=document.getElementById('allocSub'), body=document.getElementById('allocBody'),
+ const body=document.getElementById('allocBody'),
        note=document.getElementById('allocNote');
- if(!sub||!body||!note) return;
+ if(!body||!note) return;
  if(!ALLOC){
-  sub.textContent=''; body.innerHTML='';
+  body.innerHTML='';
   note.textContent = vd ? '방향이 정해진 요인이 없어 배분할 수 없습니다.'
     : (coverageGap() ? '선택한 기간을 트래픽 데이터가 덮지 못해 배분할 수 없습니다.'
                      : '배분을 계산하려면 현재·비교 기간을 모두 선택해야 합니다.');
@@ -783,8 +784,6 @@ function renderAlloc(vd){
  // during a decline an increase event contributes a NEGATIVE share, and
  // painting that green would say the opposite of the number.
  const col=v=>v<0?'var(--neg)':'var(--pos)';
- sub.textContent=`${ALLOC.n}건에 배분 · ${trafficSourceLabel()}`;
-
  body.innerHTML=`<div class="asum">
    <span><span class="k">트래픽 변화</span><b style="color:${col(t)}">${sgn(t)}%</b></span>
    <span><span class="k">증가 요인 합</span><b style="color:${col(ALLOC.posPct)}">${sgn(ALLOC.posPct)}%</b></span>
@@ -792,7 +791,8 @@ function renderAlloc(vd){
    <span><span class="k">계</span><b>100%</b></span>
    ${ALLOC.silent?`<span><span class="k">방향 미상</span><b>${ALLOC.silent}건</b></span>`:''}
    ${ALLOC.dropped?`<span><span class="k">날짜 불명</span><b>${ALLOC.dropped}건</b></span>`:''}
-  </div>` + allocRows();
+   <span class="src">${ALLOC.n}건에 배분 · ${trafficSourceLabel()}</span>
+  </div>`;
 
  note.innerHTML =
   (ALLOC.conflict
@@ -806,33 +806,9 @@ function renderAlloc(vd){
   + `AI가 매긴 라벨에서 나옵니다. <b>각 요인이 실제로 그만큼 만들었다는 뜻이 아닙니다</b> — `
   + `영향 구간이 겹치는 요인이 늘 수십 건이라 트래픽 한 계열을 사건별 몫으로 쪼갤 실측 근거는 `
   + `없습니다. 실측 트래픽을 올리면 <b>총량</b>은 그쪽 기준으로 바뀌지만, 요인 사이의 순위는 `
-  + `그대로입니다.`;
-}
-
-function allocRows(){
- const list=EVLAST.filter(e=>ALLOC.share[e.event_id]!=null)
-   .sort((a,b)=>Math.abs(ALLOC.share[b.event_id])-Math.abs(ALLOC.share[a.event_id]))
-   .slice(0,ALLOC_TOP);
- if(!list.length) return '';
- const mx=Math.max(...list.map(e=>Math.abs(ALLOC.share[e.event_id])),0.001);
- const col=v=>v<0?'var(--neg)':'var(--pos)';
- const rows=list.map((e,i)=>{
-  const v=ALLOC.share[e.event_id], w=Math.abs(v)/mx*50;
-  // One axis, zero in the middle: the sign is the point, so a bar that only
-  // ever grows rightwards would hide which way each factor pulled.
-  const bar=v<0?`left:${(50-w).toFixed(2)}%;width:${w.toFixed(2)}%`
-                :`left:50%;width:${w.toFixed(2)}%`;
-  return `<div class="arow">
-    <span class="an">${String(i+1).padStart(2,'0')}</span>
-    <span class="at" onclick="selectEvent('${e.event_id}')" title="${(e.title||'').replace(/"/g,'&quot;')}">${e.title||''}</span>
-    <span class="abar"><i style="${bar};background:${col(v)}"></i><span class="mid"></span></span>
-    <span class="av" style="color:${col(v)}">${v>=0?'+':''}${v.toFixed(1)}%</span>
-   </div>`;
- }).join('');
- const rest=ALLOC.n-list.length;
- return rows + (rest>0
-   ? `<div class="note" style="margin-top:9px">상위 ${list.length}건만 표시했습니다 · 나머지 ${rest}건은 아래 목록에 있습니다.</div>`
-   : '');
+  + `그대로입니다. 요인별 몫은 아래 목록의 각 행에 있고, <b>기여도순</b>으로 정렬하면 큰 것부터 봅니다. `
+  + `방향이 없어 배분에서 빠진 건은 목록에 나오지 않습니다`
+  + (ALLOC.silent?` — 위 <b>방향 미상 ${ALLOC.silent}건</b>이 그것입니다.`:'.');
 }
 
 // ---- verification: the tests, each beside the baseline that makes it -----
@@ -881,8 +857,8 @@ function renderVerify(){
   + `<div class="note">측정값이 기준선을 넘지 못하면 <b>"데이터가 더 쌓이면 된다"가 아니라 `
   + `"아직 아무것도 말할 수 없다"</b>입니다. 그룹 배분의 기준선은 이벤트를 하나도 쓰지 않고 `
   + `"변화 없음"을 예측한 같은 점수이고, 측정값이 그보다 낮다는 것은 <b>이벤트가 예측을 돕는 게 `
-  + `아니라 해치고 있다</b>는 뜻입니다. 위의 기간 기여 배분은 예측이 아니라 관측된 변화를 규칙대로 `
-  + `나눈 값이라 이 검정과 무관하게 성립하지만, 같은 이유로 아무것도 증명하지 않습니다.</div>`;
+  + `아니라 해치고 있다</b>는 뜻입니다. 외부 요인 목록의 기여 비중은 예측이 아니라 관측된 변화를 `
+  + `규칙대로 나눈 값이라 이 검정과 무관하게 성립하지만, 같은 이유로 아무것도 증명하지 않습니다.</div>`;
 }
 
 function evRowHtml(e, n){
@@ -901,15 +877,27 @@ function evRowHtml(e, n){
  </div>`;
 }
 
-// The row's share of the period's move. Blank when the event claims no
-// direction, or when no period comparison is set — never 0%, which would read
-// as "this event did nothing" rather than "this is not being allocated".
+// The row's share of the period's move, with the diverging bar the standalone
+// allocation list used to draw. Blank when the event claims no direction, or
+// when no period comparison is set — never 0%, which would read as "this event
+// did nothing" rather than "this is not being allocated".
+//
+// The bar is scaled to ALLOC.maxAbs, the largest share in the WHOLE period, not
+// to the largest one currently visible. Scaling to the visible rows would make
+// the same event draw a different bar depending on the direction/axis filter,
+// and the filter is not supposed to touch the allocation at all (원칙 13).
 function allocBadge(e){
  const v=ALLOC && ALLOC.share[e.event_id];
  if(v==null) return '';
  const col=v<0?'var(--neg)':'var(--pos)';
+ const w=Math.min(50, Math.abs(v)/(ALLOC.maxAbs||0.001)*50);
+ // One axis, zero in the middle: the sign is the point, so a bar that only
+ // ever grew rightwards would hide which way each factor pulled.
+ const bar=v<0?`left:${(50-w).toFixed(2)}%;width:${w.toFixed(2)}%`
+               :`left:50%;width:${w.toFixed(2)}%`;
  return `<div class="alloc" style="color:${col}" title="이 기간 변화를 영향강도로 나눈 몫입니다">`
-      + `${v>=0?'+':''}${v.toFixed(1)}%</div>`;
+      + `${v>=0?'+':''}${v.toFixed(1)}%</div>`
+      + `<div class="abar"><i style="${bar};background:${col}"></i><span class="mid"></span></div>`;
 }
 
 // Source/filter markers were once written into description; strip them so the
@@ -1358,13 +1346,12 @@ function allocate(rows, from, to, totalPct){
          // Events pointing one way while traffic went the other: the split
          // still sums to 100% but reads backwards, so it is said out loud.
          conflict:(net>0)!==(totalPct>0), n:Object.keys(w).length,
+         // Largest share in the period, so a row's bar means the same thing
+         // whatever the list is filtered to.
+         maxAbs:Math.max(...Object.keys(share).map(k=>Math.abs(share[k])),0.001),
          silent:noDir, dropped:rows.length-Object.keys(w).length-noDir, totalPct};
 }
 let ALLOC=null;
-// The period's events, kept so the allocation panel can rank them without
-// re-deriving the filter — and never the list-filtered set, or the shares
-// would stop adding to 100%.
-let EVLAST=[];
 
 // ---- label agreement: the ceiling over every other number on this page ----
 // Every figure above is computed from labels one LLM wrote, and the chain uses
@@ -1550,6 +1537,10 @@ function render(){
     + (gap.running?` 아직 끝나지 않은 기간이라면 <b>누적</b> 기간 옵션을 쓰십시오.`:'')
     + `</span>`
   : '';
+ // Whole-period allocation, computed here with the other period-wide values and
+ // BEFORE anything renders: the KPI row and the list both read it, and having
+ // the assignment sit between them left the card a render behind.
+ ALLOC = (vd && sd.value && ed.value) ? allocate(r, sd.value, ed.value, vd.pct) : null;
  // Default ordering only — the list's own 정렬 segment overrides it below.
  // Trend-direction factors first, then confidence, neutral last, newest last.
  const confRank=e=>CONFW[e.confidence]||0;
@@ -1592,7 +1583,13 @@ function render(){
  const nUp=r.filter(e=>e.impact_direction==='+').length;
  const nDn=r.filter(e=>e.impact_direction==='-').length;
  const kpi=[
-  ['수집 이벤트', r.length, (r.length!==EV.length?'전체 '+EV.length+'건 중':''), 'var(--ink)'],
+  // The list below shows only the allocated subset of the selected period, so
+  // this card is the one place the whole accumulated ledger is stated. The big
+  // number is every event ever collected; the note is how it narrows down to
+  // what is on screen.
+  ['수집 이벤트', EV.length,
+   (r.length!==EV.length?`기간·지역 ${r.length}건`:'전체 기간')
+     + (ALLOC?` · 배분 ${ALLOC.n}건`:''), 'var(--ink)'],
   ['트래픽 변화', trafVal, vd?trafficSourceLabel():(gap?'데이터 범위 밖':'기간 비교 필요'), trafCol],
   ['요인 구성', `${nUp} : ${nDn}`, `▲증가 ${nUp} · ▼감소 ${nDn}`, 'var(--ink)'],
   agreeCard(),
@@ -1601,23 +1598,41 @@ function render(){
    `<div class="card"${t?` title="${t}"`:''}><div class="lbl">${l}</div><div><span class="val" style="color:${c}">${v}</span>${n?`<span class="vnote">${n}</span>`:''}</div></div>`).join('');
 
  // ---- per-event allocation (whole period, before any list filter) -------
- EVLAST = r;
- ALLOC = (vd && sd.value && ed.value) ? allocate(r, sd.value, ed.value, vd.pct) : null;
  renderAlloc(vd);
 
  // ---- event list (direction / axis / sort apply here only, never to the
  // axis decomposition, which needs every event in the period) -------------
  let lr=r.slice();
+ // Only the events the allocation actually divides. A factor with no direction
+ // gets no share, so its row carried no percentage and no bar — it sat in the
+ // list looking like an allocated event that happened to contribute nothing.
+ // They are not lost: the 방향 미상 count in the summary strip above is exactly
+ // this set, and the 수집 이벤트 card still counts the whole ledger. When there
+ // is no allocation at all (no period comparison, or the traffic series does
+ // not cover it) there is nothing to be excluded from, so the list stays whole.
+ if(ALLOC) lr=lr.filter(e=>ALLOC.share[e.event_id]!=null);
  if(FDIR!=='ALL') lr=lr.filter(e=>e.impact_direction===FDIR);
  if(FAXIS!=='ALL') lr=lr.filter(e=>axisOf(e)===FAXIS);
- lr.sort(FSORT==='strength'
+ // 기여도순 ranks by the SIZE of the share, not its sign: a factor that pushed
+ // hard against the period's move matters as much as one that pushed with it,
+ // and the sign is on the row already. Unallocated rows (no direction, or no
+ // period comparison) sort last rather than as 0, which would read as "this one
+ // contributed nothing".
+ const shareOf=e=>{const v=ALLOC&&ALLOC.share[e.event_id]; return v==null?-1:Math.abs(v);};
+ lr.sort(FSORT==='alloc'
+   ? (a,b)=>shareOf(b)-shareOf(a)||(b.date||'').localeCompare(a.date||'')
+   : FSORT==='strength'
    ? (a,b)=>STRENGTH(b)-STRENGTH(a)||(b.date||'').localeCompare(a.date||'')
    : (a,b)=>(b.date||'').localeCompare(a.date||''));
- // suffix names which filter actually narrowed the set, so "필터 적용" never
- // shows up when nothing is filtered at all
- const _sfx = lr.length!==r.length ? ' · 목록 필터 적용'
-            : r.length!==EV.length ? ' · 기간·지역 필터 적용' : '';
- document.getElementById('evcount').textContent = `${lr.length} / ${EV.length}건` + _sfx;
+ // Denominator = what the list is drawn from, which is the allocated set once
+ // there is an allocation. Keeping EV.length there would say "423 / 540" and
+ // invite the reader to look for the missing 117 in a list that never had them.
+ const _base = ALLOC ? ALLOC.n : EV.length;
+ const _sfx = ALLOC
+   ? ' · 배분 대상만' + (lr.length!==ALLOC.n ? ' · 목록 필터 적용' : '')
+   : (lr.length!==r.length ? ' · 목록 필터 적용'
+      : r.length!==EV.length ? ' · 기간·지역 필터 적용' : '');
+ document.getElementById('evcount').textContent = `${lr.length} / ${_base}건` + _sfx;
 
  const LIMIT=30;
  const shown=showAll?lr:lr.slice(0,LIMIT);
@@ -1742,7 +1757,7 @@ const GLOSSARY=[
    myth:'경쟁사 이야기는 절대 여기에 들어가지 않습니다.'},
   {ko:'축별 기여 비중',en:'AXIS CONTRIBUTION',
    def:'이번 기간 트래픽 변화를 세 축이 각각 몇 %씩 만들어냈는지입니다. 요인 하나하나에 '
-      +'나누는 아래쪽 "기간 기여 배분"과 달리, 이 값은 트래픽 시계열 계산만으로 나옵니다.',
+      +'나누는 외부 요인 목록의 "기간 기여 비중"과 달리, 이 값은 트래픽 시계열 계산만으로 나옵니다.',
    eg:'전체 +4.2% 중 수요가 65%, 점유가 29%, 공급이 6%',
    myth:'부호를 뺀 크기 비중입니다. 반대 방향으로 작용한 축의 몫도 함께 표시됩니다.'},
  ]},
