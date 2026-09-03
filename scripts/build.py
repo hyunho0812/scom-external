@@ -223,10 +223,43 @@ input[type=date]{color-scheme:dark}
 .abar i{position:absolute;top:0;height:7px;border-radius:1px;min-width:2px}
 .abar .mid{position:absolute;top:-2px;height:11px;width:1px;left:50%;
   background:oklch(0.42 0.008 250)}
-.asum{display:flex;gap:22px;flex-wrap:wrap;align-items:baseline;padding:11px 14px;
-  background:var(--strip);border:1px solid var(--line);border-radius:3px;
-  font-family:var(--mono);font-size:11px}
-.asum .src{color:oklch(0.50 0.008 250);margin-left:auto}
+/* Allocation summary. Was one flex row of four figures, every number painted
+   by its own sign — so a period that fell showed "트래픽 변화 -44.9%" and
+   "증가 요인 합 -102.1%" side by side in the same red, and the label fought
+   the colour it wore. Now: the observed move on the left, how the rule divides
+   it on the right, numbers in ink, and role carried by the dot, the words, and
+   which side of the zero line the bar falls on. */
+.asum{display:grid;grid-template-columns:minmax(190px,auto) minmax(0,1fr);
+  border:1px solid var(--line);border-radius:3px;background:var(--strip);overflow:hidden}
+@media (max-width:900px){.asum{grid-template-columns:minmax(0,1fr)}}
+.aobs{padding:12px 16px;border-right:1px solid var(--line);
+  display:flex;flex-direction:column;gap:3px;justify-content:center}
+@media (max-width:900px){.aobs{border-right:0;border-bottom:1px solid var(--line)}}
+.aobs .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--muted)}
+.aobs .v{font-family:var(--mono);font-size:23px;font-weight:600;letter-spacing:-0.02em;
+  color:var(--ink);display:flex;align-items:baseline;gap:6px}
+.aobs .v .ar{font-size:13px}
+.aobs .s{font-family:var(--mono);font-size:10px;color:var(--muted-2);line-height:1.5}
+/* One measure for the head and the rows, so the bars sit beside their labels
+   instead of drifting to the far edge of a wide panel. */
+.asplit{padding:11px 16px 12px;min-width:0}
+.asplit>*{max-width:660px}
+.ahead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:8px;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--muted)}
+.ahead .s{letter-spacing:0;color:var(--muted-2)}
+.arow2{display:grid;grid-template-columns:minmax(0,1fr) 128px 74px;gap:12px;align-items:center;padding:3px 0}
+@media (max-width:640px){.arow2{grid-template-columns:minmax(0,1fr) 74px}.arow2 .rbar{display:none}}
+.arow2 .rl{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-2);min-width:0}
+.arow2 .rl i{width:7px;height:7px;border-radius:2px;flex:none}
+.arow2 .rl .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.arow2 .rl em{font-family:var(--mono);font-size:10px;font-style:normal;color:var(--muted-2);flex:none}
+/* Numbers wear ink, never the series colour — that pairing is what made
+   "증가 요인 합" red. The dot and the bar side carry the role instead. */
+.arow2 .rv{font-family:var(--mono);font-size:13.5px;font-weight:600;text-align:right;color:var(--ink)}
+.rbar{position:relative;height:8px;background:oklch(0.235 0.006 250);border-radius:2px;
+  border:1px solid var(--line-2)}
+.rbar i{position:absolute;top:0;height:8px;border-radius:2px;min-width:2px}
+.rbar .mid{position:absolute;top:-3px;height:14px;width:1px;left:50%;background:oklch(0.42 0.008 250)}
 .asum b{font-size:15px;font-weight:600;letter-spacing:-0.02em}
 .asum .k{color:oklch(0.57 0.008 250);margin-right:6px}
 /* verification: one row per test, each beside the baseline that reads it */
@@ -780,18 +813,57 @@ function renderAlloc(vd){
   return;
  }
  const t=ALLOC.totalPct, sgn=v=>(v>=0?'+':'')+v.toFixed(1);
- // Coloured by the sign of the contribution, not the event's own direction:
- // during a decline an increase event contributes a NEGATIVE share, and
- // painting that green would say the opposite of the number.
- const col=v=>v<0?'var(--neg)':'var(--pos)';
+ const word = t<0?'하락':'상승';
+ // A share is POSITIVE when the group pushed the period the way it actually
+ // went and NEGATIVE when it pushed back, so that is what the row is named
+ // after — its ROLE in this move, not the direction its events claim. The old
+ // labels named the direction ("증가 요인 합") while the number carried the
+ // role, which is how a rising-traffic factor came to be reported as -102.1%
+ // in the same red as the decline it was in fact resisting (원칙 17).
+ //
+ // In a conflict period the factors net one way and traffic went the other, so
+ // no role can be stated honestly; the rows fall back to naming the sign and
+ // the warning below explains.
+ const conf = ALLOC.conflict;
+ const mkRow = (pct, cnt, dirMark, dirWord) => ({
+   pct, cnt, dirMark, dirWord,
+   name: conf ? `몫이 ${pct>=0?'+':'−'}인 요인`
+              : `${word}을 ${pct>=0?'만든':'되돌린'} 요인`,
+   // The move's own colour for the group that made it, the opposite for the
+   // group that resisted. Never the sign of the number.
+   col: conf ? 'var(--neu)'
+             : ((pct>=0) === (t<0) ? 'var(--neg)' : 'var(--pos)'),
+ });
+ const rows=[mkRow(ALLOC.posPct, ALLOC.nPos, '▲', '증가'),
+             mkRow(ALLOC.negPct, ALLOC.nNeg, '▼', '감소')]
+   // An empty group has nothing to say, and printing it as +0.0% put the
+   // "made it" label on a row of zero events — the same sentence twice.
+   .filter(r=>r.cnt>0)
+   .sort((a,b)=>b.pct-a.pct);          // the group that drove it reads first
+ const mx=Math.max(...rows.map(r=>Math.abs(r.pct)), 0.001);
+ const extra=[`${ALLOC.n}건에 배분`,
+   ALLOC.silent?`방향 미상 ${ALLOC.silent}건`:'',
+   ALLOC.dropped?`날짜 불명 ${ALLOC.dropped}건`:''].filter(Boolean).join(' · ');
  body.innerHTML=`<div class="asum">
-   <span><span class="k">트래픽 변화</span><b style="color:${col(t)}">${sgn(t)}%</b></span>
-   <span><span class="k">증가 요인 합</span><b style="color:${col(ALLOC.posPct)}">${sgn(ALLOC.posPct)}%</b></span>
-   <span><span class="k">감소 요인 합</span><b style="color:${col(ALLOC.negPct)}">${sgn(ALLOC.negPct)}%</b></span>
-   <span><span class="k">계</span><b>100%</b></span>
-   ${ALLOC.silent?`<span><span class="k">방향 미상</span><b>${ALLOC.silent}건</b></span>`:''}
-   ${ALLOC.dropped?`<span><span class="k">날짜 불명</span><b>${ALLOC.dropped}건</b></span>`:''}
-   <span class="src">${ALLOC.n}건에 배분 · ${trafficSourceLabel()}</span>
+   <div class="aobs">
+     <span class="k">관측 트래픽 변화</span>
+     <b class="v"><span class="ar" style="color:${t<0?'var(--neg)':'var(--pos)'}">${t<0?'▼':'▲'}</span>${sgn(t)}%</b>
+     <span class="s">${trafficSourceLabel()}<br>${extra}</span>
+   </div>
+   <div class="asplit">
+     <div class="ahead"><span>이 변화를 요인에 나누면</span><span class="s">합계 100%</span></div>
+     ${rows.map(r=>{
+       const w=Math.abs(r.pct)/mx*50;
+       const bar=r.pct<0?`left:${(50-w).toFixed(2)}%;width:${w.toFixed(2)}%`
+                        :`left:50%;width:${w.toFixed(2)}%`;
+       return `<div class="arow2">
+         <span class="rl"><i style="background:${r.col}"></i>
+           <span class="nm">${r.name}</span>
+           <em>${r.dirMark}${r.dirWord} ${r.cnt}건</em></span>
+         <span class="rbar"><i style="${bar};background:${r.col}"></i><span class="mid"></span></span>
+         <span class="rv">${sgn(r.pct)}%</span>
+       </div>`;}).join('')}
+   </div>
   </div>`;
 
  note.innerHTML =
@@ -1348,6 +1420,10 @@ function allocate(rows, from, to, totalPct){
          // Events pointing one way while traffic went the other: the split
          // still sums to 100% but reads backwards, so it is said out loud.
          conflict:(net>0)!==(totalPct>0), n:Object.keys(w).length,
+         // Counted here, not re-derived in the renderer: these name the rows
+         // of the summary and must match exactly the set that was allocated.
+         nPos:Object.keys(w).filter(k=>w[k]>0).length,
+         nNeg:Object.keys(w).filter(k=>w[k]<0).length,
          // Largest share in the period, so a row's bar means the same thing
          // whatever the list is filtered to.
          maxAbs:Math.max(...Object.keys(share).map(k=>Math.abs(share[k])),0.001),
