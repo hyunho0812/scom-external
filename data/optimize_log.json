@@ -1622,5 +1622,33 @@
    "ai search traffic"
   ],
   "rationale": "현재 쿼리 성능을 유지하고, 필터링 키워드를 통해 수집 정확도와 중복을 관리하는 것이 목표이므로, 효과적인 기존 쿼리는 유지하고, 전체적인 키워드 목록은 관련성 높은 용어를 중심으로 유지합니다. 특히 한국어 키워드는 삼성 뉴스룸(KR) 피드의 효율적인 필터링을 위해 그대로 유지합니다."
+ },
+ {
+  "date": "2026-09-04",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "rationale": "전반적으로 현재 쿼리와 키워드 목록의 성능이 양호하여 큰 변경 없이 유지합니다. 특히 'galaxy phone launch', 'ai shopping', 'google ai search', 'ai search traffic' 쿼리의 keep_rate가 높습니다. 성능이 낮은 쿼리는 키워드 필터링으로 제거되거나 중복으로 처리되는 경향이 있어 쿼리 변경 시 오히려 raw수를 줄일 위험이 크므로 현재 상태를 유지하는 것이 최적입니다. 한국어 키워드는 삼성 뉴스룸(KR) 피드 통과에 필수적이므로 보존합니다."
  }
 ]
