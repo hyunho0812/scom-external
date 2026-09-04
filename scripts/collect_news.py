@@ -143,9 +143,8 @@ def to_event(article, verdict, llm_used):
         # "WW"/"worldwide" (and once with the instruction text itself), none of
         # which the dashboard filter can match.
         "scope":clean_scope(verdict.get("scope")) if verdict else SCOPE_ALL,
-        "divisions":";".join(verdict.get("divisions",[])) if verdict else "",
+        "division":";".join(verdict.get("division",[])) if verdict else "",
         "kpi":";".join(verdict.get("kpi",[])) if verdict else "Traffic",
-        "category":verdict.get("category","economy") if verdict else "economy",
         "title":(title_ko or article["title"])[:140],
         "impact":(verdict.get("impact","") if verdict else "samsung.com 노출·유입에 영향 가능"),
         "description":(desc_ko or ""),
@@ -157,7 +156,6 @@ def to_event(article, verdict, llm_used):
         "impact_horizon":verdict.get("impact_horizon","weeks") if verdict else "weeks",
         "impact_strength":(clean_strength(verdict.get("impact_strength")) if verdict else 1),
         "confidence":(verdict.get("confidence","low") if verdict else "low"),
-        "metric":verdict.get("metric","traffic") if verdict else "traffic",
         "axis":clean_axis(verdict.get("axis","")) if verdict else "",  # demand|share|supply|"" (build.py falls back to a heuristic if empty)
         "llm":llm_used,  # which model produced this judgement, for the dashboard badge
         "source":article["source"] or article["url"],

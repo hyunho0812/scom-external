@@ -672,7 +672,7 @@ function rows(){let r=EV.slice();
    // scope is a region: does it contain any of the selected countries?
    return sc.some(t=>(REGION_MEMBERS[t]||[]).some(c=>cs.includes(c)));}); }
  // Division: specific value = contains it; 'all' = no filter
- if(dv.value!=='ALL'){ r=r.filter(e=>(e.divisions||'').split(';').includes(dv.value)); }
+ if(dv.value!=='ALL'){ r=r.filter(e=>(e.division||'').split(';').includes(dv.value)); }
  if(sd.value)r=r.filter(e=>(e.date||'')>=sd.value);
  if(ed.value)r=r.filter(e=>(e.date||'')<=ed.value);
  return r.sort((a,b)=>(b.date||'').localeCompare(a.date||''));}
@@ -1026,7 +1026,7 @@ function detailHtml(e, n){
      + `<span style="color:var(--muted)"> · 규칙에 따른 배분입니다</span>`]]:[]),
    ['지속 기간',HORIZON_KO[e.impact_horizon]||e.impact_horizon||'-'],
    ['날짜 근거',DS_LABEL[e.date_source||'seed']||'-'],
-   ['영향 사업부',divLabel(e.divisions)],
+   ['영향 사업부',divLabel(e.division)],
    ['판정 모델',e.llm||'-'],
    ['원문 출처',e.source||'-']]
    .map(([k,v])=>`<div class="kline"><span class="klbl">${k}</span><span class="metaval">${v}</span></div>`).join('');
@@ -1265,12 +1265,13 @@ function axisOf(e){
  if(VALID_AXES.includes(e.axis)) return e.axis;
  const t=((e.title||'')+' '+(e.impact||'')+' '+(e.description||'')).toLowerCase();
  if(SUPPLY_KW.some(k=>t.includes(k))) return 'supply';
- const c=e.category;
- if(c==='platform'||c==='AI'||c==='marketing')
-  return COMPETITOR_KW.some(k=>t.includes(k)) ? 'share' : 'demand';
- // company: Samsung's own launches drive demand; competitor moves contest share
- if(c==='company') return OWN_KW.some(k=>t.includes(k))?'demand':'share';
- return 'demand'; // economy, holiday, culture, social_issue, geopolitics, regulation
+ // A named rival means traffic moving between Samsung and that rival — unless
+ // the story is Samsung's own move, which grows the market instead. This used
+ // to branch on `category` first, which is exactly why regulation and economy
+ // stories about Apple came out demand (원칙 3); the field is gone and the
+ // hole with it. Twin of llm_common.guess_axis() — keep the two identical.
+ if(COMPETITOR_KW.some(k=>t.includes(k)) && !OWN_KW.some(k=>t.includes(k))) return 'share';
+ return 'demand';
 }
 function _wikiMaps(names){
  return names.map(n=>{const m={};wikiSeries(n).forEach(q=>m[q.date]=q.views);return m;});
@@ -1912,10 +1913,42 @@ document.querySelectorAll('.tab').forEach(t=>{
  };
 });
 
-function exportCSV(){const r=rows();
- const h=['date','scope','divisions','kpi','title','impact','description','impact_direction','confidence','llm','source','raw_title','raw_desc','raw_url'];
- const csv=[h.join(',')].concat(r.map(x=>h.map(k=>`"${(x[k]||'').toString().replace(/"/g,'""')}"`).join(','))).join('\n');
- const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv,{type:'text/csv;charset=utf-8'}]));a.download='scom_external_factors.csv';a.click();}
+// Every stored field, plus the contribution share the page computes but never
+// stores. Column order is stated here so the file reads in a sensible order —
+// identity, then classification, then the judgement, then the text, then the
+// provenance — and any key the ledger grows that is NOT in this list is
+// appended at the end rather than silently dropped.
+const CSV_COLS=['event_id','date','captured_date','date_source',
+  'axis','axis_source','scope','raw_scope','division','kpi',
+  'impact_direction','raw_impact_direction','direction_source',
+  'impact_strength','impact_horizon','confidence','share_pct',
+  'title','description','impact',
+  'llm','prompt_version','source','coverage_count',
+  'raw_title','raw_desc','raw_url','raw_date','raw_description'];
+function exportCSV(){
+ const r=rows();
+ // share_pct is derived, so it is not a key on the event. Everything else is
+ // read straight off the record.
+ const seen=new Set(CSV_COLS);
+ r.forEach(e=>Object.keys(e).forEach(k=>{ if(!seen.has(k)){ seen.add(k); CSV_COLS.push(k); }}));
+ const cell=v=>`"${(v==null?'':String(v)).replace(/"/g,'""')}"`;
+ const val=(e,k)=>{
+  if(k!=='share_pct') return e[k];
+  // Blank, never 0, when this event is not in the allocation — a 0 would read
+  // as "contributed nothing" rather than "not being allocated" (원칙 17).
+  const v=ALLOC && ALLOC.share[e.event_id];
+  return v==null?'':v.toFixed(4);
+ };
+ const csv=[CSV_COLS.join(',')]
+   .concat(r.map(e=>CSV_COLS.map(k=>cell(val(e,k))).join(','))).join('\n');
+ // The options object belongs to Blob's SECOND argument. Inside the parts
+ // array it was just another part, stringified as "[object Object]" and glued
+ // onto the last data row — every exported file ended with a corrupted cell —
+ // while the MIME type stayed empty, so nothing knew it was a CSV.
+ const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');a.href=url;a.download='scom_external_factors.csv';a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),0);}
 document.getElementById('csvbtn').onclick=exportCSV;
 region.onchange=()=>{showAll=false;syncCountries();render();};
 country.onchange=onCountryChange;

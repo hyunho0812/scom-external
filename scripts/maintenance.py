@@ -327,17 +327,11 @@ def cmd_dedupe(args):
 
 
 # ============================================================ merge
-ALLOWED_CAT = {"culture","marketing","platform","holiday","economy",
-               "social_issue","geopolitics","AI","company","regulation"}
 ALLOWED_DIV = {"MX","VD","DA"}
 ALLOWED_KPI = {"Impression","Click","Traffic","Order","CVR","Revenue","AOV"}
 ALLOWED_DIR = {"+","-","neutral","unknown"}
 ALLOWED_HOR = {"immediate","weeks","months"}
 ALLOWED_CONF = {"high","med","low"}
-ALLOWED_METRIC = {"traffic","revenue","both"}
-# common fixes for category values AIs might emit
-CAT_FIX = {"competitor":"company","ai":"AI","ecommerce":"economy",
-           "tech":"company","environment":"geopolitics","politics":"geopolitics"}
 
 def clean_list(val, allowed, fixes=None):
     if isinstance(val, list):
@@ -357,12 +351,9 @@ def clean_record(r):
         date = str(r.get("date","")).strip()
         if not re.match(r"^\d{4}-\d{2}-\d{2}$", date):
             return None
-        cat = str(r.get("category","economy")).strip()
-        cat = CAT_FIX.get(cat, cat)
-        if cat not in ALLOWED_CAT: cat = "economy"
         # Korean country names or "전체" — see llm_common.clean_scope()
         scope = clean_scope(r.get("scope"))
-        divs = clean_list(r.get("divisions"), ALLOWED_DIV)
+        divs = clean_list(r.get("division"), ALLOWED_DIV)
         kpi = clean_list(r.get("kpi"), ALLOWED_KPI) or ["Traffic"]
         d = str(r.get("impact_direction","unknown")).strip()
         if d not in ALLOWED_DIR: d = "unknown"
@@ -370,8 +361,6 @@ def clean_record(r):
         if hor not in ALLOWED_HOR: hor = "weeks"
         conf = str(r.get("confidence","low")).strip()
         if conf not in ALLOWED_CONF: conf = "low"
-        metric = str(r.get("metric","traffic")).strip()
-        if metric not in ALLOWED_METRIC: metric = "traffic"
         try: strength = int(r.get("impact_strength",2))
         except (ValueError, TypeError): strength = 2
         strength = max(1, min(5, strength))
@@ -382,15 +371,13 @@ def clean_record(r):
             "date": date,
             "captured_date": str(r.get("captured_date", date)).strip() or date,
             "scope": scope,   # already a ';'-joined string
-            "divisions": ";".join(divs),
+            "division": ";".join(divs),
             "kpi": ";".join(kpi),
-            "category": cat,
             "title": title,
             "description": str(r.get("description","")).strip(),
             "impact_direction": d,
             "impact_horizon": hor,
             "confidence": conf,
-            "metric": metric,
             "source": str(r.get("source","")).strip(),
             "impact": str(r.get("impact","")).strip(),
             "impact_strength": strength,
@@ -579,8 +566,7 @@ def _direction_prompt(items):
     blocks = []
     for i, e in enumerate(items):
         blocks.append(
-            f"[{i}] CATEGORY: {e.get('category') or '-'}\n"
-            f"TITLE: {(e.get('title') or '')[:200]}\n"
+            f"[{i}] TITLE: {(e.get('title') or '')[:200]}\n"
             f"SUMMARY: {(e.get('description') or '')[:400]}\n"
             f"INFERENCE: {(e.get('impact') or '')[:300]}")
     return ("You classify stored events for a samsung.com traffic dashboard.\n"
@@ -753,8 +739,7 @@ def _axis_prompt(items):
     blocks = []
     for i, e in enumerate(items):
         blocks.append(
-            f"[{i}] CATEGORY: {e.get('category') or '-'}\n"
-            f"TITLE: {(e.get('title') or '')[:200]}\n"
+            f"[{i}] TITLE: {(e.get('title') or '')[:200]}\n"
             f"SUMMARY: {(e.get('description') or '')[:400]}\n"
             f"INFERENCE: {(e.get('impact') or '')[:300]}")
     return ("You classify stored events for a samsung.com traffic dashboard.\n"
@@ -881,7 +866,7 @@ def cmd_axis(args):
         for (a, b), n in moves.most_common():
             print(f"  {a} → {b}: {n}건")
         for e, a, b in changed:
-            print(f"  {e.get('event_id')} [{e.get('category')}] {a} → {b}  "
+            print(f"  {e.get('event_id')} {a} → {b}  "
                   f"{(e.get('title') or '')[:44]}")
         for eid, why in skipped[:10]:
             print(f"  건너뜀 {eid}: {why}")
@@ -905,7 +890,7 @@ def cmd_axis(args):
         for (a, b), n in moves.most_common():
             print(f"  {a} → {b}: {n}건")
         for e, a, b in changed[:12]:
-            print(f"  {e.get('event_id')} [{e.get('category')}] {a} → {b}  "
+            print(f"  {e.get('event_id')} {a} → {b}  "
                   f"{(e.get('title') or '')[:40]}")
         if args.apply:
             for e in todo:
@@ -939,7 +924,7 @@ def cmd_axis(args):
             e["axis_source"] = "llm"
     print(f"축 없는 이벤트 {len(todo)}건 → {counts}")
     for e in todo[:8]:
-        print(f"  {e.get('event_id')} [{e.get('category')}] → {guess_axis(e)}  {(e.get('title') or '')[:40]}")
+        print(f"  {e.get('event_id')} → {guess_axis(e)}  {(e.get('title') or '')[:40]}")
     if args.apply:
         write_json(EVENTS_FILE, events)
         print("적용됨:", EVENTS_FILE)

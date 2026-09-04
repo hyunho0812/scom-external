@@ -261,18 +261,25 @@ COMPETITOR_KW = ["apple", "xiaomi", "vivo", "oppo", "lg", "tcl", "hisense",
 
 
 def guess_axis(event):
-    """Heuristic axis for an event the model did not classify."""
+    """Heuristic axis for an event the model did not classify.
+
+    Reads the text only. It used to branch on `category` first, which is why it
+    put 13 Apple stories on the wrong axis (원칙 3): a regulation or economy
+    story never reached the named-rival rule, so "EU fines Apple" came out
+    demand. The field is gone now, and dropping the branch closes that hole —
+    a named rival makes it share wherever it appears.
+
+    build.py's axisOf() is the JS twin of this and must stay identical.
+    """
     t = " ".join(str(event.get(f) or "") for f in
                  ("title", "impact", "description")).lower()
     if any(k in t for k in SUPPLY_KW):
         return "supply"
-    c = event.get("category")
-    if c in ("platform", "AI", "marketing"):
-        return "share" if any(k in t for k in COMPETITOR_KW) else "demand"
-    # company: Samsung's own moves grow the market; a rival's contest share.
-    if c == "company":
-        return "demand" if any(k in t for k in OWN_KW) else "share"
-    return "demand"   # economy, holiday, culture, geopolitics, regulation
+    # A named rival means traffic moving between Samsung and that rival —
+    # unless the story is Samsung's own move, which grows the market instead.
+    if any(k in t for k in COMPETITOR_KW) and not any(k in t for k in OWN_KW):
+        return "share"
+    return "demand"
 
 
 
@@ -843,8 +850,7 @@ FILTER_SYSTEM = (
  "discovery, AI-shopping adoption, market research reports) — as long as "
  "they report REALIZED findings, not a forward projection (see rule 2).\n"
  "Respond with ONLY this JSON, no markdown:\n"
- '{"relevant":true|false,"date":"YYYY-MM-DD","category":"culture|marketing|'
- 'platform|holiday|economy|social_issue|geopolitics|AI|company|regulation",'
+ '{"relevant":true|false,"date":"YYYY-MM-DD",'
  '"scope":[the countries THIS article is about, as Korean country names '
  '("영국","독일","인도"). Use exactly ["전체"] when it applies everywhere '
  'rather than to particular countries. Never answer "worldwide"/"WW"/"global", '
@@ -852,7 +858,7 @@ FILTER_SYSTEM = (
  'article only identifies a region and not the countries within it, name the '
  'region instead ("유럽","아시아","중동") — do not guess which countries it '
  'means],'
- '"divisions":[MX=mobile/phones (Apple,Xiaomi,vivo,OPPO-relevant),'
+ '"division":[MX=mobile/phones (Apple,Xiaomi,vivo,OPPO-relevant),'
  'VD=TV/display (LG,TCL,Hisense-relevant),DA=home appliances (LG,Whirlpool,'
  'Bosch-relevant); empty if none],"kpi":[from Impression,Click,Traffic,Order,CVR,Revenue,AOV],'
  '"title":"<=12 words",'
@@ -896,7 +902,6 @@ FILTER_SYSTEM = (
  'category. A small samsung.com banner change can be strength 2 with '
  'confidence high. Use low regularly; never using it means you are reporting '
  'size, not certainty.",'
- '"metric":"traffic|revenue|both",'
  '"axis":"' + AXIS_SPEC + '"}\n'
  'title/impact/description IN KOREAN (한국어), with plain 다/했다/이다 endings (NOT polite 요/습니다) and SIMPLE everyday words — explaining to a colleague, not writing a report. description is the summary and impact is your inference: do not repeat one inside the other. If not relevant: {"relevant":false}.'
 )

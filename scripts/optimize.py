@@ -171,7 +171,12 @@ def recent_kept_titles(n=25, prefix=None):
     """Sample recent event titles. prefix='A' -> news-pipeline events only,
     prefix='FP' -> first-party-feed events only, None -> either."""
     ev = read_json(EVENTS_FILE, [])
-    ev = [e for e in ev if e.get("category") != "company" or e.get("source")]  # tend to skip seeds
+    # Skip the hand-curated seeds: they carry Korean titles written by a person,
+    # not the source headlines the collectors actually meet, so feeding them to
+    # the query tuner teaches it the wrong shape. Was a proxy on category
+    # ("company" with no source"); date_source names the seeds outright, which
+    # is what the line always meant.
+    ev = [e for e in ev if e.get("date_source") != "seed"]
     if prefix:
         ev = [e for e in ev if str(e.get("event_id","")).startswith(prefix)]
     titles = [e.get("raw_title") or e.get("title","") for e in ev[-n:]]

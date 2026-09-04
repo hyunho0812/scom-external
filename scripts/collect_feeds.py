@@ -226,9 +226,8 @@ def main():
                 # See llm_common.PROMPT_VERSION.
                 "prompt_version": PROMPT_VERSION,
                 "scope": clean_scope(verdict.get("scope")),  # see collect_news
-                "divisions": ";".join(verdict.get("divisions", [])),
+                "division": ";".join(verdict.get("division", [])),
                 "kpi": ";".join(verdict.get("kpi", [])) or "Traffic",
-                "category": verdict.get("category", "platform"),
                 "title": f"[{label}] " + title_ko,
                 "impact": verdict.get("impact", ""),
                 "description": verdict.get("description", ""),
@@ -237,7 +236,6 @@ def main():
                 "impact_horizon": verdict.get("impact_horizon", "weeks"),
                 "impact_strength": clean_strength(verdict.get("impact_strength")),
                 "confidence": verdict.get("confidence", "med"),
-                "metric": verdict.get("metric", "traffic"),
                 "axis": clean_axis(verdict.get("axis", "")),  # demand|share|supply|"" (build.py falls back to a heuristic if empty)
                 "llm": llm_used,  # which model judged/produced this, for the dashboard badge
                 "source": label,
