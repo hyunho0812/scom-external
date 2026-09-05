@@ -3140,5 +3140,111 @@
    }
   },
   "total_attempts": 8
+ },
+ {
+  "date": "2026-09-05",
+  "at": "2026-09-05 22:52 UTC",
+  "stage": "collect_news",
+  "providers": {
+   "gemini": {
+    "attempt": 7,
+    "ok": 6,
+    "ko_reject": 0,
+    "dir_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "batch_no_index": 2,
+    "batch_reordered": 0,
+    "http_429": 1,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 41
+   },
+   "groq": {
+    "attempt": 4,
+    "ok": 3,
+    "ko_reject": 0,
+    "dir_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "batch_no_index": 0,
+    "batch_reordered": 0,
+    "http_429": 1,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 38
+   },
+   "mistral": {
+    "attempt": 1,
+    "ok": 0,
+    "ko_reject": 0,
+    "dir_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "batch_no_index": 0,
+    "batch_reordered": 0,
+    "http_429": 1,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 38
+   }
+  },
+  "total_attempts": 12
+ },
+ {
+  "date": "2026-09-05",
+  "at": "2026-09-05 22:54 UTC",
+  "stage": "collect_feeds",
+  "providers": {
+   "gemini": {
+    "attempt": 3,
+    "ok": 2,
+    "ko_reject": 0,
+    "dir_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "batch_no_index": 0,
+    "batch_reordered": 0,
+    "http_429": 0,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 1,
+    "skipped_off": 0
+   },
+   "groq": {
+    "attempt": 1,
+    "ok": 1,
+    "ko_reject": 0,
+    "dir_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "batch_no_index": 0,
+    "batch_reordered": 0,
+    "http_429": 0,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 0
+   },
+   "mistral": {
+    "attempt": 0,
+    "ok": 0,
+    "ko_reject": 0,
+    "dir_reject": 0,
+    "empty": 0,
+    "batch_shape_fail": 0,
+    "batch_no_index": 0,
+    "batch_reordered": 0,
+    "http_429": 0,
+    "http_auth": 0,
+    "http_other": 0,
+    "exception": 0,
+    "skipped_off": 0
+   }
+  },
+  "total_attempts": 4
  }
 ]
