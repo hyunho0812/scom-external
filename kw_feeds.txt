@@ -683,6 +683,18 @@ samsung p-series
 one ui
 qcom
 retailer
+reddit
+openai
+semrush
+google
+microsoft
+youtube
+facebook
+갤럭시 z 폴드8
+갤럭시 북6
+비스포크 ai 무풍콤보 프로 벽걸이
+게임스컴
+s26 fe
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

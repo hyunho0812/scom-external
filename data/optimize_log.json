@@ -2,34 +2,6 @@
  {
   "date": "2026-07-07",
   "old_queries": [
-   "samsung",
-   "samsung galaxy",
-   "smartphone market",
-   "consumer electronics retail",
-   "ecommerce market share",
-   "social commerce",
-   "product discovery survey",
-   "retail channel report",
-   "ai shopping adoption",
-   "brand website shopper behavior"
-  ],
-  "new_queries": [
-   "consumer electronics retail",
-   "ecommerce market share",
-   "social commerce",
-   "product discovery survey",
-   "retail channel report",
-   "ai shopping adoption",
-   "brand website shopper behavior",
-   "samsung ecommerce strategy",
-   "galaxy device innovation",
-   "smartphone market share trend"
-  ],
-  "rationale": "관련성 높은 기사 제목에서 핵심 키워드를 추출하여 기존 쿼리를 구체화하고, 외부 환경 변화 추적을 위해 경쟁사 및 거시 경제, AI 쇼핑 트렌드 쿼리를 추가했으며, KW_KEEP을 확장했습니다."
- },
- {
-  "date": "2026-07-07",
-  "old_queries": [
    "consumer electronics retail",
    "ecommerce market share",
    "social commerce",
@@ -1678,5 +1650,33 @@
    "ai search traffic"
   ],
   "rationale": "전반적으로 현재 쿼리 및 키워드 필터 성능이 양호하여 큰 변경 없이 유지했습니다. 특히 'samsung product launch', 'samsung earnings', 'galaxy phone launch', 'smartphone market share' 쿼리는 높은 'kw_pass'율과 'keep_rate'를 보여 변경할 필요가 없다고 판단했습니다. 'ecommerce trends'와 'ai shopping'도 합리적인 성능을 유지하고 있어 그대로 두었습니다. 'apple intelligence', 'semiconductor market', 'google ai search', 'ai search traffic' 쿼리는 'pass'율이 낮은 편이지만, 광범위한 트렌드를 추적하는 목적에 부합하며, 더 줄일 경우 관련성 있는 기사까지 놓칠 우려가 있어 유지했습니다. 키워드 필터 역시 현행 유지하며 전반적인 안정성과 관련된 항목의 커버리지를 높였습니다."
+ },
+ {
+  "date": "2026-09-06",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "rationale": "기존 쿼리들은 유지율이 나쁘지 않아 변경하지 않았습니다. 키워드 필터에는 뉴스 기사 및 피드에서 'kept'로 분류된 항목들에 등장하는 관련성 높은 용어들을 추가하고, 노이즈가 높은 용어들을 제외하여 관련성을 높였습니다."
  }
 ]

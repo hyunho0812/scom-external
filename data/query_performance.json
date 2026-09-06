@@ -1,74 +1,5 @@
 [
  {
-  "date": "2026-08-05",
-  "total_raw": 131,
-  "total_dup": 9,
-  "total_kw_pass": 115,
-  "total_kept": 20,
-  "per_query": {
-   "samsung product launch": {
-    "raw": 18,
-    "dup": 2,
-    "kw_pass": 13,
-    "kept": 3
-   },
-   "samsung earnings": {
-    "raw": 10,
-    "dup": 0,
-    "kw_pass": 9,
-    "kept": 3
-   },
-   "galaxy phone launch": {
-    "raw": 17,
-    "dup": 3,
-    "kw_pass": 14,
-    "kept": 6
-   },
-   "smartphone market share": {
-    "raw": 20,
-    "dup": 0,
-    "kw_pass": 19,
-    "kept": 2
-   },
-   "ecommerce trends": {
-    "raw": 6,
-    "dup": 0,
-    "kw_pass": 5,
-    "kept": 0
-   },
-   "ai shopping": {
-    "raw": 10,
-    "dup": 0,
-    "kw_pass": 10,
-    "kept": 2
-   },
-   "apple intelligence": {
-    "raw": 10,
-    "dup": 0,
-    "kw_pass": 10,
-    "kept": 3
-   },
-   "semiconductor trends": {
-    "raw": 20,
-    "dup": 0,
-    "kw_pass": 19,
-    "kept": 0
-   },
-   "online retail trends": {
-    "raw": 10,
-    "dup": 0,
-    "kw_pass": 10,
-    "kept": 0
-   },
-   "ai search traffic": {
-    "raw": 10,
-    "dup": 4,
-    "kw_pass": 6,
-    "kept": 1
-   }
-  }
- },
- {
   "date": "2026-08-07",
   "total_raw": 28,
   "total_dup": 3,
@@ -2138,6 +2069,86 @@
     "dup_near": 0,
     "kw_pass": 4,
     "kept": 0
+   }
+  }
+ },
+ {
+  "date": "2026-09-06",
+  "total_raw": 72,
+  "total_dup": 2,
+  "total_dup_near": 1,
+  "total_kw_pass": 65,
+  "total_kept": 15,
+  "per_query": {
+   "samsung product launch": {
+    "raw": 4,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 4,
+    "kept": 0
+   },
+   "samsung earnings": {
+    "raw": 4,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 4,
+    "kept": 1
+   },
+   "galaxy phone launch": {
+    "raw": 8,
+    "dup": 1,
+    "dup_near": 0,
+    "kw_pass": 7,
+    "kept": 3
+   },
+   "smartphone market share": {
+    "raw": 8,
+    "dup": 1,
+    "dup_near": 0,
+    "kw_pass": 4,
+    "kept": 1
+   },
+   "ecommerce trends": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "ai shopping": {
+    "raw": 9,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 9,
+    "kept": 2
+   },
+   "apple intelligence": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 10,
+    "kept": 2
+   },
+   "semiconductor market": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 9,
+    "kept": 0
+   },
+   "google ai search": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 1,
+    "kw_pass": 9,
+    "kept": 4
+   },
+   "ai search traffic": {
+    "raw": 8,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 8,
+    "kept": 2
    }
   }
  }

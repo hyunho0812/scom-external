@@ -1,18 +1,18 @@
 {
- "updated": "2026-09-05",
+ "updated": "2026-09-06",
  "window": {
   "from": "2024-10-28",
-  "to": "2026-09-04",
-  "days": 677
+  "to": "2026-09-05",
+  "days": 678
  },
  "proxy": "wikipedia_samsung_pageviews",
- "scored": 333,
+ "scored": 334,
  "skipped": 0,
- "unfinished_horizon": 275,
+ "unfinished_horizon": 289,
  "summary": {
   "all": {
-   "n": 333,
-   "hit_rate": 0.547,
+   "n": 334,
+   "hit_rate": 0.548,
    "mean_abs_move_pct": 6.62,
    "by_strength": {
     "1": {
@@ -23,11 +23,11 @@
     "2": {
      "n": 41,
      "hit_rate": 0.537,
-     "mean_abs_move_pct": 8.27
+     "mean_abs_move_pct": 8.28
     },
     "3": {
-     "n": 195,
-     "hit_rate": 0.559,
+     "n": 196,
+     "hit_rate": 0.561,
      "mean_abs_move_pct": 6.69
     },
     "4": {
@@ -43,8 +43,8 @@
    },
    "by_confidence": {
     "high": {
-     "n": 180,
-     "hit_rate": 0.517
+     "n": 181,
+     "hit_rate": 0.519
     },
     "med": {
      "n": 153,
@@ -95,24 +95,24 @@
    }
   },
   "retrospective": {
-   "n": 174,
-   "hit_rate": 0.489,
+   "n": 175,
+   "hit_rate": 0.491,
    "mean_abs_move_pct": 6.61,
    "by_strength": {
     "2": {
      "n": 23,
      "hit_rate": 0.522,
-     "mean_abs_move_pct": 8.1
+     "mean_abs_move_pct": 8.11
     },
     "3": {
-     "n": 108,
-     "hit_rate": 0.519,
-     "mean_abs_move_pct": 6.59
+     "n": 109,
+     "hit_rate": 0.523,
+     "mean_abs_move_pct": 6.58
     },
     "4": {
      "n": 39,
      "hit_rate": 0.436,
-     "mean_abs_move_pct": 6.06
+     "mean_abs_move_pct": 6.07
     },
     "5": {
      "n": 4,
@@ -122,8 +122,8 @@
    },
    "by_confidence": {
     "high": {
-     "n": 78,
-     "hit_rate": 0.359
+     "n": 79,
+     "hit_rate": 0.367
     },
     "med": {
      "n": 96,
@@ -135,7 +135,7 @@
    "demand": {
     "n": 253,
     "hit_rate": 0.526,
-    "mean_abs_move_pct": 6.73,
+    "mean_abs_move_pct": 6.74,
     "by_strength": {
      "1": {
       "n": 1,
@@ -145,7 +145,7 @@
      "2": {
       "n": 26,
       "hit_rate": 0.423,
-      "mean_abs_move_pct": 7.31
+      "mean_abs_move_pct": 7.33
      },
      "3": {
       "n": 145,
@@ -175,8 +175,8 @@
     }
    },
    "share": {
-    "n": 72,
-    "hit_rate": 0.625,
+    "n": 73,
+    "hit_rate": 0.63,
     "mean_abs_move_pct": 6.23,
     "by_strength": {
      "2": {
@@ -185,9 +185,9 @@
       "mean_abs_move_pct": 10.36
      },
      "3": {
-      "n": 48,
-      "hit_rate": 0.646,
-      "mean_abs_move_pct": 6.11
+      "n": 49,
+      "hit_rate": 0.653,
+      "mean_abs_move_pct": 6.12
      },
      "4": {
       "n": 11,
@@ -202,8 +202,8 @@
     },
     "by_confidence": {
      "high": {
-      "n": 31,
-      "hit_rate": 0.516
+      "n": 32,
+      "hit_rate": 0.531
      },
      "med": {
       "n": 41,
@@ -251,21 +251,21 @@
   }
  },
  "strength_calibration": {
-  "n": 333,
+  "n": 334,
   "overlap": {
-   "median": 75,
+   "median": 76,
    "max": 125,
    "isolated": 0
   },
   "convergence": {
-   "mean_gap": 1.444,
-   "random_gap": 1.319,
+   "mean_gap": 1.44,
+   "random_gap": 1.316,
    "informative": false,
-   "exact_match_rate": 0.186,
+   "exact_match_rate": 0.189,
    "by_prompt_version": {
     "1": {
-     "n": 299,
-     "mean_gap": 1.321
+     "n": 300,
+     "mean_gap": 1.317
     },
     "2": {
      "n": 33,
@@ -322,8 +322,8 @@
      "mean_gap": 1.381
     },
     "2026-08": {
-     "n": 145,
-     "mean_gap": 1.379
+     "n": 146,
+     "mean_gap": 1.37
     }
    }
   },
@@ -347,7 +347,7 @@
     "suggested": 4
    },
    "3": {
-    "n": 195,
+    "n": 196,
     "observed_median": 3,
     "observed_mean": 3.1,
     "suggested": 3
@@ -1071,14 +1071,14 @@
     "observed": 5,
     "actual_pct": -9.57,
     "hit": false,
-    "opposing_overlap": 102
+    "opposing_overlap": 103
    },
    "A82a29636": {
     "predicted": 3,
     "observed": 5,
     "actual_pct": -9.57,
     "hit": false,
-    "opposing_overlap": 102
+    "opposing_overlap": 103
    },
    "FPba3313c6": {
     "predicted": 4,
@@ -1099,7 +1099,7 @@
     "observed": 5,
     "actual_pct": -11.98,
     "hit": false,
-    "opposing_overlap": 102
+    "opposing_overlap": 103
    },
    "A7d0f20a8": {
     "predicted": 3,
@@ -1148,7 +1148,7 @@
     "observed": 5,
     "actual_pct": -14.36,
     "hit": false,
-    "opposing_overlap": 114
+    "opposing_overlap": 115
    },
    "FPde641cef": {
     "predicted": 3,
@@ -1204,7 +1204,7 @@
     "observed": 5,
     "actual_pct": -13.38,
     "hit": false,
-    "opposing_overlap": 119
+    "opposing_overlap": 120
    },
    "FP45cc5ed8": {
     "predicted": 3,
@@ -1246,7 +1246,7 @@
     "observed": 5,
     "actual_pct": -10.16,
     "hit": false,
-    "opposing_overlap": 119
+    "opposing_overlap": 120
    },
    "FP11ff86e9": {
     "predicted": 4,
@@ -1309,7 +1309,7 @@
     "observed": 4,
     "actual_pct": -8.73,
     "hit": false,
-    "opposing_overlap": 119
+    "opposing_overlap": 120
    },
    "FP20fe4ae0": {
     "predicted": 2,
@@ -1330,7 +1330,7 @@
     "observed": 4,
     "actual_pct": -7.36,
     "hit": false,
-    "opposing_overlap": 119
+    "opposing_overlap": 120
    },
    "FPa8182b55": {
     "predicted": 3,
@@ -1414,7 +1414,7 @@
     "observed": 2,
     "actual_pct": -4.45,
     "hit": false,
-    "opposing_overlap": 119
+    "opposing_overlap": 120
    },
    "FP165ce871": {
     "predicted": 3,
@@ -1428,14 +1428,14 @@
     "observed": 2,
     "actual_pct": -4.21,
     "hit": false,
-    "opposing_overlap": 116
+    "opposing_overlap": 117
    },
    "Ae8a2e64c": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.21,
     "hit": false,
-    "opposing_overlap": 116
+    "opposing_overlap": 117
    },
    "FP18a5f7e9": {
     "predicted": 4,
@@ -1456,7 +1456,7 @@
     "observed": 2,
     "actual_pct": -4.21,
     "hit": false,
-    "opposing_overlap": 116
+    "opposing_overlap": 117
    },
    "FPa72e1ce7": {
     "predicted": 3,
@@ -1477,7 +1477,7 @@
     "observed": 2,
     "actual_pct": -4.47,
     "hit": false,
-    "opposing_overlap": 112
+    "opposing_overlap": 113
    },
    "A0c58aa40": {
     "predicted": 3,
@@ -1547,7 +1547,7 @@
     "observed": 3,
     "actual_pct": -5.11,
     "hit": false,
-    "opposing_overlap": 116
+    "opposing_overlap": 117
    },
    "A9cb5ad89": {
     "predicted": 3,
@@ -1561,7 +1561,7 @@
     "observed": 3,
     "actual_pct": -5.11,
     "hit": false,
-    "opposing_overlap": 116
+    "opposing_overlap": 117
    },
    "A7b0876a6": {
     "predicted": 3,
@@ -1575,14 +1575,14 @@
     "observed": 3,
     "actual_pct": -5.22,
     "hit": false,
-    "opposing_overlap": 116
+    "opposing_overlap": 117
    },
    "Ab51943ea": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -5.22,
     "hit": false,
-    "opposing_overlap": 116
+    "opposing_overlap": 117
    },
    "A16d8ca60": {
     "predicted": 4,
@@ -1603,42 +1603,42 @@
     "observed": 3,
     "actual_pct": -5.22,
     "hit": false,
-    "opposing_overlap": 116
+    "opposing_overlap": 117
    },
    "FP63673af2": {
     "predicted": 2,
     "observed": 3,
     "actual_pct": -5.22,
     "hit": false,
-    "opposing_overlap": 116
+    "opposing_overlap": 117
    },
    "Aa72e1385": {
     "predicted": 4,
     "observed": 3,
     "actual_pct": -5.22,
     "hit": false,
-    "opposing_overlap": 116
+    "opposing_overlap": 117
    },
    "Adce7e7ca": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -5.22,
     "hit": false,
-    "opposing_overlap": 116
+    "opposing_overlap": 117
    },
    "A4fc70f8c": {
     "predicted": 2,
     "observed": 3,
     "actual_pct": -5.22,
     "hit": false,
-    "opposing_overlap": 116
+    "opposing_overlap": 117
    },
    "FP132729c0": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -5.22,
     "hit": false,
-    "opposing_overlap": 116
+    "opposing_overlap": 117
    },
    "A46f00c67": {
     "predicted": 4,
@@ -1687,7 +1687,7 @@
     "observed": 3,
     "actual_pct": -5.9,
     "hit": false,
-    "opposing_overlap": 116
+    "opposing_overlap": 117
    },
    "Ac0382ce7": {
     "predicted": 3,
@@ -1750,7 +1750,7 @@
     "observed": 3,
     "actual_pct": -6.12,
     "hit": false,
-    "opposing_overlap": 115
+    "opposing_overlap": 116
    },
    "A0bb42168": {
     "predicted": 4,
@@ -1792,28 +1792,28 @@
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 89
+    "opposing_overlap": 90
    },
    "A4b7c1fd3": {
     "predicted": 4,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 89
+    "opposing_overlap": 90
    },
    "FP5c024aae": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 89
+    "opposing_overlap": 90
    },
    "Ad1260779": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -6.6,
     "hit": false,
-    "opposing_overlap": 115
+    "opposing_overlap": 116
    },
    "Ad7e90ac6": {
     "predicted": 3,
@@ -1834,35 +1834,35 @@
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 89
+    "opposing_overlap": 90
    },
    "A04b56af2": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -6.6,
     "hit": false,
-    "opposing_overlap": 115
+    "opposing_overlap": 116
    },
    "A5038853a": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 89
+    "opposing_overlap": 90
    },
    "FP6ef141a5": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 89
+    "opposing_overlap": 90
    },
    "A132492da": {
     "predicted": 4,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 89
+    "opposing_overlap": 90
    },
    "Abc96bc5e": {
     "predicted": 2,
@@ -1890,14 +1890,14 @@
     "observed": 4,
     "actual_pct": -6.91,
     "hit": false,
-    "opposing_overlap": 101
+    "opposing_overlap": 102
    },
    "FP815dc0e0": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": -6.91,
     "hit": false,
-    "opposing_overlap": 101
+    "opposing_overlap": 102
    },
    "FP1f662044": {
     "predicted": 2,
@@ -1925,21 +1925,21 @@
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 76
+    "opposing_overlap": 77
    },
    "Aeded2622": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": -6.91,
     "hit": false,
-    "opposing_overlap": 101
+    "opposing_overlap": 102
    },
    "Ab208caae": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": -6.91,
     "hit": false,
-    "opposing_overlap": 101
+    "opposing_overlap": 102
    },
    "A51844c2c": {
     "predicted": 4,
@@ -1953,7 +1953,7 @@
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 76
+    "opposing_overlap": 77
    },
    "FPa5ec0445": {
     "predicted": 3,
@@ -1967,14 +1967,14 @@
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 76
+    "opposing_overlap": 77
    },
    "Acc0cd672": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.19,
     "hit": false,
-    "opposing_overlap": 76
+    "opposing_overlap": 77
    },
    "FPcc8aa1c5": {
     "predicted": 3,
@@ -1988,14 +1988,14 @@
     "observed": 3,
     "actual_pct": -6.87,
     "hit": false,
-    "opposing_overlap": 100
+    "opposing_overlap": 101
    },
    "Ae64b9945": {
     "predicted": 4,
     "observed": 3,
     "actual_pct": -4.51,
     "hit": false,
-    "opposing_overlap": 75
+    "opposing_overlap": 76
    },
    "Abe483bb6": {
     "predicted": 3,
@@ -2009,7 +2009,7 @@
     "observed": 3,
     "actual_pct": -6.87,
     "hit": false,
-    "opposing_overlap": 100
+    "opposing_overlap": 101
    },
    "Ac9bbdb8b": {
     "predicted": 4,
@@ -2044,21 +2044,21 @@
     "observed": 3,
     "actual_pct": -6.87,
     "hit": false,
-    "opposing_overlap": 100
+    "opposing_overlap": 101
    },
    "Ae70eaa98": {
     "predicted": 4,
     "observed": 3,
     "actual_pct": -4.51,
     "hit": false,
-    "opposing_overlap": 75
+    "opposing_overlap": 76
    },
    "FPca6d4d7d": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -4.51,
     "hit": false,
-    "opposing_overlap": 75
+    "opposing_overlap": 76
    },
    "A2cdbd0a6": {
     "predicted": 3,
@@ -2072,7 +2072,7 @@
     "observed": 3,
     "actual_pct": -4.51,
     "hit": false,
-    "opposing_overlap": 75
+    "opposing_overlap": 76
    },
    "A7b7fe9ec": {
     "predicted": 3,
@@ -2086,7 +2086,7 @@
     "observed": 3,
     "actual_pct": -4.51,
     "hit": false,
-    "opposing_overlap": 75
+    "opposing_overlap": 76
    },
    "A49381f23": {
     "predicted": 3,
@@ -2128,14 +2128,14 @@
     "observed": 3,
     "actual_pct": -6.02,
     "hit": false,
-    "opposing_overlap": 97
+    "opposing_overlap": 98
    },
    "A52a06d00": {
     "predicted": 3,
     "observed": 3,
     "actual_pct": -6.02,
     "hit": false,
-    "opposing_overlap": 97
+    "opposing_overlap": 98
    },
    "A05942557": {
     "predicted": 3,
@@ -2149,21 +2149,21 @@
     "observed": 1,
     "actual_pct": -1.54,
     "hit": false,
-    "opposing_overlap": 76
+    "opposing_overlap": 77
    },
    "Af9cc7fe1": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": -1.54,
     "hit": false,
-    "opposing_overlap": 76
+    "opposing_overlap": 77
    },
    "A03bb1b32": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": -1.54,
     "hit": false,
-    "opposing_overlap": 76
+    "opposing_overlap": 77
    },
    "Ad6a92c15": {
     "predicted": 3,
@@ -2177,7 +2177,7 @@
     "observed": 1,
     "actual_pct": -1.54,
     "hit": false,
-    "opposing_overlap": 76
+    "opposing_overlap": 77
    },
    "A87eed480": {
     "predicted": 3,
@@ -2189,49 +2189,49 @@
    "A4c447904": {
     "predicted": 2,
     "observed": 3,
-    "actual_pct": -5.7,
+    "actual_pct": -6.06,
     "hit": false,
-    "opposing_overlap": 95
+    "opposing_overlap": 96
    },
    "Ae9e6875b": {
     "predicted": 3,
     "observed": 3,
-    "actual_pct": -5.7,
+    "actual_pct": -6.06,
     "hit": false,
-    "opposing_overlap": 95
+    "opposing_overlap": 96
    },
    "A8f68cda2": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": -1.64,
     "hit": false,
-    "opposing_overlap": 82
+    "opposing_overlap": 83
    },
    "A12f9b712": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": -1.64,
     "hit": false,
-    "opposing_overlap": 82
+    "opposing_overlap": 83
    },
    "A75a5a99f": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": -1.64,
     "hit": false,
-    "opposing_overlap": 82
+    "opposing_overlap": 83
    },
    "Aa6a5d80f": {
     "predicted": 4,
     "observed": 3,
-    "actual_pct": -5.7,
+    "actual_pct": -6.06,
     "hit": true,
     "opposing_overlap": 101
    },
    "A967c6e5a": {
     "predicted": 3,
     "observed": 3,
-    "actual_pct": -5.7,
+    "actual_pct": -6.06,
     "hit": true,
     "opposing_overlap": 101
    },
@@ -2240,14 +2240,14 @@
     "observed": 1,
     "actual_pct": -1.64,
     "hit": false,
-    "opposing_overlap": 82
+    "opposing_overlap": 83
    },
    "A735928f9": {
     "predicted": 5,
     "observed": 1,
     "actual_pct": -1.32,
     "hit": false,
-    "opposing_overlap": 82
+    "opposing_overlap": 83
    },
    "A9bbd4c6d": {
     "predicted": 4,
@@ -2256,12 +2256,19 @@
     "hit": true,
     "opposing_overlap": 74
    },
+   "A06d57210": {
+    "predicted": 3,
+    "observed": 3,
+    "actual_pct": -5.77,
+    "hit": true,
+    "opposing_overlap": 100
+   },
    "Af6a0f1f2": {
     "predicted": 5,
     "observed": 1,
     "actual_pct": -1.32,
     "hit": false,
-    "opposing_overlap": 82
+    "opposing_overlap": 83
    },
    "FPbdae823b": {
     "predicted": 3,
@@ -2275,35 +2282,35 @@
     "observed": 2,
     "actual_pct": -4.47,
     "hit": false,
-    "opposing_overlap": 81
+    "opposing_overlap": 82
    },
    "A2f37b50b": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -4.47,
     "hit": false,
-    "opposing_overlap": 81
+    "opposing_overlap": 82
    },
    "Aa119d9ea": {
     "predicted": 4,
     "observed": 2,
     "actual_pct": -4.47,
     "hit": false,
-    "opposing_overlap": 81
+    "opposing_overlap": 82
    },
    "Aca9b34a9": {
     "predicted": 3,
     "observed": 4,
     "actual_pct": -7.92,
     "hit": false,
-    "opposing_overlap": 69
+    "opposing_overlap": 70
    },
    "A61a49061": {
     "predicted": 2,
     "observed": 4,
     "actual_pct": -7.92,
     "hit": false,
-    "opposing_overlap": 69
+    "opposing_overlap": 70
    },
    "A8c782590": {
     "predicted": 3,
@@ -2324,7 +2331,7 @@
     "observed": 4,
     "actual_pct": -7.92,
     "hit": false,
-    "opposing_overlap": 69
+    "opposing_overlap": 70
    },
    "A09b32846": {
     "predicted": 2,
@@ -2345,7 +2352,7 @@
     "observed": 4,
     "actual_pct": -7.53,
     "hit": false,
-    "opposing_overlap": 65
+    "opposing_overlap": 66
    },
    "A793de52a": {
     "predicted": 3,
@@ -2373,7 +2380,7 @@
     "observed": 4,
     "actual_pct": -7.53,
     "hit": false,
-    "opposing_overlap": 65
+    "opposing_overlap": 66
    },
    "A1d54bd4a": {
     "predicted": 3,
@@ -2387,7 +2394,7 @@
     "observed": 4,
     "actual_pct": -7.53,
     "hit": false,
-    "opposing_overlap": 65
+    "opposing_overlap": 66
    },
    "Ab0ab90e7": {
     "predicted": 3,
@@ -2415,7 +2422,7 @@
     "observed": 4,
     "actual_pct": -7.53,
     "hit": false,
-    "opposing_overlap": 65
+    "opposing_overlap": 66
    },
    "FP8f42fc22": {
     "predicted": 4,
@@ -2457,7 +2464,7 @@
     "observed": 2,
     "actual_pct": -3.57,
     "hit": false,
-    "opposing_overlap": 56
+    "opposing_overlap": 57
    },
    "A738c6a2a": {
     "predicted": 3,
@@ -2471,21 +2478,21 @@
     "observed": 2,
     "actual_pct": -3.57,
     "hit": false,
-    "opposing_overlap": 56
+    "opposing_overlap": 57
    },
    "FP811938bd": {
     "predicted": 3,
     "observed": 2,
     "actual_pct": -3.57,
     "hit": false,
-    "opposing_overlap": 56
+    "opposing_overlap": 57
    },
    "A8e5710a6": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": -0.29,
     "hit": false,
-    "opposing_overlap": 37
+    "opposing_overlap": 38
    },
    "A7b8237b7": {
     "predicted": 3,
@@ -2520,7 +2527,7 @@
     "observed": 1,
     "actual_pct": 1.05,
     "hit": true,
-    "opposing_overlap": 35
+    "opposing_overlap": 36
    },
    "A1ec75cb4": {
     "predicted": 4,
@@ -2534,70 +2541,70 @@
     "observed": 1,
     "actual_pct": 1.05,
     "hit": true,
-    "opposing_overlap": 35
+    "opposing_overlap": 36
    },
    "A1d1327a3": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": 1.05,
     "hit": true,
-    "opposing_overlap": 35
+    "opposing_overlap": 36
    },
    "A56015f85": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": 1.05,
     "hit": true,
-    "opposing_overlap": 35
+    "opposing_overlap": 36
    },
    "Abe4f716d": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": 1.05,
     "hit": true,
-    "opposing_overlap": 35
+    "opposing_overlap": 36
    },
    "FP284239ed": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": 1.05,
     "hit": true,
-    "opposing_overlap": 35
+    "opposing_overlap": 36
    },
    "FPb35c7bc8": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": 1.05,
     "hit": true,
-    "opposing_overlap": 35
+    "opposing_overlap": 36
    },
    "A59936b28": {
     "predicted": 5,
     "observed": 1,
     "actual_pct": 0.52,
     "hit": true,
-    "opposing_overlap": 30
+    "opposing_overlap": 31
    },
    "A72f13fb4": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": 0.52,
     "hit": true,
-    "opposing_overlap": 30
+    "opposing_overlap": 31
    },
    "Ada964ca3": {
     "predicted": 5,
     "observed": 1,
     "actual_pct": 0.52,
     "hit": true,
-    "opposing_overlap": 30
+    "opposing_overlap": 31
    },
    "Adbf63f4f": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": 0.52,
     "hit": true,
-    "opposing_overlap": 30
+    "opposing_overlap": 31
    },
    "FPd3942397": {
     "predicted": 2,
@@ -2611,42 +2618,42 @@
     "observed": 1,
     "actual_pct": 0.52,
     "hit": true,
-    "opposing_overlap": 30
+    "opposing_overlap": 31
    },
    "FP0b982af1": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": 0.52,
     "hit": true,
-    "opposing_overlap": 30
+    "opposing_overlap": 31
    },
    "Ab26005cd": {
     "predicted": 5,
     "observed": 1,
     "actual_pct": 0.65,
     "hit": true,
-    "opposing_overlap": 29
+    "opposing_overlap": 30
    },
    "A65bf5855": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": 0.65,
     "hit": true,
-    "opposing_overlap": 29
+    "opposing_overlap": 30
    },
    "A0eb5d32e": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": 0.65,
     "hit": true,
-    "opposing_overlap": 29
+    "opposing_overlap": 30
    },
    "FPb60335bc": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": 0.65,
     "hit": true,
-    "opposing_overlap": 29
+    "opposing_overlap": 30
    },
    "FP461996f4": {
     "predicted": 3,
@@ -2660,35 +2667,35 @@
     "observed": 1,
     "actual_pct": 0.65,
     "hit": true,
-    "opposing_overlap": 29
+    "opposing_overlap": 30
    },
    "A08c439ce": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": 0.65,
     "hit": true,
-    "opposing_overlap": 29
+    "opposing_overlap": 30
    },
    "A65e2cede": {
     "predicted": 4,
     "observed": 1,
     "actual_pct": 0.65,
     "hit": true,
-    "opposing_overlap": 29
+    "opposing_overlap": 30
    },
    "A76e2c4df": {
     "predicted": 5,
     "observed": 1,
     "actual_pct": 0.65,
     "hit": true,
-    "opposing_overlap": 29
+    "opposing_overlap": 30
    },
    "A48a0a4c3": {
     "predicted": 3,
     "observed": 1,
     "actual_pct": 0.65,
     "hit": true,
-    "opposing_overlap": 29
+    "opposing_overlap": 30
    },
    "A7af8f2ea": {
     "predicted": 4,
@@ -2701,80 +2708,80 @@
   "note": "조정강도는 horizon 경과 후 트래픽 변화폭을 5분위로 자른 값입니다. 그 사건 하나의 효과가 아니라 '그 무렵 트래픽이 이만큼 움직였다'는 뜻이며, 같은 구간에 반대 방향 이벤트가 몇 건 살아 있었는지는 opposing_overlap에 있습니다. 저장된 impact_strength는 덮어쓰지 않습니다 — 예측과 결과를 나란히 두어야 예측을 검증할 수 있습니다."
  },
  "correlation": {
-  "pressure_vs_forward_traffic_r": 0.2276,
-  "n_days": 59,
+  "pressure_vs_forward_traffic_r": 0.2272,
+  "n_days": 60,
   "forward_days": 7,
   "dense_window_from": "2026-07-01",
-  "full_window_r": 0.0632,
-  "full_window_n_days": 670
+  "full_window_r": 0.0631,
+  "full_window_n_days": 671
  },
  "axis_validation": {
   "demand": {
-   "r": 0.1844,
-   "n": 59,
+   "r": 0.2337,
+   "n": 60,
    "target": "market_total"
   },
   "share": {
-   "r": 0.3108,
-   "n": 59,
+   "r": 0.3158,
+   "n": 60,
    "target": "samsung_share"
   },
   "supply": {
-   "r": 0.1409,
-   "n": 59,
+   "r": 0.1395,
+   "n": 60,
    "target": "samsung"
   }
  },
  "group_attribution": {
   "window": {
    "from": "2026-07-01",
-   "to": "2026-09-04",
-   "days": 66
+   "to": "2026-09-05",
+   "days": 67
   },
-  "r2_in": 0.3099,
+  "r2_in": 0.3186,
   "out_of_sample": {
    "test_weeks": 76,
    "ridge_lambda": 10.0,
-   "r2_out": -0.1503,
-   "baseline_r2_out": -0.0011,
+   "r2_out": -0.1563,
+   "baseline_r2_out": -0.0012,
    "beats_baseline": false
   },
   "usable": false,
   "verdict": "학습에 쓰지 않은 주에서 설명력이 0 이하입니다 — 이 배분은 아직 쓰지 않습니다.",
   "groups": {
    "수요↑": {
-    "coefficient": -0.00318,
-    "halflife_days": 14,
-    "share_pct": 47.2,
-    "signed_effect": -0.33277,
-    "n_events": 224
+    "coefficient": -0.00364,
+    "halflife_days": 10,
+    "share_pct": 48.7,
+    "signed_effect": -0.31117,
+    "n_events": 229
    },
    "수요↓": {
-    "coefficient": 0.00663,
+    "coefficient": 0.00645,
     "halflife_days": 2,
-    "share_pct": 19.6,
-    "signed_effect": 0.138,
-    "n_events": 235
+    "share_pct": 21.1,
+    "signed_effect": 0.13456,
+    "n_events": 243
    },
    "점유↑": {
-    "coefficient": 0.00544,
-    "halflife_days": 30,
-    "share_pct": 21.5,
-    "signed_effect": 0.15123,
-    "n_events": 54
+    "coefficient": 0.00517,
+    "halflife_days": 14,
+    "share_pct": 16.4,
+    "signed_effect": 0.10506,
+    "n_events": 55
    },
    "점유↓": {
-    "coefficient": -0.00716,
+    "coefficient": -0.00657,
     "halflife_days": 2,
-    "share_pct": 7.2,
-    "signed_effect": -0.0505,
-    "n_events": 77
+    "share_pct": 7.3,
+    "signed_effect": -0.04651,
+    "n_events": 78
    },
    "공급": {
-    "coefficient": 0.01723,
+    "coefficient": 0.02259,
     "halflife_days": 2,
-    "share_pct": 4.5,
-    "signed_effect": 0.03186,
+    "share_pct": 6.5,
+    "signed_effect": 0.04149,
     "n_events": 18
    }
   },
@@ -2783,30 +2790,30 @@
  "permutation": {
   "all": {
    "permutations": 1000,
-   "observed_r": 0.2276,
-   "null_p95_abs_r": 0.4681,
-   "p_value": 0.655,
+   "observed_r": 0.2272,
+   "null_p95_abs_r": 0.462,
+   "p_value": 0.639,
    "significant": false
   },
   "demand": {
    "permutations": 1000,
-   "observed_r": 0.1844,
-   "null_p95_abs_r": 0.5783,
-   "p_value": 0.918,
+   "observed_r": 0.2337,
+   "null_p95_abs_r": 0.6086,
+   "p_value": 0.885,
    "significant": false
   },
   "share": {
    "permutations": 1000,
-   "observed_r": 0.3108,
-   "null_p95_abs_r": 0.5412,
-   "p_value": 0.333,
+   "observed_r": 0.3158,
+   "null_p95_abs_r": 0.5268,
+   "p_value": 0.328,
    "significant": false
   },
   "supply": {
    "permutations": 1000,
-   "observed_r": 0.1409,
-   "null_p95_abs_r": 0.4475,
-   "p_value": 0.534,
+   "observed_r": 0.1395,
+   "null_p95_abs_r": 0.4504,
+   "p_value": 0.579,
    "significant": false
   }
  },

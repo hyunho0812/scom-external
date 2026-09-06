@@ -561,6 +561,13 @@ folding iphone
 one ui
 qcom
 retailer
+meta
+htc
+anker
+google
+whatsapp
+lava
+xiaomi
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -585,3 +592,4 @@ mac studio
 pixel
 nvidia groq
 bank of korea
+microsoft
