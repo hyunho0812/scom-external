@@ -1,51 +1,6 @@
 [
  {
   "date": "2026-08-07",
-  "total_raw": 28,
-  "total_dup": 3,
-  "total_kw_pass": 20,
-  "total_kept": 0,
-  "per_query": {
-   "ai shopping": {
-    "raw": 1,
-    "dup": 0,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "apple intelligence": {
-    "raw": 2,
-    "dup": 0,
-    "kw_pass": 2,
-    "kept": 0
-   },
-   "semiconductor trends": {
-    "raw": 1,
-    "dup": 0,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "smartphone market share": {
-    "raw": 10,
-    "dup": 2,
-    "kw_pass": 6,
-    "kept": 0
-   },
-   "ecommerce trends": {
-    "raw": 4,
-    "dup": 0,
-    "kw_pass": 3,
-    "kept": 0
-   },
-   "online retail trends": {
-    "raw": 10,
-    "dup": 1,
-    "kw_pass": 7,
-    "kept": 0
-   }
-  }
- },
- {
-  "date": "2026-08-07",
   "total_raw": 126,
   "total_dup": 19,
   "total_kw_pass": 101,
@@ -2149,6 +2104,86 @@
     "dup_near": 0,
     "kw_pass": 8,
     "kept": 2
+   }
+  }
+ },
+ {
+  "date": "2026-09-07",
+  "total_raw": 87,
+  "total_dup": 8,
+  "total_dup_near": 0,
+  "total_kw_pass": 74,
+  "total_kept": 8,
+  "per_query": {
+   "samsung product launch": {
+    "raw": 6,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 6,
+    "kept": 2
+   },
+   "samsung earnings": {
+    "raw": 3,
+    "dup": 2,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "galaxy phone launch": {
+    "raw": 5,
+    "dup": 1,
+    "dup_near": 0,
+    "kw_pass": 4,
+    "kept": 0
+   },
+   "smartphone market share": {
+    "raw": 5,
+    "dup": 1,
+    "dup_near": 0,
+    "kw_pass": 3,
+    "kept": 0
+   },
+   "ecommerce trends": {
+    "raw": 3,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 3,
+    "kept": 0
+   },
+   "ai shopping": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 10,
+    "kept": 3
+   },
+   "apple intelligence": {
+    "raw": 20,
+    "dup": 2,
+    "dup_near": 0,
+    "kw_pass": 15,
+    "kept": 2
+   },
+   "semiconductor market": {
+    "raw": 19,
+    "dup": 1,
+    "dup_near": 0,
+    "kw_pass": 17,
+    "kept": 1
+   },
+   "google ai search": {
+    "raw": 10,
+    "dup": 1,
+    "dup_near": 0,
+    "kw_pass": 9,
+    "kept": 0
+   },
+   "ai search traffic": {
+    "raw": 6,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 6,
+    "kept": 0
    }
   }
  }

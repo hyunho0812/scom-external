@@ -1,33 +1,5 @@
 [
  {
-  "date": "2026-07-07",
-  "old_queries": [
-   "consumer electronics retail",
-   "ecommerce market share",
-   "social commerce",
-   "product discovery survey",
-   "retail channel report",
-   "ai shopping adoption",
-   "brand website shopper behavior",
-   "samsung ecommerce strategy",
-   "galaxy device innovation",
-   "smartphone market share trend"
-  ],
-  "new_queries": [
-   "consumer electronics retail",
-   "social commerce",
-   "product discovery survey",
-   "retail channel report",
-   "brand website shopper behavior",
-   "galaxy device innovation",
-   "smartphone market share trend",
-   "apple intelligence strategy",
-   "semiconductor memory market trend",
-   "online retail ai adoption"
-  ],
-  "rationale": "기존 성능이 저조한 쿼리들을 제거하고, 최근 관련 기사에서 나타난 AI, 반도체 시장, 경쟁사(Apple) 전략, 지속 가능성 트렌드 및 유망 키워드를 반영하여 쿼리와 KW_KEEP을 업데이트했습니다."
- },
- {
   "date": "2026-07-08",
   "old_queries": [
    "consumer electronics retail",
@@ -1678,5 +1650,33 @@
    "ai search traffic"
   ],
   "rationale": "기존 쿼리들은 유지율이 나쁘지 않아 변경하지 않았습니다. 키워드 필터에는 뉴스 기사 및 피드에서 'kept'로 분류된 항목들에 등장하는 관련성 높은 용어들을 추가하고, 노이즈가 높은 용어들을 제외하여 관련성을 높였습니다."
+ },
+ {
+  "date": "2026-09-07",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "rationale": "현재 쿼리 성능이 양호하여 기존 쿼리를 유지하고, 중복 및 노이즈가 적절히 처리되고 있어 키워드 변경은 최소화했습니다. 특히 'samsung product launch', 'samsung earnings' 쿼리의 keep_rate가 낮지만, 이는 LLM 판단에 의해 아웃될 수 있는 예측 중심 콘텐츠가 많기 때문이며, 원본 검색 결과 확보를 위해 쿼리 폭을 유지합니다. 'semiconductor market'의 낮은 keep_rate 또한 유사한 맥락으로 해석됩니다. 'OpenAI news', 'Pew Research Internet & Tech' 등 keep_rate 0%인 피드 소스는 내용이 주제에 맞지만 예측 위주여서 LLM이 배제했을 가능성이 높으므로, 피드 소스 자체는 유지하되 키워드 필터에서 'forecast'를 DROP 키워드에 추가할지 고려할 수 있으나, 현재는 광범위한 트렌드 감지를 위해 유지합니다."
  }
 ]
