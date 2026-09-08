@@ -1,33 +1,5 @@
 [
  {
-  "date": "2026-07-08",
-  "old_queries": [
-   "consumer electronics retail",
-   "social commerce",
-   "product discovery survey",
-   "retail channel report",
-   "brand website shopper behavior",
-   "galaxy device innovation",
-   "smartphone market share trend",
-   "apple intelligence strategy",
-   "semiconductor memory market trend",
-   "online retail ai adoption"
-  ],
-  "new_queries": [
-   "consumer electronics retail",
-   "social commerce",
-   "retail channel report",
-   "galaxy device innovation",
-   "apple intelligence strategy",
-   "semiconductor memory market trend",
-   "online retail ai adoption",
-   "samsung galaxy innovation",
-   "smartphone memory market trend",
-   "social commerce growth report"
-  ],
-  "rationale": "낮은 통과율 및 중복률 쿼리 교체, 최근 관련 기사에서 언급된 키워드 (중고폰, 숏폼 영상, 파운드리)를 중심으로 외부 요인 추적 쿼리를 보강하고, 삼성 직접 언급 쿼리를 1개로 조정하여 외부 환경에 집중했습니다."
- },
- {
   "date": "2026-07-09",
   "old_queries": [
    "consumer electronics retail",
@@ -1678,5 +1650,33 @@
    "ai search traffic"
   ],
   "rationale": "현재 쿼리 성능이 양호하여 기존 쿼리를 유지하고, 중복 및 노이즈가 적절히 처리되고 있어 키워드 변경은 최소화했습니다. 특히 'samsung product launch', 'samsung earnings' 쿼리의 keep_rate가 낮지만, 이는 LLM 판단에 의해 아웃될 수 있는 예측 중심 콘텐츠가 많기 때문이며, 원본 검색 결과 확보를 위해 쿼리 폭을 유지합니다. 'semiconductor market'의 낮은 keep_rate 또한 유사한 맥락으로 해석됩니다. 'OpenAI news', 'Pew Research Internet & Tech' 등 keep_rate 0%인 피드 소스는 내용이 주제에 맞지만 예측 위주여서 LLM이 배제했을 가능성이 높으므로, 피드 소스 자체는 유지하되 키워드 필터에서 'forecast'를 DROP 키워드에 추가할지 고려할 수 있으나, 현재는 광범위한 트렌드 감지를 위해 유지합니다."
+ },
+ {
+  "date": "2026-09-08",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "google ai search",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "ai search",
+   "ai search traffic"
+  ],
+  "rationale": "중복 수집 및 낮은 유지율을 보이는 쿼리를 대체하고, AI 및 리테일 관련 키워드를 강화하여 삼성닷컴 트래픽 및 매출 연관성을 높였습니다."
  }
 ]

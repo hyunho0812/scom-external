@@ -1,62 +1,5 @@
 [
  {
-  "date": "2026-08-07",
-  "total_raw": 36,
-  "total_kept": 3,
-  "per_feed": {
-   "OpenAI news": {
-    "raw": 10,
-    "kw_pass": 8,
-    "kept": 0
-   },
-   "Gemini (Google)": {
-    "raw": 1,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Samsung newsroom (KR)": {
-    "raw": 4,
-    "kw_pass": 4,
-    "kept": 3
-   },
-   "Search Engine Journal": {
-    "raw": 5,
-    "kw_pass": 5,
-    "kept": 0
-   },
-   "Retail Dive": {
-    "raw": 5,
-    "kw_pass": 4,
-    "kept": 0
-   },
-   "Practical Ecommerce": {
-    "raw": 1,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Digiday": {
-    "raw": 7,
-    "kw_pass": 7,
-    "kept": 0
-   },
-   "Moz": {
-    "raw": 1,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "HubSpot Marketing": {
-    "raw": 1,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Neil Patel": {
-    "raw": 1,
-    "kw_pass": 1,
-    "kept": 0
-   }
-  }
- },
- {
   "date": "2026-08-08",
   "total_raw": 11,
   "total_kept": 0,
@@ -1658,6 +1601,84 @@
     "dup_near": 0,
     "kw_pass": 1,
     "kept": 1
+   }
+  }
+ },
+ {
+  "date": "2026-09-08",
+  "total_raw": 36,
+  "total_dup_near": 0,
+  "total_kept": 2,
+  "per_feed": {
+   "OpenAI news": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 7,
+    "kept": 0
+   },
+   "Google Search Central Blog": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Apple newsroom": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Samsung newsroom (KR)": {
+    "raw": 3,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 3,
+    "kept": 2
+   },
+   "Search Engine Journal": {
+    "raw": 6,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 6,
+    "kept": 0
+   },
+   "Retail Dive": {
+    "raw": 7,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 7,
+    "kept": 0
+   },
+   "Practical Ecommerce": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Digiday": {
+    "raw": 5,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 5,
+    "kept": 0
+   },
+   "Semrush": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "HubSpot Marketing": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
    }
   }
  }
