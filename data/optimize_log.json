@@ -1,33 +1,5 @@
 [
  {
-  "date": "2026-07-09",
-  "old_queries": [
-   "consumer electronics retail",
-   "social commerce",
-   "retail channel report",
-   "galaxy device innovation",
-   "apple intelligence strategy",
-   "semiconductor memory market trend",
-   "online retail ai adoption",
-   "samsung galaxy innovation",
-   "smartphone memory market trend",
-   "social commerce growth report"
-  ],
-  "new_queries": [
-   "consumer electronics retail",
-   "social commerce",
-   "galaxy device innovation",
-   "apple intelligence strategy",
-   "samsung galaxy innovation",
-   "smartphone memory market trend",
-   "social commerce growth report",
-   "samsung galaxy foldable innovation",
-   "apple competitive strategy",
-   "semiconductor memory pricing trend"
-  ],
-  "rationale": "중복을 줄이고 외부 요인에 초점을 맞추기 위해 실적이 저조한 쿼리를 제거하고 관련성이 높은 키워드를 추가했습니다."
- },
- {
   "date": "2026-07-10",
   "old_queries": [
    "consumer electronics retail",
@@ -1678,5 +1650,33 @@
    "ai search traffic"
   ],
   "rationale": "중복 수집 및 낮은 유지율을 보이는 쿼리를 대체하고, AI 및 리테일 관련 키워드를 강화하여 삼성닷컴 트래픽 및 매출 연관성을 높였습니다."
+ },
+ {
+  "date": "2026-09-09",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "ai search",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "ai search",
+   "ai search traffic"
+  ],
+  "rationale": "현재 쿼리들의 성능이 대부분 양호하며, 특히 'ai search'와 'semiconductor market'은 raw 값이 높은 반면 keep_rate가 낮아 키워드 필터 개선이 필요할 수 있으나, 쿼리 자체는 충분히 넓고 관련성이 있는 것으로 판단되어 현재 쿼리들을 유지합니다. 키워드 필터는 뉴스 및 피드 항목에서 삼성 제품, AI, 전자상거래 트렌드와 관련된 핵심 키워드를 더욱 강화하고 중복 콘텐츠를 최소화하도록 조정했습니다."
  }
 ]
