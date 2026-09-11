@@ -568,6 +568,10 @@ google
 whatsapp
 lava
 xiaomi
+instacart
+shipt
+motorola
+muse
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -593,3 +597,5 @@ pixel
 nvidia groq
 bank of korea
 microsoft
+amazon
+x (formerly twitter)

@@ -695,6 +695,19 @@ facebook
 비스포크 ai 무풍콤보 프로 벽걸이
 게임스컴
 s26 fe
+instacart
+shipt
+mistral ai
+windows
+apple watch ultra 4
+apple watch series 12
+airpods 5
+iphone 18 pro
+iphone 18 pro max
+smic
+susquehanna
+asml
+tsmc
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -729,3 +742,5 @@ mac mini
 mac studio
 nvidia groq
 bank of korea
+amazon
+x (formerly twitter)
