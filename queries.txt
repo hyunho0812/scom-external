@@ -15,4 +15,4 @@ ecommerce | ai shopping
 other | apple intelligence
 other | semiconductor market
 other | ai search
-other | ai search traffic
+other | ai traffic

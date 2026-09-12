@@ -1,33 +1,5 @@
 [
  {
-  "date": "2026-07-12",
-  "old_queries": [
-   "consumer electronics retail",
-   "social commerce",
-   "galaxy device innovation",
-   "apple intelligence strategy",
-   "samsung galaxy innovation",
-   "smartphone memory market trend",
-   "smartphone memory market pricing",
-   "samsung galaxy foldable innovation",
-   "apple product strategy",
-   "ai search platform shifts"
-  ],
-  "new_queries": [
-   "consumer electronics retail",
-   "social commerce",
-   "galaxy device innovation",
-   "apple intelligence strategy",
-   "samsung galaxy innovation",
-   "smartphone memory market trend",
-   "smartphone memory market pricing",
-   "galaxy s series production",
-   "apple iphone product strategy",
-   "smartphone memory market pricing trend"
-  ],
-  "rationale": "중복률이 높거나 성과가 낮은 쿼리를 제거하고, 관련성 높은 새 쿼리를 추가하여 삼성 관련 기사와 외부 시장 동향 수집 효율을 높였습니다."
- },
- {
   "date": "2026-07-13",
   "old_queries": [
    "consumer electronics retail",
@@ -1678,5 +1650,33 @@
    "ai search traffic"
   ],
   "rationale": "기존 쿼리들의 성능이 전반적으로 양호하여 쿼리 자체는 변경하지 않았으며, 최근 기사와 피드 내용을 바탕으로 관련성 높은 키워드(예: instacart, shipt, motorola, muse, mistral ai, windows, apple watch ultra 4, airpods 5, iphone 18 pro, smic, susquehanna, asml, tsmc 등)를 KEEP 리스트에 추가하고, 관련성 낮은 키워드(예: amazon, x (formerly twitter))를 DROP 리스트에 추가하여 필터링 정확도를 높였습니다."
+ },
+ {
+  "date": "2026-09-12",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "ai search",
+   "ai search traffic"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "ai search",
+   "ai traffic"
+  ],
+  "rationale": "'ai search traffic' 쿼리의 raw 및 keep_rate가 낮으므로, 더 짧고 광범위한 'ai traffic'으로 변경하여 뉴스 API에서 더 많은 결과를 확보하도록 했습니다."
  }
 ]

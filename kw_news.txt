@@ -572,6 +572,7 @@ instacart
 shipt
 motorola
 muse
+ai traffic
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 

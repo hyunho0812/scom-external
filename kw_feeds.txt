@@ -708,6 +708,7 @@ smic
 susquehanna
 asml
 tsmc
+ai traffic
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
