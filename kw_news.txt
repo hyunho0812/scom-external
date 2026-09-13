@@ -545,7 +545,6 @@ iot security
 automotive security
 industrial control system security
 critical infrastructure security
-ai device
 earnings report
 consumer electronics
 new tech
@@ -572,7 +571,6 @@ instacart
 shipt
 motorola
 muse
-ai traffic
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -600,3 +598,4 @@ bank of korea
 microsoft
 amazon
 x (formerly twitter)
+ai traffic
