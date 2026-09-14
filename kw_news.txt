@@ -571,6 +571,9 @@ instacart
 shipt
 motorola
 muse
+retail dive
+gemini
+google search central
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -599,3 +602,7 @@ microsoft
 amazon
 x (formerly twitter)
 ai traffic
+hubspot
+neil patel
+moz
+semrush

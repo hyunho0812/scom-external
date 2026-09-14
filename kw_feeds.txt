@@ -706,6 +706,7 @@ iphone 18 pro max
 smic
 susquehanna
 asml
+sejournal
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -743,3 +744,7 @@ bank of korea
 amazon
 x (formerly twitter)
 ai traffic
+hubspot
+neil patel
+moz
+retail dive
