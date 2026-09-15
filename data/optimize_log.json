@@ -3,34 +3,6 @@
   "date": "2026-07-14",
   "old_queries": [
    "samsung new product launch event",
-   "samsung electronics quarterly earnings",
-   "galaxy AI device innovation",
-   "global smartphone market share trend",
-   "ecommerce market trend analysis",
-   "ecommerce ai shopping adoption",
-   "consumer product discovery insights",
-   "retail channel report",
-   "apple intelligence strategy",
-   "semiconductor memory market trend"
-  ],
-  "new_queries": [
-   "samsung new product launch event",
-   "samsung electronics quarterly earnings report",
-   "galaxy AI device innovation trends",
-   "global smartphone market share trends",
-   "ecommerce market trend analysis",
-   "ecommerce ai shopping adoption",
-   "consumer electronics product discovery insights",
-   "retail channel report",
-   "apple intelligence strategy",
-   "semiconductor memory market trend"
-  ],
-  "rationale": "실적 낮은 쿼리는 구체성을 높여 재수집을 유도하고, KW_NEWS 및 KW_FEEDS에 주요 제품 및 시장 관련 키워드를 추가하여 관련성 및 포괄성을 개선했습니다."
- },
- {
-  "date": "2026-07-14",
-  "old_queries": [
-   "samsung new product launch event",
    "samsung electronics quarterly earnings report",
    "galaxy AI device innovation trends",
    "global smartphone market share trends",
@@ -1678,5 +1650,33 @@
    "ai device"
   ],
   "rationale": "쿼리는 기존의 성능이 좋은 쿼리를 유지하고, 중복 및 낮은 keep_rate를 보이는 외부 소스 중 일부 (HubSpot, Neil Patel, Moz, Retail Dive)를 KW_NEWS_DROP에서 제외하여 중복 수집을 최소화했습니다. 동시에 'sejournal', 'retail dive', 'gemini', 'google search central'과 같이 긍정적인 keep_rate를 보이는 소스의 이름을 KW_NEWS_KEEP에 추가했습니다. 첫 번째 피드의 경우, 'sejournal'을 KW_FEEDS_KEEP에 추가하여 관련성을 높였습니다."
+ },
+ {
+  "date": "2026-09-15",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "ai search",
+   "ai device"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "ai search",
+   "ai device"
+  ],
+  "rationale": "기존 쿼리의 성능이 전반적으로 양호하여 변경하지 않았습니다. 키워드 필터는 중복을 최소화하고 관련성을 높이기 위해 유지했습니다."
  }
 ]
