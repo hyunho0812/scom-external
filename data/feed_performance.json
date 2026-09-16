@@ -1,91 +1,5 @@
 [
  {
-  "date": "2026-08-18",
-  "total_raw": 41,
-  "total_dup_near": 0,
-  "total_kept": 7,
-  "per_feed": {
-   "OpenAI news": {
-    "raw": 10,
-    "dup_near": 0,
-    "kw_pass": 7,
-    "kept": 1
-   },
-   "Gemini (Google)": {
-    "raw": 1,
-    "dup_near": 0,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Google Search Status": {
-    "raw": 1,
-    "dup_near": 0,
-    "kw_pass": 1,
-    "kept": 1
-   },
-   "Apple newsroom": {
-    "raw": 1,
-    "dup_near": 0,
-    "kw_pass": 1,
-    "kept": 1
-   },
-   "Samsung newsroom (KR)": {
-    "raw": 3,
-    "dup_near": 0,
-    "kw_pass": 3,
-    "kept": 3
-   },
-   "TrendForce Semiconductors": {
-    "raw": 1,
-    "dup_near": 0,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Pew Research Internet & Tech": {
-    "raw": 1,
-    "dup_near": 0,
-    "kw_pass": 0,
-    "kept": 0
-   },
-   "Search Engine Journal": {
-    "raw": 7,
-    "dup_near": 0,
-    "kw_pass": 7,
-    "kept": 1
-   },
-   "Retail Dive": {
-    "raw": 6,
-    "dup_near": 0,
-    "kw_pass": 6,
-    "kept": 0
-   },
-   "Practical Ecommerce": {
-    "raw": 1,
-    "dup_near": 0,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Digiday": {
-    "raw": 7,
-    "dup_near": 0,
-    "kw_pass": 5,
-    "kept": 0
-   },
-   "Moz": {
-    "raw": 1,
-    "dup_near": 0,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "HubSpot Marketing": {
-    "raw": 1,
-    "dup_near": 0,
-    "kw_pass": 1,
-    "kept": 0
-   }
-  }
- },
- {
   "date": "2026-08-19",
   "total_raw": 43,
   "total_dup_near": 1,
@@ -1865,6 +1779,98 @@
     "dup_near": 0,
     "kw_pass": 6,
     "kept": 0
+   },
+   "HubSpot Marketing": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   }
+  }
+ },
+ {
+  "date": "2026-09-16",
+  "total_raw": 40,
+  "total_dup_near": 0,
+  "total_kept": 14,
+  "per_feed": {
+   "OpenAI news": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 9,
+    "kept": 1
+   },
+   "Google Search Central Blog": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 1
+   },
+   "Apple newsroom": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 1
+   },
+   "Samsung newsroom (KR)": {
+    "raw": 3,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 3,
+    "kept": 3
+   },
+   "TrendForce Semiconductors": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Search Engine Journal": {
+    "raw": 8,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 8,
+    "kept": 5
+   },
+   "Retail Dive": {
+    "raw": 5,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 5,
+    "kept": 0
+   },
+   "Practical Ecommerce": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Digiday": {
+    "raw": 6,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 6,
+    "kept": 0
+   },
+   "Ahrefs": {
+    "raw": 2,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 2,
+    "kept": 2
+   },
+   "Moz": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 1
    },
    "HubSpot Marketing": {
     "raw": 1,
