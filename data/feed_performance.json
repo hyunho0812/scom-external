@@ -1,79 +1,5 @@
 [
  {
-  "date": "2026-08-20",
-  "total_raw": 40,
-  "total_dup_near": 2,
-  "total_kept": 3,
-  "per_feed": {
-   "OpenAI news": {
-    "raw": 10,
-    "dup_near": 2,
-    "kw_pass": 6,
-    "kept": 0
-   },
-   "Samsung newsroom (KR)": {
-    "raw": 2,
-    "dup_near": 0,
-    "kw_pass": 2,
-    "kept": 2
-   },
-   "Pew Research Internet & Tech": {
-    "raw": 3,
-    "dup_near": 0,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Search Engine Journal": {
-    "raw": 7,
-    "dup_near": 0,
-    "kw_pass": 7,
-    "kept": 0
-   },
-   "Retail Dive": {
-    "raw": 6,
-    "dup_near": 0,
-    "kw_pass": 6,
-    "kept": 0
-   },
-   "Practical Ecommerce": {
-    "raw": 1,
-    "dup_near": 0,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Digiday": {
-    "raw": 6,
-    "dup_near": 0,
-    "kw_pass": 5,
-    "kept": 0
-   },
-   "Semrush": {
-    "raw": 1,
-    "dup_near": 0,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Ahrefs": {
-    "raw": 1,
-    "dup_near": 0,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Moz": {
-    "raw": 1,
-    "dup_near": 0,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "HubSpot Marketing": {
-    "raw": 2,
-    "dup_near": 0,
-    "kw_pass": 2,
-    "kept": 1
-   }
-  }
- },
- {
   "date": "2026-08-21",
   "total_raw": 32,
   "total_dup_near": 0,
@@ -1883,6 +1809,98 @@
     "dup_near": 0,
     "kw_pass": 1,
     "kept": 0
+   }
+  }
+ },
+ {
+  "date": "2026-09-18",
+  "total_raw": 42,
+  "total_dup_near": 0,
+  "total_kept": 11,
+  "per_feed": {
+   "OpenAI news": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 9,
+    "kept": 0
+   },
+   "Google AI blog": {
+    "raw": 2,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 2,
+    "kept": 0
+   },
+   "Apple newsroom": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 1
+   },
+   "Samsung newsroom (KR)": {
+    "raw": 3,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 3,
+    "kept": 3
+   },
+   "TrendForce Semiconductors": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Pew Research Internet & Tech": {
+    "raw": 2,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 2,
+    "kept": 0
+   },
+   "Search Engine Journal": {
+    "raw": 8,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 8,
+    "kept": 6
+   },
+   "Retail Dive": {
+    "raw": 5,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 5,
+    "kept": 0
+   },
+   "Practical Ecommerce": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 0
+   },
+   "Digiday": {
+    "raw": 5,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 4,
+    "kept": 0
+   },
+   "Semrush": {
+    "raw": 3,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 3,
+    "kept": 0
+   },
+   "Neil Patel": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 1
    }
   }
  }

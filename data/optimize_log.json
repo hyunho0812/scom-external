@@ -1,33 +1,5 @@
 [
  {
-  "date": "2026-07-16",
-  "old_queries": [
-   "samsung new product launch event review",
-   "samsung electronics quarterly earnings report",
-   "galaxy AI device innovation trends",
-   "global smartphone market share trends",
-   "ecommerce ai shopping adoption",
-   "ecommerce ai shopping adoption",
-   "consumer electronics product discovery insights",
-   "retail channel report",
-   "apple intelligence strategy",
-   "semiconductor memory market trend"
-  ],
-  "new_queries": [
-   "samsung electronics product launch analysis",
-   "samsung electronics quarterly earnings report",
-   "galaxy AI device innovation trends",
-   "global smartphone market share trends",
-   "ecommerce AI shopping adoption",
-   "ecommerce ai shopping adoption",
-   "consumer electronics product discovery insights",
-   "retail channel report",
-   "apple intelligence strategy",
-   "semiconductor memory market trend"
-  ],
-  "rationale": "실적이 좋지 않은 쿼리를 개선하고, 중복을 줄이며, 삼성닷컴 트래픽 및 수익에 더 직접적으로 관련되도록 키워드를 미세 조정했습니다. 'samsung new product launch event review' 쿼리를 'samsung electronics product launch analysis'로 변경하여 분석 중심의 콘텐츠를 더 잘 포착하도록 했습니다."
- },
- {
   "date": "2026-07-17",
   "old_queries": [
    "samsung electronics product launch analysis",
@@ -1678,5 +1650,33 @@
    "ai device"
   ],
   "rationale": "중복 제거 및 관련성 향상을 위해 'iphone duo' 키워드를 news drop 목록에 추가했습니다. 기존 쿼리들은 성능이 양호하여 그대로 유지했습니다."
+ },
+ {
+  "date": "2026-09-18",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "ai search",
+   "ai device"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "ai search",
+   "ai device"
+  ],
+  "rationale": "기존 쿼리는 짧고 일반적인 형태를 유지하며, 실적이 저조한 키워드를 제외하고 새롭게 등장한 중요한 기술 관련 키워드를 추가하여 최신 트렌드 반영 및 관련 없는 기사 필터링을 강화했습니다."
  }
 ]

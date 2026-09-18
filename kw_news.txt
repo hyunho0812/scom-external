@@ -574,6 +574,11 @@ muse
 retail dive
 gemini
 google search central
+shopify
+nubia
+mediatek
+teradyne
+nvidia ai chips
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
@@ -608,3 +613,5 @@ moz
 semrush
 apple watch series 12
 iphone duo
+ios 27
+watchos 27
