@@ -571,7 +571,6 @@ instacart
 shipt
 motorola
 muse
-retail dive
 gemini
 google search central
 shopify
@@ -579,6 +578,7 @@ nubia
 mediatek
 teradyne
 nvidia ai chips
+retailer news
 
 # ---DROP--- (everything below: reject if present, checked before KEEP)
 
