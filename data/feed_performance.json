@@ -1,31 +1,5 @@
 [
  {
-  "date": "2026-08-22",
-  "total_raw": 12,
-  "total_dup_near": 1,
-  "total_kept": 1,
-  "per_feed": {
-   "OpenAI news": {
-    "raw": 10,
-    "dup_near": 1,
-    "kw_pass": 6,
-    "kept": 0
-   },
-   "Pew Research Internet & Tech": {
-    "raw": 1,
-    "dup_near": 0,
-    "kw_pass": 1,
-    "kept": 0
-   },
-   "Search Engine Journal": {
-    "raw": 1,
-    "dup_near": 0,
-    "kw_pass": 1,
-    "kept": 1
-   }
-  }
- },
- {
   "date": "2026-08-23",
   "total_raw": 11,
   "total_dup_near": 2,
@@ -1862,6 +1836,35 @@
     "dup_near": 0,
     "kw_pass": 0,
     "kept": 0
+   }
+  }
+ },
+ {
+  "date": "2026-09-20",
+  "total_raw": 12,
+  "total_dup_near": 1,
+  "total_kept": 2,
+  "per_feed": {
+   "OpenAI news": {
+    "raw": 10,
+    "dup": 0,
+    "dup_near": 1,
+    "kw_pass": 8,
+    "kept": 0
+   },
+   "Samsung newsroom (KR)": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 1
+   },
+   "Practical Ecommerce": {
+    "raw": 1,
+    "dup": 0,
+    "dup_near": 0,
+    "kw_pass": 1,
+    "kept": 1
    }
   }
  }

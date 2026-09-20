@@ -1,33 +1,5 @@
 [
  {
-  "date": "2026-07-18",
-  "old_queries": [
-   "samsung electronics product launch impact",
-   "samsung electronics quarterly earnings report",
-   "galaxy AI device market adoption",
-   "global smartphone market share shifts",
-   "ecommerce AI shopping assistant adoption trends",
-   "ecommerce ai shopping adoption",
-   "consumer electronics product discovery trends",
-   "retail channel report",
-   "apple intelligence strategy",
-   "semiconductor memory market trend"
-  ],
-  "new_queries": [
-   "samsung electronics product launch impact",
-   "samsung electronics quarterly earnings report",
-   "galaxy AI device market adoption",
-   "global smartphone market share shifts",
-   "ai agentic shopping experience trends",
-   "ecommerce ai shopping adoption",
-   "consumer electronics product discovery trends",
-   "retail channel report",
-   "apple intelligence strategy",
-   "semiconductor memory market trend"
-  ],
-  "rationale": "'ecommerce AI shopping assistant adoption trends' 쿼리의 낮은 실적을 개선하고, 최근 KEEP된 기사에서 'agentic commerce' 키워드가 자주 등장하여 'ai agentic shopping experience trends'로 변경했습니다. 중복이 높은 'ecommerce ai shopping adoption'은 유지하고, AI 관련 기사의 포괄적인 필터링을 위해 'agentic' 키워드를 kw_news와 kw_feeds KEEP 목록에 추가했습니다."
- },
- {
   "date": "2026-07-19",
   "old_queries": [
    "samsung electronics product launch impact",
@@ -1678,5 +1650,33 @@
    "ai device"
   ],
   "rationale": "쿼리 및 키워드 유지/제외 목록을 검토한 결과, 현재 설정이 삼성닷컴 트래픽 및 매출과 높은 관련성을 유지하면서 중복 수집을 최소화하고 있다고 판단했습니다. 특히 뉴스 쿼리들의 낮은 kept/raw 비율은 키워드 필터가 효과적으로 작동하여 관련성 낮은 기사를 제거하고 있음을 보여줍니다. 'ecommerce trends'와 'semiconductor market' 같은 일부 쿼리는 kept/raw 비율이 낮지만, 해당 주제의 중요성을 고려할 때 유지하는 것이 적절합니다. 피드 소스 측면에서는 'Pew Research Internet & Tech', 'Gemini (Google)', 'Google AI blog', 'TrendForce Semiconductors', 'HubSpot Marketing', 'Semrush'와 같이 keep_rate가 낮은 피드는 내용이 온-토픽이지만 종종 예측 위주로 판단되어 제외되는 경향이 있어, 이러한 피드는 계속 모니터링하되 당장 제외하기보다는 키워드 필터가 더욱 정교해지면 개선될 수 있다고 판단했습니다. 'Retail Dive', 'Digiday'는 kw_pass_rate는 높으나 keep_rate가 낮아, 해당 소스에서 'retailer news'와 같은 좀 더 구체적인 키워드를 추가하여 관련성 있는 기사를 더 많이 필터링할 수 있도록 뉴스 KEEP 키워드에 'retailer news'를 추가했습니다. 전반적으로 현재 쿼리와 키워드 목록이 잘 작동하고 있어 큰 변경 없이 유지합니다."
+ },
+ {
+  "date": "2026-09-20",
+  "old_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "ai search",
+   "ai device"
+  ],
+  "new_queries": [
+   "samsung product launch",
+   "samsung earnings",
+   "galaxy phone launch",
+   "smartphone market share",
+   "ecommerce trends",
+   "ai shopping",
+   "apple intelligence",
+   "semiconductor market",
+   "ai search",
+   "ai device"
+  ],
+  "rationale": "기존 쿼리의 성능이 비교적 양호하고 단어 수 제한 및 기존 카테고리 유지 규칙을 고려하여 쿼리 변경은 최소화함. 키워드 필터의 경우, 'Retail Dive'가 피드 소스에서 낮은 keep_rate를 보여 kw_feeds DROP에 추가하고, 최근 기사 샘플에서 발견된 'samsung p-series'와 같은 특정 제품명을 kw_feeds KEEP에 추가하여 관련성을 높임."
  }
 ]
